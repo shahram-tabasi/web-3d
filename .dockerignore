@@ -9,3 +9,4 @@ docs
 !.env.example
 Dockerfile
 .dockerignore
+marketing

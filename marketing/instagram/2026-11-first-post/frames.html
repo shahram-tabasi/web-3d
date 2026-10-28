@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><style>
+@font-face{font-family:Vazirmatn;src:url(assets/Vazirmatn-Variable.woff2) format("woff2");font-weight:100 900}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000;font-family:Vazirmatn,sans-serif;color:#e7edff}
+.f{position:relative;overflow:hidden;margin:0 0 40px;background:radial-gradient(ellipse at 50% 30%,#15275a 0%,#0a1330 50%,#04060e 100%)}
+.post{width:1080px;height:1350px}
+.story{width:1080px;height:1920px}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(120,160,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(120,160,255,.06) 1px,transparent 1px);background-size:60px 60px}
+.stars{position:absolute;inset:0}
+.bgimg{position:absolute;inset:0;background-size:cover;background-position:center}
+.scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,6,14,.2),rgba(4,6,14,.85))}
+.top{position:absolute;top:64px;right:72px;left:72px;display:flex;align-items:center;justify-content:space-between;direction:rtl}
+.brand{display:flex;align-items:center;gap:16px}
+.brand img{width:74px;filter:drop-shadow(0 0 14px rgba(42,211,240,.5))}
+.brand b{font-family:Inter,Vazirmatn;font-size:26px;letter-spacing:.22em;font-weight:700;direction:ltr}
+.page{font-size:26px;color:#6d7fa8;font-weight:500}
+.foot{position:absolute;bottom:60px;right:72px;left:72px;display:flex;justify-content:space-between;align-items:center;font-size:26px;color:#9fb0d8}
+.foot .h{direction:ltr;font-family:Inter,Vazirmatn;color:#7ce6f7}
+.body{position:absolute;right:72px;left:72px}
+.eyebrow{font-size:30px;font-weight:600;color:#2ad3f0}
+h1{font-size:84px;font-weight:850;line-height:1.25;letter-spacing:-.01em;margin-top:18px}
+h2{font-size:66px;font-weight:800;line-height:1.3;margin-top:14px}
+.en{direction:ltr;unicode-bidi:isolate;font-family:Inter,Vazirmatn;font-weight:800}
+.grad{background:linear-gradient(90deg,#a48bff,#5c8dff 45%,#7ce6f7);-webkit-background-clip:text;background-clip:text;color:transparent}
+p.lead{font-size:38px;line-height:1.75;color:#c9d5f5;margin-top:30px;font-weight:400}
+ul{list-style:none;margin-top:44px}
+li{position:relative;font-size:37px;line-height:1.6;padding:20px 64px 20px 0;border-bottom:1px solid rgba(120,160,255,.14)}
+li:last-child{border-bottom:0}
+li:before{content:"";position:absolute;right:8px;top:38px;width:22px;height:22px;border-radius:50%;border:3px solid #2ad3f0;box-shadow:0 0 12px rgba(42,211,240,.6)}
+li small{display:block;font-size:29px;color:#9fb0d8;margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:18px;margin-top:50px}
+.chip{font-size:32px;padding:16px 28px;border-radius:999px;border:2px solid rgba(255,107,107,.55);color:#ffb3b3;background:rgba(80,20,30,.35)}
+.chip s{text-decoration-thickness:3px}
+.card{border:2px solid rgba(42,211,240,.4);background:rgba(16,26,53,.82);border-radius:28px;padding:36px 40px}
+.card.mid{border-color:rgba(164,139,255,.6)}
+.card .k{font-size:28px;color:#2ad3f0;font-weight:600}
+.card.mid .k{color:#a48bff}
+.card .t{font-size:52px;margin-top:6px;text-align:right}
+.card .d{font-size:32px;color:#9fb0d8;margin-top:8px;line-height:1.6}
+.down{width:4px;height:60px;margin:14px auto;background:linear-gradient(#2ad3f0,#a48bff)}
+.cta{display:inline-block;margin-top:40px;padding:26px 48px;border-radius:20px;background:#2b6bff;font-size:40px;font-weight:700;box-shadow:0 10px 40px rgba(43,107,255,.45)}
+.url{font-family:Inter,Vazirmatn;direction:ltr;unicode-bidi:isolate;font-weight:700}
+.swipe{font-size:30px;color:#7ce6f7;font-weight:600}
+</style></head><body>
+
+<!-- ───────────── POST 1: cover ───────────── -->
+<section class="f post" data-out="post-1.jpg">
+  <div class="grid"></div><canvas class="stars"></canvas>
+  <img src="assets/simorgh-still.webp" style="position:absolute;width:980px;left:50px;top:150px;opacity:.95;filter:drop-shadow(0 0 40px rgba(124,230,247,.35))">
+  <div class="scrim" style="background:linear-gradient(180deg,rgba(4,6,14,0) 35%,rgba(4,6,14,.92) 70%)"></div>
+  <div class="top"><div class="brand"><img src="assets/logo-mark.png"><b>SIMORGH</b></div><span class="page">۱ از ۷</span></div>
+  <div class="body" style="bottom:180px">
+    <div class="eyebrow">سیمرغ · نرم&zwnj;افزار هوشمند برای صنعت</div>
+    <h1>از نقشه مهندس<br><span class="grad">تا امضای مشتری</span></h1>
+    <p class="lead" style="margin-top:20px">یک رشته پیوسته برای سازمان&zwnj;های مهندسی و تولیدی، روی سرورهای خود شما</p>
+  </div>
+  <div class="foot"><span class="swipe">ورق بزنید ←</span><span class="h">@ai_simorgh</span></div>
+</section>
+
+<!-- ───────────── POST 2: the problem ───────────── -->
+<section class="f post" data-out="post-2.jpg">
+  <div class="grid"></div><canvas class="stars"></canvas>
+  <div class="top"><div class="brand"><img src="assets/logo-mark.png"><b>SIMORGH</b></div><span class="page">۲ از ۷</span></div>
+  <div class="body" style="top:250px">
+    <div class="eyebrow">مسئله</div>
+    <h2 style="font-size:60px">در تولید سفارشی،<br>هر دست&zwnj;به&zwnj;دست شدن یک ریسک است</h2>
+    <p class="lead">هر تابلو برای یک مشتری طراحی می&zwnj;شود. وقتی طراحی، فهرست مواد، کارگاه، آزمون و خدمات پس از فروش هر کدام در سامانه&zwnj;ای جدا هستند، نسخه&zwnj;ها، کدهای قطعه و وعده&zwnj;ها در میانه راه گم می&zwnj;شوند.</p>
+    <div class="chips">
+      <span class="chip"><s>فایل طراحی جدا</s></span>
+      <span class="chip"><s>BoM دوباره تایپ&zwnj;شده</s></span>
+      <span class="chip"><s>کاغذ در کارگاه</s></span>
+      <span class="chip"><s>نتیجه آزمون روی کاغذ</s></span>
+      <span class="chip"><s>خدمات از روی ایمیل</s></span>
+    </div>
+  </div>
+  <div class="foot"><span class="swipe">راه&zwnj;حل سیمرغ ←</span><span class="h">@ai_simorgh</span></div>
+</section>
+
+<!-- ───────────── POST 3: Design Suite ───────────── -->
+<section class="f post" data-out="post-3.jpg">
+  <div class="grid"></div><canvas class="stars"></canvas>
+  <div class="top"><div class="brand"><img src="assets/logo-mark.png"><b>SIMORGH</b></div><span class="page">۳ از ۷</span></div>
+  <div class="body" style="top:230px">
+    <div class="eyebrow">۱ · برای مهندسان</div>
+    <h2><span class="en grad">Simorgh Design Suite</span></h2>
+    <ul>
+      <li>تحلیل مشخصات فنی و نقشه تک&zwnj;خطی با هوش مصنوعی<small>هر مقدار با منبعش؛ تصمیم نهایی با مهندس</small></li>
+      <li>طراحی تابلو از کاتالوگ<small>با کد واقعی قطعات از انبار شما</small></li>
+      <li><span class="en" style="font-weight:700">Simorgh Draw</span>: نقشه شماتیک در مرورگر<small>با کتابخانه&zwnj;های نماد، ماکرو و قطعات EPLAN</small></li>
+      <li>مطالعات IEC 60909 و تولید پروژه EPLAN</li>
+      <li><span class="en" style="font-weight:700">Send to PLM</span>: ارسال طراحی هر تابلو به ERP</li>
+    </ul>
+  </div>
+  <div class="foot"><span class="swipe">←</span><span class="h">@ai_simorgh</span></div>
+</section>
+
+<!-- ───────────── POST 4: ERP ───────────── -->
+<section class="f post" data-out="post-4.jpg">
+  <div class="grid"></div><canvas class="stars"></canvas>
+  <div class="top"><div class="brand"><img src="assets/logo-mark.png"><b>SIMORGH</b></div><span class="page">۴ از ۷</span></div>
+  <div class="body" style="top:230px">
+    <div class="eyebrow" style="color:#a48bff">۲ · یک سابقه واحد</div>
+    <h2><span class="en grad">Simorgh ERP</span></h2>
+    <ul>
+      <li>از سفارش تا وصول<small>سفارش کلید در دست، تولید، پروژه و خرید را با هم باز می&zwnj;کند</small></li>
+      <li>تغییر مهندسی (ECO) با تأیید مرحله&zwnj;ای<small>هزینه در برابر BoM فعلی و سفارش&zwnj;های متأثر</small></li>
+      <li>برنامه&zwnj;ریزی MRP II و هشدار کمبود قطعه</li>
+      <li>واردات با بهای تمام&zwnj;شده واقعی و تأیید دوم خرید</li>
+      <li>آزمون&zwnj;های IEC 62271-200 با مقادیر اندازه&zwnj;گیری&zwnj;شده</li>
+      <li>Customer 360 برای مدیریت</li>
+    </ul>
+  </div>
+  <div class="foot"><span class="swipe">←</span><span class="h">@ai_simorgh</span></div>
+</section>
+
+<!-- ───────────── POST 5: Kara ───────────── -->
+<section class="f post" data-out="post-5.jpg">
+  <div class="grid"></div><canvas class="stars"></canvas>
+  <div class="top"><div class="brand"><img src="assets/logo-mark.png"><b>SIMORGH</b></div><span class="page">۵ از ۷</span></div>
+  <div class="body" style="top:230px">
+    <div class="eyebrow">۳ · برای همه سازمان</div>
+    <h2><span class="en grad">Simorgh Kara</span></h2>
+    <ul>
+      <li>کارتابل وظایف و تأییدها<small>با یادآوری، تفویض و سابقه کامل تصمیم&zwnj;ها</small></li>
+      <li>حضور و غیاب، شیفت و مرخصی</li>
+      <li>کارگاه: اسکن بارکد دستور کار با گوشی<small>شروع، توقف، پایان، قطعات مصرفی و ضایعات</small></li>
+      <li>خدمات میدانی با امضای مشتری روی صفحه</li>
+      <li>تماس و جلسه روی سرور خود شما</li>
+    </ul>
+  </div>
+  <div class="foot"><span class="swipe">←</span><span class="h">@ai_simorgh</span></div>
+</section>
+
+<!-- ───────────── POST 6: AI ───────────── -->
+<section class="f post" data-out="post-6.jpg">
+  <div class="grid"></div><canvas class="stars"></canvas>
+  <div class="top"><div class="brand"><img src="assets/logo-mark.png"><b>SIMORGH</b></div><span class="page">۶ از ۷</span></div>
+  <div class="body" style="top:230px">
+    <div class="eyebrow">هوش مصنوعی خصوصی</div>
+    <h2>هوش مصنوعی پیش&zwnj;نویس می&zwnj;کند،<br><span class="grad">انسان تصمیم می&zwnj;گیرد</span></h2>
+    <ul>
+      <li><span class="en" style="font-weight:700">Engineering AI</span><small>پاسخ از مدارک و استانداردهای خودتان، با ذکر صفحه</small></li>
+      <li><span class="en" style="font-weight:700">HR Assistant</span><small>پاسخ به پرسش&zwnj;های پرسنلی از آیین&zwnj;نامه&zwnj;های شما</small></li>
+      <li>مدل&zwnj;ها روی GPUهای خود شما<small>داده&zwnj;های سازمان به سرویس&zwnj;های بیرونی نمی&zwnj;رود</small></li>
+    </ul>
+  </div>
+  <div class="foot"><span class="swipe">←</span><span class="h">@ai_simorgh</span></div>
+</section>
+
+<!-- ───────────── POST 7: CTA ───────────── -->
+<section class="f post" data-out="post-7.jpg">
+  <div class="bgimg" style="-webkit-mask-image:linear-gradient(180deg,transparent 21.5%,#000 31%,#000 43%,transparent 53.5%);background-image:url(assets/simorgh-wings.webp);background-size:1900px auto;background-position:50% 32%;background-repeat:no-repeat"></div>
+  <div class="scrim" style="background:linear-gradient(180deg,rgba(4,6,14,.1) 20%,rgba(4,6,14,.95) 62%)"></div>
+  <div class="top"><div class="brand"><img src="assets/logo-mark.png"><b>SIMORGH</b></div><span class="page">۷ از ۷</span></div>
+  <div class="body" style="bottom:170px">
+    <h2>یک پلتفرم،<br><span class="grad">از طراحی تا تحویل</span></h2>
+    <p class="lead" style="margin-top:18px">مقاله کامل «از طراحی تا تحویل» و درخواست دمو در سایت:</p>
+    <div class="cta"><span class="url">simorghai.com</span></div>
+  </div>
+  <div class="foot"><span>ما را دنبال کنید</span><span class="h">@ai_simorgh</span></div>
+</section>
+
+<!-- ───────────── STORY 1 ───────────── -->
+<section class="f story" data-out="story-1.jpg">
+  <div class="grid"></div><canvas class="stars"></canvas>
+  <img src="assets/simorgh-still.webp" style="position:absolute;width:1100px;left:-10px;top:330px;filter:drop-shadow(0 0 50px rgba(124,230,247,.35))">
+  <div class="scrim" style="background:linear-gradient(180deg,rgba(4,6,14,0) 45%,rgba(4,6,14,.9) 72%)"></div>
+  <div class="top" style="top:260px;justify-content:center"><div class="brand"><img src="assets/logo-mark.png"><b>SIMORGH</b></div></div>
+  <div class="body" style="bottom:420px;text-align:center">
+    <h1>سلام!<br><span class="grad">ما سیمرغ هستیم</span></h1>
+    <p class="lead">نرم&zwnj;افزار و هوش مصنوعی برای<br>سازمان&zwnj;های مهندسی و تولیدی</p>
+  </div>
+</section>
+
+<!-- ───────────── STORY 2 ───────────── -->
+<section class="f story" data-out="story-2.jpg">
+  <div class="grid"></div><canvas class="stars"></canvas>
+  <div class="top" style="top:200px;justify-content:center"><div class="brand"><img src="assets/logo-mark.png"><b>SIMORGH</b></div></div>
+  <div class="body" style="top:330px;text-align:center">
+    <div class="eyebrow">از نقشه مهندس تا امضای مشتری</div>
+    <h2 style="font-size:72px">یک رشته پیوسته</h2>
+  </div>
+  <div class="body" style="top:620px">
+    <div class="card"><div class="k">مهندسان</div><div class="t en">Design Suite</div><div class="d">طراحی تابلو، Simorgh Draw، ارسال به PLM</div></div>
+    <div class="down"></div>
+    <div class="card mid"><div class="k">سابقه واحد</div><div class="t en">Simorgh ERP</div><div class="d">تغییر مهندسی، MRP II، خرید، کیفیت، آزمون</div></div>
+    <div class="down"></div>
+    <div class="card"><div class="k">همه سازمان</div><div class="t en">Kara</div><div class="d">کارتابل، کارگاه، خدمات میدانی با امضا</div></div>
+  </div>
+</section>
+
+<!-- ───────────── STORY 3 (leave the lower middle free for the link sticker) ───────────── -->
+<section class="f story" data-out="story-3.jpg">
+  <div class="grid"></div><canvas class="stars"></canvas>
+  <img src="assets/simorgh-still.webp" style="position:absolute;width:820px;left:130px;top:330px;filter:drop-shadow(0 0 40px rgba(124,230,247,.35))">
+  <div class="top" style="top:230px;justify-content:center"><div class="brand"><img src="assets/logo-mark.png"><b>SIMORGH</b></div></div>
+  <div class="body" style="top:970px;text-align:center">
+    <h2>مقاله کامل را<br><span class="grad">در سایت بخوانید</span></h2>
+    <p class="lead" style="margin-top:16px">«از طراحی تا تحویل: یک رشته پیوسته»</p>
+    <div class="cta" style="margin-top:34px"><span class="url">simorghai.com</span></div>
+    <div style="margin-top:40px;font-size:60px;color:#7ce6f7">↓</div>
+  </div>
+</section>
+
+<script>
+document.querySelectorAll('canvas.stars').forEach((c, k) => {
+  const f = c.parentElement; c.width = f.clientWidth; c.height = f.clientHeight;
+  const x = c.getContext('2d'); let s = 11 + k * 97; const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 220; i++) { x.globalAlpha = r() * .7 + .1; x.fillStyle = '#fff'; x.beginPath(); x.arc(r() * c.width, r() * c.height, r() * 1.6 + .3, 0, 7); x.fill(); }
+});
+</script>
+</body></html>
