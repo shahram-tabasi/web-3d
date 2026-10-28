@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" font-family="Inter, 'Segoe UI', system-ui, sans-serif">
+  <title>From design to delivery: Design Suite, Simorgh ERP and Kara</title>
+  <defs>
+    <linearGradient id="dtd-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b1330"/><stop offset="1" stop-color="#05080f"/></linearGradient>
+    <marker id="dtd-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#2ad3f0"/></marker>
+  </defs>
+  <rect width="1200" height="600" rx="18" fill="url(#dtd-bg)"/>
+  <text x="40" y="52" fill="#7ce6f7" font-size="15" letter-spacing="3">ONE THREAD · FROM THE DRAWING TO THE SIGNATURE</text>
+
+  <!-- Design Suite -->
+  <g font-size="14" fill="#e7edff">
+    <rect x="40" y="90" width="300" height="190" rx="14" fill="#101a3a" stroke="#2ad3f0" stroke-opacity=".45"/>
+    <text x="60" y="120" fill="#7ce6f7" font-size="12" letter-spacing="2">DESIGN SUITE · ENGINEERS</text>
+    <text x="60" y="156" font-weight="600">Specification and SLD</text>
+    <text x="60" y="176" fill="#9fb0d8" font-size="12.5">read by AI, confirmed by an engineer</text>
+    <text x="60" y="210" font-weight="600">Panels, studies, Simorgh Draw</text>
+    <text x="60" y="230" fill="#9fb0d8" font-size="12.5">catalogue parts, EPLAN libraries</text>
+    <text x="60" y="262" font-weight="600" fill="#7ce6f7">Send to PLM ›</text>
+  </g>
+
+  <!-- ERP -->
+  <g font-size="14" fill="#e7edff">
+    <rect x="420" y="90" width="360" height="420" rx="14" fill="#0f2147" stroke="#5c8dff" stroke-opacity=".5"/>
+    <text x="440" y="120" fill="#a48bff" font-size="12" letter-spacing="2">SIMORGH ERP · THE RECORD</text>
+    <text x="440" y="156" font-weight="600">Engineering change (ECO)</text>
+    <text x="440" y="176" fill="#9fb0d8" font-size="12.5">stages and approvers · cost vs current BoM</text>
+    <text x="440" y="194" fill="#9fb0d8" font-size="12.5">affected orders · documents</text>
+    <text x="440" y="228" font-weight="600">BoM revision → MRP II</text>
+    <text x="440" y="248" fill="#9fb0d8" font-size="12.5">what to make, what to buy, when</text>
+    <text x="440" y="282" font-weight="600">Purchasing and imports</text>
+    <text x="440" y="302" fill="#9fb0d8" font-size="12.5">currency · landed costs · 2nd approval</text>
+    <text x="440" y="336" font-weight="600">Receiving inspection</text>
+    <text x="440" y="356" fill="#9fb0d8" font-size="12.5">failed goods to quarantine</text>
+    <text x="440" y="390" font-weight="600">Routine tests, IEC 62271-200</text>
+    <text x="440" y="410" fill="#9fb0d8" font-size="12.5">measured values against limits</text>
+    <text x="440" y="444" font-weight="600">Delivery, invoice, Customer 360</text>
+    <text x="440" y="464" fill="#9fb0d8" font-size="12.5">margin · collected · due · service cost</text>
+    <text x="440" y="494" fill="#6d7fa8" font-size="12">Odoo Community + OCA + Simorgh modules</text>
+  </g>
+
+  <!-- Kara -->
+  <g font-size="14" fill="#e7edff">
+    <rect x="860" y="90" width="300" height="420" rx="14" fill="#101a3a" stroke="#2ad3f0" stroke-opacity=".45"/>
+    <text x="880" y="120" fill="#7ce6f7" font-size="12" letter-spacing="2">KARA · EVERYONE ELSE</text>
+    <text x="880" y="156" font-weight="600">Kartabl and approvals</text>
+    <text x="880" y="176" fill="#9fb0d8" font-size="12.5">engineering changes, purchases</text>
+    <text x="880" y="228" font-weight="600">Shop floor</text>
+    <text x="880" y="248" fill="#9fb0d8" font-size="12.5">scan · start · pause · finish</text>
+    <text x="880" y="266" fill="#9fb0d8" font-size="12.5">parts used · scrap · instructions</text>
+    <text x="880" y="336" font-weight="600">Field service</text>
+    <text x="880" y="356" fill="#9fb0d8" font-size="12.5">installation, commissioning, support</text>
+    <text x="880" y="374" fill="#9fb0d8" font-size="12.5">report signed by the customer</text>
+    <text x="880" y="444" font-weight="600">Helpdesk</text>
+    <text x="880" y="464" fill="#9fb0d8" font-size="12.5">AI drafts the reply, a person sends</text>
+  </g>
+
+  <path d="M342 256 H412" stroke="#2ad3f0" stroke-width="2" marker-end="url(#dtd-a)"/>
+  <path d="M852 170 H788" stroke="#2ad3f0" stroke-width="2" marker-end="url(#dtd-a)"/>
+  <path d="M788 250 H852" stroke="#2ad3f0" stroke-width="2" marker-end="url(#dtd-a)"/>
+  <path d="M852 260 H788" stroke="#2ad3f0" stroke-width="2" stroke-opacity=".5" marker-end="url(#dtd-a)"/>
+  <path d="M788 356 H852" stroke="#2ad3f0" stroke-width="2" marker-end="url(#dtd-a)"/>
+  <path d="M852 366 H788" stroke="#2ad3f0" stroke-width="2" stroke-opacity=".5" marker-end="url(#dtd-a)"/>
+
+  <!-- foundation -->
+  <g font-size="13" fill="#9fb0d8">
+    <rect x="40" y="530" width="1120" height="46" rx="10" fill="#0b1226" stroke="#2ad3f0" stroke-opacity=".2"/>
+    <text x="600" y="558" text-anchor="middle">One sign-in (Keycloak) · audited connector · event bus · local language models on our own GPUs · your own servers</text>
+  </g>
+</svg>

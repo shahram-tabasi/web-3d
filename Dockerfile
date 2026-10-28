@@ -20,6 +20,10 @@ ARG RUNTIME_IMAGE=registry.simorghai.com/gcr-proxy/distroless/nodejs20-debian12:
 # ── deps ─────────────────────────────────────────────────────────────────────
 FROM ${NODE_IMAGE} AS deps
 WORKDIR /app
+# The office builds through the npm cache on the Harbor server
+# (--build-arg NPM_CONFIG_REGISTRY=http://5.161.149.228:4873/); npm reads it from the environment.
+ARG NPM_CONFIG_REGISTRY=https://registry.npmjs.org/
+ENV NPM_CONFIG_REGISTRY=$NPM_CONFIG_REGISTRY
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts
 

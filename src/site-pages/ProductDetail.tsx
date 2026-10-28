@@ -22,6 +22,13 @@ const previewRows: Record<string, {label: string;value: string;state?: 'ok' | 'w
   { label: 'ERP sync', value: 'Up to date', state: 'ok' },
   { label: 'Call', value: 'Project room · 4 people' }],
 
+  'simorgh-erp': [
+  { label: 'Sales order', value: 'Panel + installation + support' },
+  { label: 'Engineering change', value: 'BoM rev. B · awaiting approval', state: 'warn' },
+  { label: 'Cost vs current BoM', value: '+2.4%' },
+  { label: 'Routine tests', value: 'All values within limits', state: 'ok' },
+  { label: 'Service visit', value: 'Signed by the customer', state: 'ok' }],
+
   'simorgh-design-suite': [
   { label: 'Project', value: 'MV switchgear · 24 panels' },
   { label: 'Documents read', value: 'Spec, SLD, load list' },

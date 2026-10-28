@@ -5,12 +5,19 @@
 // admin who later undoes part of it (re-publishes a product) is not overruled.
 import { productionProducts, retiredProducts } from './seed/products-2026-10';
 import { simodArticle } from './seed/article-simod';
+import { designSuiteUpdate, erpProduct, karaUpdate, productOrder } from './seed/products-2026-11';
+import { designToDeliveryArticle } from './seed/article-design-to-delivery';
 import type { SiteContent } from './types';
 
 interface Migration {
   id: string;
   apply: (c: SiteContent) => SiteContent;
 }
+
+const OCT_PRODUCTS_DESCRIPTION =
+  'Simorgh Kara, Design Suite, Engineering AI and HR Assistant: software for running complex engineering organisations, on your own servers.';
+
+const OLD_ENTERPRISE_BODY = 'Accounting, inventory and workforce systems built for engineering organisations.';
 
 const OLD_PRODUCTS_DESCRIPTION =
   'SIMORGH Design Suite, Grid, Digital Twin, Kara, Shop, Draw and Cloud: seven products sharing one intelligence layer, from electrical design to digital twin.';
@@ -55,11 +62,63 @@ export const MIGRATIONS: Migration[] = [
           ...pages.products,
           seo: {
             ...pages.products.seo,
-            description: 'Simorgh Kara, Design Suite, Engineering AI and HR Assistant: software for running complex engineering organisations, on your own servers.',
+            description: OCT_PRODUCTS_DESCRIPTION,
           },
         };
       }
       return { ...c, products, articles, pages };
+    },
+  },
+  {
+    // November 2026: Simorgh ERP as a product of its own; Kara gains the shop
+    // floor and field service, Design Suite gains Simorgh Draw and Send to
+    // PLM; the article on the whole thread. Pictures and SEO the admin chose
+    // stay; texts are replaced, as in the October migration.
+    id: '2026-11-erp-shop-floor',
+    apply: (c) => {
+      const products = c.products.map((p) => {
+        if (p.slug === 'simorgh-kara') return { ...p, ...karaUpdate };
+        if (p.slug === 'simorgh-design-suite') return { ...p, ...designSuiteUpdate };
+        return p;
+      });
+      const old = products.find((p) => p.slug === erpProduct.slug);
+      const erp = {
+        ...erpProduct,
+        image: old?.image || erpProduct.image,
+        // The banner carries words; the page header gets the wordless picture.
+        headerImage: old?.headerImage || '/images/products/simorgh-erp/header.jpg',
+        gallery: old?.gallery ?? [],
+        schematics: old?.schematics ?? [],
+        seo: { ...erpProduct.seo, ...Object.fromEntries(Object.entries(old?.seo ?? {}).filter(([, v]) => v)) },
+        status: 'published' as const,
+        order: 0,
+      };
+      const i = products.findIndex((p) => p.slug === erp.slug);
+      if (i >= 0) products[i] = erp; else products.push(erp);
+      for (const p of products) {
+        const rank = productOrder.indexOf(p.slug);
+        if (rank >= 0) p.order = rank + 1;
+      }
+
+      const articles = c.articles.some((a) => a.slug === designToDeliveryArticle.slug)
+        ? c.articles
+        : [designToDeliveryArticle, ...c.articles];
+
+      const ecosystem = c.ecosystem.map((e) =>
+        e.key === 'enterprise' && e.body === OLD_ENTERPRISE_BODY
+          ? { ...e, body: 'Kara for people and work, Simorgh ERP for orders, production, quality and service, connected to the design.' }
+          : e);
+      const pages = { ...c.pages };
+      if (pages.products?.seo.description === OCT_PRODUCTS_DESCRIPTION) {
+        pages.products = {
+          ...pages.products,
+          seo: {
+            ...pages.products.seo,
+            description: 'Simorgh Kara, ERP, Design Suite, Engineering AI and HR Assistant: one platform from the engineer’s design to the customer’s signature, on your own servers.',
+          },
+        };
+      }
+      return { ...c, products, articles, ecosystem, pages };
     },
   },
 ];
