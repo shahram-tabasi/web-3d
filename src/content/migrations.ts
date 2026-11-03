@@ -121,6 +121,24 @@ export const MIGRATIONS: Migration[] = [
       return { ...c, products, articles, ecosystem, pages };
     },
   },
+  {
+    // November 2026: the new logo and the company's name as on it — in English
+    // as on the brochure, and in Persian. A name the admin changed stays.
+    id: '2026-11-brand-name',
+    apply: (c) => {
+      const old = ['SIMORGH Intelligent Iranian Technology', 'SIMORGH Intelligent Technology', ''];
+      const settings = { ...c.settings };
+      if (old.includes(settings.legalName.trim())) settings.legalName = 'Simorgh Intelligent Iranian Technology Co.';
+      if (!settings.legalNameFa?.trim()) settings.legalNameFa = 'سیمرغ فن‌آوری هوشمند ایرانیان';
+      const seo = { ...c.seo };
+      if (!/فن.?آوری هوشمند ایرانیان/.test(seo.keywords)) {
+        seo.keywords = `سیمرغ فن آوری هوشمند ایرانیان, سیمرغ فن‌آوری هوشمند ایرانیان, Simorgh AI, SimorghAI, ${seo.keywords}`;
+      }
+      // The share card with the new logo, unless the admin chose their own.
+      if (!seo.ogImage || seo.ogImage === '/images/og-default.jpg') seo.ogImage = '/brand/og-sti.jpg';
+      return { ...c, settings, seo };
+    },
+  },
 ];
 
 /** The migrations not yet applied to `c`, applied in order. */

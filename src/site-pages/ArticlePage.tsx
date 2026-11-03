@@ -4,7 +4,7 @@
 // executed (react-markdown escapes it).
 
 import React from 'react';
-import Link from 'next/link';
+import Link from '../components/layout/LocaleLink';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ArrowRightIcon } from 'lucide-react';

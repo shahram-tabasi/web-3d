@@ -100,6 +100,7 @@ export function toPublic(content: SiteContent): PublicContent {
     ...content,
     products: live(content.products).sort((a, b) => a.order - b.order),
     industries: live(content.industries).sort((a, b) => a.order - b.order),
+    team: live(content.team ?? []).sort((a, b) => a.order - b.order),
     articles: live(content.articles)
       .sort((a, b) => b.date.localeCompare(a.date))
       .map(({ body: _body, ...rest }) => rest),

@@ -65,7 +65,7 @@ export function LoginForm({ configured, oidc = false }: { configured: boolean; o
     <div className="grid min-h-screen place-items-center bg-[radial-gradient(ellipse_at_top,#101a35,transparent_60%)] p-5">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center">
-          <img src="/simorgh/logo-mark-192.png" alt="" className="h-16 w-16" />
+          <img src="/brand/sti-mark-light.png" alt="" className="h-16 w-auto" />
           <h1 className="mt-4 text-[20px] font-bold text-ink">پنل مدیریت SIMORGH</h1>
           <p className="mt-1 text-[12.5px] text-ink-faint">برای ویرایش سایت وارد شوید</p>
         </div>

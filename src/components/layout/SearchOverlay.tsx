@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import Link from 'next/link';
+import Link from './LocaleLink';
 import { SearchIcon, XIcon } from 'lucide-react';
 import { useContent } from '../../content/ContentProvider';
 

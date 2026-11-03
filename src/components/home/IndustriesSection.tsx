@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
+import Link from '../layout/LocaleLink';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRightIcon } from 'lucide-react';
 import { SectionHeader } from '../ui/SectionHeader';

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import Link from '../layout/LocaleLink';
 import { ArrowRightIcon, PlayIcon, FileTextIcon } from 'lucide-react';
 import { SectionHeader } from '../ui/SectionHeader';
 import { Reveal } from '../ui/Reveal';

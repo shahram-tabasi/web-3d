@@ -1,9 +1,14 @@
-// Page metadata (title, description, canonical link, social cards) built from
-// the content the admin edits. Each page's server file calls these.
+// Page metadata (title, description, canonical link, language alternates,
+// social cards) built from the content the admin edits, in the language of
+// the request (/fa/… is Persian). Each page's server file calls these.
 
 import type { Metadata } from 'next';
 import { getContent } from '../content/store';
 import type { PageKey, Seo, SiteContent } from '../content/types';
+import type { Locale } from '../i18n-dictionaries';
+import { LOCALES, localizePath, OG_LOCALE } from '../i18n-routing';
+import { getRequestLocale } from './locale';
+import { FA_PAGES, titleTemplate, translator } from './localized';
 
 export function siteUrl(c: SiteContent) {
   return (c.settings.siteUrl || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/+$/, '');
@@ -12,6 +17,14 @@ export function siteUrl(c: SiteContent) {
 export function absoluteUrl(c: SiteContent, path: string) {
   if (/^https?:\/\//.test(path)) return path;
   return siteUrl(c) + (path.startsWith('/') ? path : `/${path}`);
+}
+
+/** hreflang alternates for one page: every language, plus x-default (English). */
+export function languageAlternates(c: SiteContent, path: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const l of LOCALES) out[l] = absoluteUrl(c, localizePath(path, l));
+  out['x-default'] = absoluteUrl(c, path);
+  return out;
 }
 
 interface Build {
@@ -23,34 +36,48 @@ interface Build {
   image?: string;
   type?: 'website' | 'article';
   publishedTime?: string;
+  /** Hand-written title/description for this language, ahead of everything else. */
+  localized?: { title: string; description: string; keywords?: string };
 }
 
-export function buildMetadata(c: SiteContent, b: Build): Metadata {
-  const title = b.seo?.title || b.fallbackTitle;
-  const description = b.seo?.description || b.fallbackDescription || c.seo.description;
+const hasBrand = (t: string) => /simorgh|سیمرغ/i.test(t);
+
+export async function buildMetadata(c: SiteContent, b: Build, locale?: Locale): Promise<Metadata> {
+  const lang = locale ?? (await getRequestLocale());
+  const tr = await translator(c, lang);
+  const enTitle = b.seo?.title || b.fallbackTitle;
+  const enDescription = b.seo?.description || b.fallbackDescription || c.seo.description;
+  const title = b.localized?.title || (enTitle ? tr(enTitle) : undefined);
+  const description = b.localized?.description || tr(enDescription);
   const image = b.seo?.image || b.image || c.seo.ogImage;
-  const keywords = [b.seo?.keywords, c.seo.keywords].filter(Boolean).join(', ');
-  const url = absoluteUrl(c, b.path);
-  const fullTitle = title ? c.seo.titleTemplate.replace('%s', title) : c.seo.defaultTitle;
+  const keywords = [b.localized?.keywords, b.seo?.keywords, c.seo.keywords].filter(Boolean).join(', ');
+  const url = absoluteUrl(c, localizePath(b.path, lang));
+  const template = titleTemplate(c, lang);
+  const fullTitle = title ? (hasBrand(title) ? title : template.replace('%s', title)) : undefined;
   return {
     // A page title that already carries the brand is used as is.
-    title: title ? (/simorgh/i.test(title) ? { absolute: title } : title) : undefined,
+    title: fullTitle ? { absolute: fullTitle } : undefined,
     description,
     keywords: keywords || undefined,
-    alternates: { canonical: url, types: { 'application/rss+xml': [{ url: '/insights/feed.xml', title: `${c.settings.siteName} Insights` }] } },
+    alternates: {
+      canonical: url,
+      languages: b.seo?.noindex ? undefined : languageAlternates(c, b.path),
+      types: { 'application/rss+xml': [{ url: '/insights/feed.xml', title: `${c.settings.siteName} Insights` }] },
+    },
     robots: b.seo?.noindex ? { index: false, follow: true } : undefined,
     openGraph: {
       type: b.type ?? 'website',
       url,
-      title: title && /simorgh/i.test(title) ? title : fullTitle,
+      title: fullTitle,
       description,
       siteName: c.settings.siteName,
+      locale: OG_LOCALE[lang],
       images: image ? [{ url: absoluteUrl(c, image) }] : undefined,
       publishedTime: b.publishedTime,
     },
     twitter: {
       card: 'summary_large_image',
-      title: title && /simorgh/i.test(title) ? title : fullTitle,
+      title: fullTitle,
       description,
       images: image ? [absoluteUrl(c, image)] : undefined,
       site: c.seo.twitterHandle || undefined,
@@ -58,7 +85,7 @@ export function buildMetadata(c: SiteContent, b: Build): Metadata {
   };
 }
 
-const PATHS: Record<PageKey, string> = {
+export const PAGE_PATHS: Record<PageKey, string> = {
   home: '/', products: '/products', solutions: '/solutions', industries: '/industries', technology: '/technology',
   insights: '/insights', company: '/company', contact: '/contact', requestDemo: '/request-demo',
 };
@@ -67,7 +94,13 @@ const PATHS: Record<PageKey, string> = {
 export function pageMetadata(key: PageKey) {
   return async (): Promise<Metadata> => {
     const c = await getContent();
+    const locale = await getRequestLocale();
     const p = c.pages[key];
-    return buildMetadata(c, { path: PATHS[key], seo: p.seo, image: p.heroImage });
+    return buildMetadata(c, {
+      path: PAGE_PATHS[key],
+      seo: p.seo,
+      image: p.heroImage,
+      localized: locale === 'fa' ? FA_PAGES[key] : undefined,
+    }, locale);
   };
 }

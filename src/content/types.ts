@@ -111,11 +111,36 @@ export interface Article extends Insight {
   seo: Seo;
 }
 
+/** A person on the Company page's team section, with their résumé. */
+export interface TeamMember {
+  id: string;
+  name: string;
+  nameFa: string;
+  role: string;
+  roleFa: string;
+  /** Portrait, ideally 4:5 and at least 800px tall; a monogram is drawn when empty. */
+  photo: MediaUrl;
+  bio: string;
+  bioFa: string;
+  /** Skills and specialisms, shown as chips. */
+  expertise: string[];
+  experience: { period: string; title: string; org: string }[];
+  education: string;
+  /** Uploaded résumé (PDF). */
+  resume: MediaUrl;
+  linkedin: string;
+  email: string;
+  status: Status;
+  order: number;
+}
+
 export interface Settings {
   siteName: string;
   /** Public address of the site, e.g. https://www.simorghai.com — used for canonical links, sitemap and sharing. */
   siteUrl: string;
   legalName: string;
+  /** The company's name in Persian, as on the logo. */
+  legalNameFa: string;
   email: string;
   phone: string;
   address: string;
@@ -146,6 +171,7 @@ export interface SiteContent {
   products: ProductEntry[];
   industries: IndustryEntry[];
   articles: Article[];
+  team: TeamMember[];
   caseStudies: CaseStudy[];
   ecosystem: { key: string; code: string; title: string; body: string; icon: string }[];
   intelligenceChain: { label: string; detail: string }[];

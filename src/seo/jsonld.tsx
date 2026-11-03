@@ -3,8 +3,14 @@
 
 import React from 'react';
 import type { Thread } from '../comments/store';
-import type { Article, ProductEntry, SiteContent } from '../content/types';
+import type { Article, ProductEntry, SiteContent, TeamMember } from '../content/types';
+import type { Locale } from '../i18n-dictionaries';
+import { localizePath } from '../i18n-routing';
+import { BRAND } from '../data/brand';
 import { absoluteUrl } from './metadata';
+
+/** A placeholder number ("+98 21 0000 0000") is worse than none: search engines show it. */
+const realPhone = (p: string) => (p && !/0000\s*0000/.test(p) ? p : undefined);
 
 export function JsonLd({ data }: { data: object | object[] }) {
   return (
@@ -22,25 +28,27 @@ export function organizationLd(c: SiteContent) {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     '@id': absoluteUrl(c, '/#organization'),
-    name: c.settings.siteName,
-    legalName: c.settings.legalName,
-    alternateName: 'سیمرغ',
+    name: c.settings.legalName || BRAND.nameEn,
+    legalName: c.settings.legalName || BRAND.nameEn,
+    alternateName: [...new Set([c.settings.legalNameFa, ...BRAND.alternateNames, c.settings.siteName, 'سیمرغ'].filter(Boolean))],
     url: absoluteUrl(c, '/'),
-    logo: absoluteUrl(c, '/icon.png'),
+    logo: { '@type': 'ImageObject', url: absoluteUrl(c, BRAND.logoSquare), width: 600, height: 600 },
+    image: absoluteUrl(c, BRAND.logoSquare),
     email: c.settings.email || undefined,
-    telephone: c.settings.phone || undefined,
+    telephone: realPhone(c.settings.phone),
     address: c.settings.address ? { '@type': 'PostalAddress', streetAddress: c.settings.address, addressCountry: 'IR' } : undefined,
     sameAs: sameAs.length ? sameAs : undefined,
   };
 }
 
-export function websiteLd(c: SiteContent) {
+export function websiteLd(c: SiteContent, locale: Locale = 'en') {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     '@id': absoluteUrl(c, '/#website'),
-    name: c.settings.siteName,
-    url: absoluteUrl(c, '/'),
+    name: locale === 'fa' ? (c.settings.legalNameFa || BRAND.nameFa) : c.settings.siteName,
+    alternateName: [c.settings.legalNameFa || BRAND.nameFa, c.settings.legalName || BRAND.nameEn, 'Simorgh AI'],
+    url: absoluteUrl(c, localizePath('/', locale)),
     publisher: { '@id': absoluteUrl(c, '/#organization') },
     inLanguage: ['en', 'fa', 'ar', 'tr', 'de', 'fr', 'es', 'zh', 'ja', 'ru'],
   };
@@ -113,4 +121,23 @@ export function articleLd(c: SiteContent, a: Article, thread?: Thread) {
       : undefined,
     interactionStatistic: thread?.likes ? { '@type': 'InteractionCounter', interactionType: 'https://schema.org/LikeAction', userInteractionCount: thread.likes } : undefined,
   };
+}
+
+/** The team on the Company page, as people who work for the organisation. */
+export function teamLd(c: SiteContent, team: TeamMember[], locale: Locale = 'en') {
+  return team.filter((m) => m.name || m.nameFa).map((m) => ({
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': absoluteUrl(c, `/company#${m.id}`),
+    name: (locale === 'fa' ? m.nameFa || m.name : m.name || m.nameFa),
+    alternateName: m.name && m.nameFa ? (locale === 'fa' ? m.name : m.nameFa) : undefined,
+    jobTitle: (locale === 'fa' ? m.roleFa || m.role : m.role || m.roleFa) || undefined,
+    description: (locale === 'fa' ? m.bioFa || m.bio : m.bio || m.bioFa) || undefined,
+    image: m.photo ? absoluteUrl(c, m.photo) : undefined,
+    knowsAbout: m.expertise.length ? m.expertise : undefined,
+    alumniOf: m.education || undefined,
+    sameAs: m.linkedin ? [m.linkedin] : undefined,
+    worksFor: { '@id': absoluteUrl(c, '/#organization') },
+    url: absoluteUrl(c, `${localizePath('/company', locale)}#${m.id}`),
+  }));
 }

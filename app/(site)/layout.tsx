@@ -1,6 +1,7 @@
 import { SiteLayout } from '@/src/components/layout/SiteLayout';
 import { ContentProvider } from '@/src/content/ContentProvider';
 import { getContent, toPublic } from '@/src/content/store';
+import { getRequestLocale } from '@/src/seo/locale';
 import { JsonLd, organizationLd, websiteLd } from '@/src/seo/jsonld';
 
 // Rendered per request from storage/content.json, never prerendered. A page
@@ -12,10 +13,11 @@ export const dynamic = 'force-dynamic';
 
 export default async function SiteRootLayout({ children }: { children: React.ReactNode }) {
   const content = await getContent();
+  const locale = await getRequestLocale();
   return (
     <ContentProvider content={toPublic(content)}>
-      <JsonLd data={[organizationLd(content), websiteLd(content)]} />
-      <SiteLayout>{children}</SiteLayout>
+      <JsonLd data={[organizationLd(content), websiteLd(content, locale)]} />
+      <SiteLayout locale={locale}>{children}</SiteLayout>
     </ContentProvider>
   );
 }

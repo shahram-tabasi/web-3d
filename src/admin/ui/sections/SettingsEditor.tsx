@@ -58,7 +58,8 @@ export function SettingsEditor() {
       <Card title="اطلاعات سایت و تماس" hint="در پاورقی، صفحه تماس و داده‌های ساختاریافته گوگل (Organization) استفاده می‌شود.">
         <Grid>
           <Text label="نام سایت" value={draft.settings.siteName} onChange={s('siteName')} ltr />
-          <Text label="نام حقوقی شرکت" value={draft.settings.legalName} onChange={s('legalName')} ltr />
+          <Text label="نام حقوقی شرکت (انگلیسی)" value={draft.settings.legalName} onChange={s('legalName')} ltr />
+          <Text label="نام شرکت (فارسی)" value={draft.settings.legalNameFa} onChange={s('legalNameFa')} hint="در عنوان صفحات فارسی، فوتر و اطلاعات ساختاریافته گوگل." />
           <Text label="آدرس اصلی سایت (دامنه)" value={draft.settings.siteUrl} onChange={s('siteUrl')} ltr placeholder="https://www.simorghai.com"
             hint="بسیار مهم برای سئو: لینک‌های canonical، نقشه سایت و اشتراک‌گذاری از این آدرس ساخته می‌شوند." />
           <Text label="ایمیل" value={draft.settings.email} onChange={s('email')} ltr />

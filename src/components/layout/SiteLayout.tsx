@@ -4,13 +4,13 @@ import React, { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import { I18nProvider } from '../../i18n';
+import { I18nProvider, type Locale } from '../../i18n';
 import { AutoTranslate } from '../i18n/AutoTranslate';
 import { SimorghAIChat } from '../ai/SimorghAIChat';
 import { Starfield } from '../ui/Starfield';
 import { MeteorShower } from '../ui/MeteorShower';
 
-export function SiteLayout({ children }: { children: React.ReactNode }) {
+export function SiteLayout({ children, locale }: { children: React.ReactNode; locale?: Locale }) {
   const pathname = usePathname();
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   return (
-    <I18nProvider>
+    <I18nProvider initial={locale}>
       {/* The site-wide sky: fixed behind everything, seen through the translucent sections. */}
       <div aria-hidden="true" className="sim-sky pointer-events-none fixed inset-0 -z-10">
         <Starfield fixed />

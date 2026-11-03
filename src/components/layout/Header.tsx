@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+import Link from './LocaleLink';
+import NextLink from 'next/link';
+import { localizePath } from '../../i18n-routing';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SearchIcon, GlobeIcon, MenuIcon, XIcon, ChevronDownIcon } from 'lucide-react';
@@ -19,7 +21,7 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
-  const { locale: lang, setLocale, t } = useI18n();
+  const { locale: lang, setLocale, t, path } = useI18n();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -52,7 +54,7 @@ export function Header() {
                 <Link
                 href={item.to}
                 className={`flex items-center gap-1.5 px-3.5 py-2 text-[13.5px] transition-colors duration-150 ease-sim ${
-                pathname.startsWith(item.to) ? 'text-ink' : 'text-ink-muted hover:text-ink'}`
+                path.startsWith(item.to) ? 'text-ink' : 'text-ink-muted hover:text-ink'}`
                 }>
                 
                   {t.nav[item.label] ?? item.label}
@@ -93,8 +95,11 @@ export function Header() {
                   
                     {languages.map((l) =>
                   <li key={l.code}>
-                        <button
-                      onClick={() => {
+                        <NextLink
+                      href={localizePath(path, l.code as Locale)}
+                      hrefLang={l.code}
+                      onClick={(e) => {
+                        e.preventDefault();
                         setLocale(l.code as Locale);
                         setLangOpen(false);
                       }}
@@ -104,7 +109,7 @@ export function Header() {
                       
                           <span>{l.label}</span>
                           <span className="font-mono text-[10px] text-ink-faint">/{l.code}</span>
-                        </button>
+                        </NextLink>
                       </li>
                   )}
                   </motion.ul>

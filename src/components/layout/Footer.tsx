@@ -1,11 +1,14 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import Link from './LocaleLink';
 import { Logo } from './Logo';
 import { languages } from '../../data/site';
 import { useContent } from '../../content/ContentProvider';
-import { useI18n } from '../../i18n';
+import { useI18n, type Locale } from '../../i18n';
+import NextLink from 'next/link';
+import { localizePath } from '../../i18n-routing';
+import { BRAND } from '../../data/brand';
 
 const columns = (products: { short: string; slug: string }[], industries: { name: string; slug: string }[]) => [
 {
@@ -20,6 +23,7 @@ const columns = (products: { short: string; slug: string }[], industries: { name
   title: 'Company',
   links: [
   { label: 'About SIMORGH', to: '/company' },
+  { label: 'Our Team', to: '/company#team' },
   { label: 'Technology', to: '/technology' },
   { label: 'Insights', to: '/insights' },
   { label: 'Careers', to: '/company' },
@@ -31,7 +35,7 @@ const columns = (products: { short: string; slug: string }[], industries: { name
 
 export function Footer() {
   const { products, industries } = useContent();
-  const { t, locale } = useI18n();
+  const { t, locale, path, setLocale } = useI18n();
   return (
     <footer className="relative border-t border-line bg-space-1">
       <div className="mx-auto max-w-shell px-5 py-16 lg:px-10 lg:py-20">
@@ -43,9 +47,11 @@ export function Footer() {
             </p>
             <div className="mt-8 flex flex-wrap gap-1.5" data-no-translate>
               {languages.map((l) =>
-              <span key={l.code} className="border border-line px-2 py-1 font-mono text-[10px] text-ink-faint">
+              <NextLink key={l.code} href={localizePath(path, l.code as Locale)} hrefLang={l.code} title={l.label}
+                onClick={(e) => { e.preventDefault(); setLocale(l.code as Locale); }}
+                className={`border px-2 py-1 font-mono text-[10px] transition-colors hover:text-cyan-soft ${l.code === locale ? 'border-cyan/50 text-cyan-soft' : 'border-line text-ink-faint'}`}>
                   /{l.code}
-                </span>
+                </NextLink>
               )}
             </div>
           </div>
@@ -70,7 +76,11 @@ export function Footer() {
         </div>
 
         <div className="mt-16 flex flex-col gap-4 border-t border-line pt-8 text-[12.5px] text-ink-faint sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} SIMORGH Intelligent Iranian Technology. All rights reserved.</p>
+          <p data-no-translate>
+            {locale === 'fa'
+              ? `© ${new Date().getFullYear()} ${BRAND.nameFa}. تمامی حقوق محفوظ است.`
+              : `© ${new Date().getFullYear()} ${BRAND.nameEn} (${BRAND.nameFa}). All rights reserved.`}
+          </p>
           <p className="font-mono text-[11px] tracking-[0.12em]">
             ENTERPRISE · ENGINEERING · KNOWLEDGE AI
           </p>

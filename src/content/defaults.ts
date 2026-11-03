@@ -59,7 +59,7 @@ const pages: Record<PageKey, PageContent> = {
   insights: page(BACKGROUNDS.earthLight, 'Insights',
     'Technical articles, case studies, recorded walkthroughs and whitepapers from the engineering teams building SIMORGH.', true),
   company: page(BACKGROUNDS.simorghWings, 'About SIMORGH',
-    'SIMORGH Intelligent Iranian Technology: an engineering and artificial intelligence company building software for the systems that run industry, energy and cities.'),
+    'Simorgh Intelligent Iranian Technology Co. (سیمرغ فن‌آوری هوشمند ایرانیان): an engineering and artificial intelligence company building software for the systems that run industry, energy and cities.'),
   contact: page(BACKGROUNDS.blueDots, 'Contact',
     'Contact SIMORGH for sales, enterprise, partnership and support enquiries.'),
   requestDemo: page(BACKGROUNDS.earthLight, 'Request a demo',
@@ -73,7 +73,8 @@ export function defaultContent(): SiteContent {
     settings: {
       siteName: 'SIMORGH',
       siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.simorghai.com',
-      legalName: 'SIMORGH Intelligent Iranian Technology',
+      legalName: 'Simorgh Intelligent Iranian Technology Co.',
+      legalNameFa: 'سیمرغ فن‌آوری هوشمند ایرانیان',
       email: 'info@simorghai.com',
       phone: '+98 21 0000 0000',
       address: 'Tehran · Iran',
@@ -88,8 +89,8 @@ export function defaultContent(): SiteContent {
       description:
         'SIMORGH builds AI-powered engineering software, digital twins and smart-grid intelligence for industry, utilities and cities — Design Suite, Grid, Digital Twin, Kara, Shop, Draw and Cloud.',
       keywords:
-        'SIMORGH, سیمرغ, AI, artificial intelligence, digital twin, smart grid, EPLAN, single line diagram, SLD, switchgear design, electrical engineering software, industrial AI, SCADA, GIS, IoT',
-      ogImage: '/images/og-default.jpg',
+        'SIMORGH, سیمرغ, سیمرغ فن آوری هوشمند ایرانیان, سیمرغ فن‌آوری هوشمند ایرانیان, Simorgh AI, SimorghAI, AI, artificial intelligence, digital twin, smart grid, EPLAN, single line diagram, SLD, switchgear design, electrical engineering software, industrial AI, SCADA, GIS, IoT',
+      ogImage: '/brand/og-sti.jpg',
       twitterHandle: '',
     },
     hero: {
@@ -128,6 +129,17 @@ export function defaultContent(): SiteContent {
       video: '',
       status: 'published',
       seo: { title: '', description: '', keywords: '', image: '' },
+    })),
+    // Three empty profiles to fill in from the admin (Team); drafts until then.
+    team: [1, 2, 3].map((n) => ({
+      id: `member-${n}`,
+      name: '', nameFa: `عضو تیم ${n}`,
+      role: '', roleFa: '',
+      photo: '', bio: '', bioFa: '',
+      expertise: [], experience: [], education: '',
+      resume: '', linkedin: '', email: '',
+      status: 'draft' as const,
+      order: n,
     })),
     caseStudies,
     ecosystem,

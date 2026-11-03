@@ -7,6 +7,9 @@ import { SectionHeader } from '../components/ui/SectionHeader';
 import { Reveal } from '../components/ui/Reveal';
 import { Button } from '../components/ui/Button';
 import { useContent } from '../content/ContentProvider';
+import { TeamSection } from '../components/company/TeamSection';
+import { BRAND } from '../data/brand';
+import { useI18n } from '../i18n';
 
 const pillars = [
 { title: 'Vision', body: 'Engineering knowledge should be executable. The systems that run a city or a plant deserve software that understands them, not software they are forced to accommodate.' },
@@ -23,12 +26,13 @@ const positions = [
 
 
 export function Company() {
-  const { pages } = useContent();
+  const { pages, settings } = useContent();
+  const fa = useI18n().locale === 'fa';
   return (
     <>
       <PageHero
         eyebrow="COMPANY"
-        title="SIMORGH Intelligent Iranian Technology"
+        title={fa ? settings.legalNameFa || BRAND.nameFa : settings.legalName || BRAND.nameEn}
         lead="An engineering and artificial intelligence company building software for the systems that physically run industry, energy and cities."
         crumbs={[{ label: 'Company' }]}
         image={pages.company.heroImage}
@@ -42,9 +46,13 @@ export function Company() {
               index="ABOUT"
               title="Engineers who write software, not the other way round"
               lead="SIMORGH was founded by electrical and industrial engineers who kept running into the same wall: the knowledge required to make a decision existed, but not in a form any system could use. The platform is the answer to that." />
-            <div data-no-simorgh className="relative mx-auto w-full max-w-[340px] overflow-hidden rounded-2xl border border-line bg-[#07132a] shadow-[0_0_80px_rgba(232,182,90,.12)]">
-              <Image src="/company.jpg" alt="SIMORGH company logo" width={481} height={442} className="h-auto w-full" />
-            </div>
+            <figure data-no-simorgh data-no-translate className="relative mx-auto flex w-full max-w-[360px] flex-col items-center overflow-hidden rounded-2xl border border-line bg-[radial-gradient(120%_100%_at_50%_0%,#13224a_0%,#07132a_70%)] px-8 pb-8 pt-10 shadow-[0_0_80px_rgba(232,182,90,.12)]">
+              <Image src="/brand/sti-mark-light.png" alt={`${BRAND.nameFa} — ${BRAND.nameEn}`} width={500} height={362} className="h-auto w-full" />
+              <figcaption className="mt-6 text-center">
+                <span className="block text-[17px] font-bold text-ink" dir="rtl">{settings.legalNameFa || BRAND.nameFa}</span>
+                <span className="mt-2 block font-mono text-[10px] tracking-[0.16em] text-ink-faint">{(settings.legalName || BRAND.nameEn).toUpperCase()}</span>
+              </figcaption>
+            </figure>
           </Reveal>
 
           <ul className="mt-16 grid gap-px border border-line bg-line sm:grid-cols-2">
@@ -57,6 +65,8 @@ export function Company() {
           </ul>
         </div>
       </section>
+
+      <TeamSection />
 
       <section className="bg-space-1">
         <div className="mx-auto grid max-w-shell gap-14 px-5 py-20 lg:grid-cols-[1fr_1fr] lg:gap-20 lg:px-10 lg:py-24">

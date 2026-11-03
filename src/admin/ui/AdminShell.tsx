@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   BoxIcon, ExternalLinkIcon, FactoryIcon, FileTextIcon, GaugeIcon, ImagesIcon, InboxIcon, LanguagesIcon,
-  LayersIcon, LayoutTemplateIcon, LogOutIcon, MailIcon, MenuIcon, MessageCircleIcon, SaveIcon, SettingsIcon, SparklesIcon, Undo2Icon, XIcon,
+  LayersIcon, LayoutTemplateIcon, UsersIcon, LogOutIcon, MailIcon, MenuIcon, MessageCircleIcon, SaveIcon, SettingsIcon, SparklesIcon, Undo2Icon, XIcon,
 } from 'lucide-react';
 import { useAdmin } from './AdminStore';
 
@@ -16,6 +16,7 @@ const NAV = [
   { href: '/admin/products', label: 'محصولات', icon: BoxIcon },
   { href: '/admin/articles', label: 'مقالات و اخبار', icon: FileTextIcon },
   { href: '/admin/industries', label: 'صنایع', icon: FactoryIcon },
+  { href: '/admin/team', label: 'تیم و رزومه‌ها', icon: UsersIcon },
   { href: '/admin/sections', label: 'بخش‌های صفحه اصلی', icon: LayersIcon },
   { href: '/admin/media', label: 'کتابخانه رسانه', icon: ImagesIcon },
   { href: '/admin/requests', label: 'پیام‌ها و درخواست دمو', icon: InboxIcon },
@@ -111,7 +112,7 @@ export function AdminShell({ user, children }: { user: string; children: React.R
 function Brand() {
   return (
     <Link href="/admin" className="flex items-center gap-3 px-2">
-      <img src="/simorgh/logo-mark-192.png" alt="" className="h-9 w-9" />
+      <img src="/brand/sti-mark-light.png" alt="" className="h-9 w-auto" />
       <span>
         <span className="block text-[14px] font-bold tracking-wide text-ink">SIMORGH</span>
         <span className="block text-[11px] text-ink-faint">پنل مدیریت سایت</span>

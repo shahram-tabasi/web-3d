@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'SIMORGH Intelligent Technology',
+    name: 'سیمرغ فن‌آوری هوشمند ایرانیان — Simorgh Intelligent Iranian Technology',
     short_name: 'SIMORGH',
     description: 'Engineering intelligence for a smarter world.',
     start_url: '/',
@@ -12,6 +12,7 @@ export default function manifest(): MetadataRoute.Manifest {
     icons: [
       { src: '/icon.png', sizes: '512x512', type: 'image/png' },
       { src: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+      { src: '/brand/icon-192.png', sizes: '192x192', type: 'image/png' },
     ],
   };
 }

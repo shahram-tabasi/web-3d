@@ -31,7 +31,7 @@ function Avatar({ name, team, small }: { name: string; team: boolean; small?: bo
   if (team) {
     return (
       <span className={`${size} grid shrink-0 place-items-center rounded-full border border-cyan/40 bg-space-2`}>
-        <img src="/logo-mark.png" alt="" className="h-[62%] w-[62%] object-contain" />
+        <img src="/brand/sti-mark-light.png" alt="" className="h-[62%] w-[62%] object-contain" />
       </span>
     );
   }

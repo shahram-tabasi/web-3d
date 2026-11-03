@@ -1,39 +1,67 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { languages } from './data/site';
+import React, { createContext, useContext, useEffect, useMemo } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { dictionaries, type Dictionary, type Locale } from './i18n-dictionaries';
+import { DEFAULT_LOCALE, dirOf, isLocale, localizePath, splitLocale } from './i18n-routing';
 
 export type { Locale };
+
+const STORAGE_KEY = 'simorgh-locale';
 
 const I18nContext = createContext<{
   locale: Locale;
   setLocale: (locale: Locale) => void;
   t: Dictionary;
-}>({ locale: 'en', setLocale: () => undefined, t: dictionaries.en });
+  /** The current address without its language prefix ("/fa/products" → "/products"). */
+  path: string;
+}>({ locale: 'en', setLocale: () => undefined, t: dictionaries.en, path: '/' });
 
-export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>('en');
+const readSaved = (): Locale | null => {
+  try {
+    const v = window.localStorage.getItem(STORAGE_KEY);
+    return isLocale(v) ? v : null;
+  } catch { return null; }
+};
 
+/**
+ * The language comes from the address (/fa/… is Persian), so the server
+ * renders the right lang/dir and search engines see one URL per language.
+ * `initial` is what the server resolved for this request.
+ */
+export function I18nProvider({ children, initial = DEFAULT_LOCALE }: { children: React.ReactNode; initial?: Locale }) {
+  const pathname = usePathname() || '/';
+  const router = useRouter();
+  const fromUrl = splitLocale(pathname);
+  // usePathname may report the rewritten (unprefixed) path; the server's answer covers that case.
+  const locale: Locale = fromUrl.locale !== DEFAULT_LOCALE ? fromUrl.locale : initial;
+  const path = fromUrl.path;
+
+  // A visitor who chose a language before and lands on an English address goes to their language.
   useEffect(() => {
-    const saved = window.localStorage.getItem('simorgh-locale') as Locale | null;
-    if (saved && dictionaries[saved]) setLocaleState(saved);
+    if (locale !== DEFAULT_LOCALE) return;
+    const saved = readSaved();
+    if (saved && saved !== DEFAULT_LOCALE) router.replace(localizePath(path, saved) + window.location.search + window.location.hash);
+    // Only on arrival, not on every navigation.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    const lang = languages.find((item) => item.code === locale);
     document.documentElement.lang = locale;
-    document.documentElement.dir = lang?.dir ?? 'ltr';
+    document.documentElement.dir = dirOf(locale);
     document.body.dataset.locale = locale;
     document.body.classList.toggle('locale-fa', locale === 'fa');
   }, [locale]);
 
-  const setLocale = (next: Locale) => {
-    setLocaleState(next);
-    window.localStorage.setItem('simorgh-locale', next);
-  };
-
-  const value = useMemo(() => ({ locale, setLocale, t: dictionaries[locale] }), [locale]);
+  const value = useMemo(() => ({
+    locale,
+    path,
+    t: dictionaries[locale],
+    setLocale: (next: Locale) => {
+      try { window.localStorage.setItem(STORAGE_KEY, next); } catch { /* private mode */ }
+      router.push(localizePath(path, next) + window.location.search);
+    },
+  }), [locale, path, router]);
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
 

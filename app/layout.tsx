@@ -3,9 +3,12 @@ import Script from 'next/script';
 import '../src/index.css';
 import { getContent } from '@/src/content/store';
 import { absoluteUrl, siteUrl } from '@/src/seo/metadata';
+import { getRequestLocale } from '@/src/seo/locale';
+import { dirOf, OG_LOCALE, LOCALES } from '@/src/i18n-routing';
 
 export async function generateMetadata(): Promise<Metadata> {
   const c = await getContent();
+  const locale = await getRequestLocale();
   return {
     metadataBase: new URL(siteUrl(c)),
     title: { default: c.seo.defaultTitle, template: c.seo.titleTemplate },
@@ -15,7 +18,6 @@ export async function generateMetadata(): Promise<Metadata> {
     authors: [{ name: c.settings.legalName }],
     creator: c.settings.legalName,
     publisher: c.settings.legalName,
-    alternates: { canonical: '/', types: { 'application/rss+xml': [{ url: '/insights/feed.xml', title: `${c.settings.siteName} Insights` }] } },
     openGraph: {
       type: 'website',
       siteName: c.settings.siteName,
@@ -23,8 +25,8 @@ export async function generateMetadata(): Promise<Metadata> {
       description: c.seo.description,
       url: siteUrl(c),
       images: c.seo.ogImage ? [{ url: absoluteUrl(c, c.seo.ogImage), width: 1200, height: 630 }] : undefined,
-      locale: 'en_US',
-      alternateLocale: ['fa_IR', 'ar_AE', 'tr_TR', 'de_DE', 'fr_FR', 'es_ES', 'zh_CN', 'ja_JP', 'ru_RU'],
+      locale: OG_LOCALE[locale],
+      alternateLocale: LOCALES.filter((l) => l !== locale).map((l) => OG_LOCALE[l]),
     },
     twitter: {
       card: 'summary_large_image',
@@ -50,10 +52,11 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const c = await getContent();
+  const locale = await getRequestLocale();
   const ga = c.settings.gaId.trim();
   return (
-    <html lang="en" dir="ltr">
-      <body>
+    <html lang={locale} dir={dirOf(locale)}>
+      <body data-locale={locale} className={locale === 'fa' ? 'locale-fa' : undefined}>
         {children}
         {/^G-[A-Z0-9]+$/i.test(ga) && (
           <>

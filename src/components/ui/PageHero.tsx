@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import Link from '../layout/LocaleLink';
 import { ChevronRightIcon } from 'lucide-react';
 import { Starfield } from './Starfield';
 import { HeroSimorgh } from './HeroSimorgh';

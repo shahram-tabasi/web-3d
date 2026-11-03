@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import Link from '../components/layout/LocaleLink';
 import { notFound } from 'next/navigation';
 import { ArrowRightIcon } from 'lucide-react';
 import { PageHero } from '../components/ui/PageHero';

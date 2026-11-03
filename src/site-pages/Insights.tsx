@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '../components/layout/LocaleLink';
 import React, { useMemo, useState } from 'react';
 import { PlayIcon, FileTextIcon } from 'lucide-react';
 import { PageHero } from '../components/ui/PageHero';
