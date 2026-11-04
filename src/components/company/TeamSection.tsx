@@ -1,17 +1,15 @@
 'use client';
 
-// The team on a turning cylinder, like the product slider: the person in
-// front, the ones before and after turned away at the sides, so it is plain
-// there are more; arrows, dots, swipe, the arrow keys, or a click on a side card. Each page is the person's résumé in full: the portrait as it
-// was taken (never cropped to a band or tinted), name, role, bio, expertise,
-// experience by role and years, education and the résumé file.
-//
-// Text the admin types may be in either language whatever page it sits on,
-// so each piece takes its own direction (dir="auto") and stays in its box.
+// The team on a tight 3D cylinder of small cards (portrait, name, role):
+// the front card faces the reader, the ones round the sides turn toward
+// them, so several people are seen at once. Arrows, dots, swipe or the
+// arrow keys turn it; a click brings that card forward out of the ring,
+// grown into the person's whole résumé (portrait as taken, bio, expertise,
+// experience by role and years, education, résumé file).
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
-import { BriefcaseIcon, ChevronLeftIcon, ChevronRightIcon, DownloadIcon, GraduationCapIcon, LinkedinIcon, MailIcon } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { BriefcaseIcon, ChevronLeftIcon, ChevronRightIcon, DownloadIcon, GraduationCapIcon, LinkedinIcon, MailIcon, XIcon } from 'lucide-react';
 import { useContent } from '../../content/ContentProvider';
 import { useI18n } from '../../i18n';
 import type { TeamMember } from '../../content/types';
@@ -26,6 +24,7 @@ const COPY = {
     experience: 'Experience',
     education: 'Education',
     prev: 'Previous person',
+    close: 'Close',
     next: 'Next person',
     people: 'PEOPLE',
   },
@@ -38,6 +37,7 @@ const COPY = {
     experience: 'سوابق کاری',
     education: 'تحصیلات',
     prev: 'نفر قبلی',
+    close: 'بستن',
     next: 'نفر بعدی',
     people: 'نفر',
   },
@@ -85,22 +85,78 @@ function offsetOf(i: number, active: number, count: number) {
 }
 
 /**
- * The cards stand on the inside of a cylinder, the reader at its axis: the
- * front card faces them flat, and each card further round turns toward them
- * and comes nearer, like the panels of a curved screen. `width` is the card's
- * width in pixels; the cylinder's radius follows from it.
+ * Small cards on the inside of a tight cylinder, the reader at its axis: the
+ * front card faces them, each card further round turns toward them and comes
+ * nearer. `width` is a card's width in pixels; the radius follows from it.
  */
 function cardStyle(offset: number, width: number, reduce: boolean): React.CSSProperties {
-  const radius = width * 1.9;
-  const step = ((width * 1.05) / radius) * (180 / Math.PI); // degrees between neighbours, with a small gap
-  const angle = reduce ? 0 : -offset * step;
+  const radius = width * 1.45;
+  const step = ((width * 1.1) / radius) * (180 / Math.PI);
   const far = Math.abs(offset);
-  const shift = reduce ? `translateX(${offset * 105}%)` : '';
+  const transform = reduce
+    ? `translateX(${offset * 112}%)`
+    : `translateZ(${radius}px) rotateY(${-offset * step}deg) translateZ(${-radius}px)`;
   return {
-    transform: `${shift} translateZ(${radius}px) rotateY(${angle}deg) translateZ(${-radius}px)`,
-    opacity: far === 0 ? 1 : far === 1 ? 0.55 : far === 2 ? 0.25 : 0,
+    transform,
+    opacity: far === 0 ? 1 : far === 1 ? 0.8 : far === 2 ? 0.5 : 0,
     pointerEvents: far > 2 ? 'none' : undefined,
   };
+}
+
+/** The whole résumé of one person: the portrait beside everything about them. */
+function Resume({ m, fa, t, reduce }: { m: TeamMember; fa: boolean; t: typeof COPY.en; reduce: boolean }) {
+  const p = pick(m, fa);
+  const align: React.CSSProperties = { textAlign: fa ? 'right' : 'left' };
+  return (
+    <div dir={fa ? 'rtl' : 'ltr'} className="grid h-full grid-rows-[260px_minmax(0,1fr)] md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:grid-rows-1">
+      <div className="relative overflow-hidden bg-[#e8e6e4]"><Portrait m={m} name={p.name} eager /></div>
+      <div className="flex min-h-0 flex-col overflow-y-auto p-6 sm:p-9">
+        <h3 dir="auto" style={align} className="font-display text-[26px] font-semibold leading-tight text-ink sm:text-[32px]">{p.name}</h3>
+        {p.other && <p dir="auto" style={align} className="mt-1.5 text-[14px] text-ink-faint">{p.other}</p>}
+        {p.role && <p dir="auto" style={align} className="mt-3 text-[16px] text-cyan-soft">{p.role}</p>}
+        {p.bio && <p dir="auto" style={align} className="mt-5 whitespace-pre-line text-[14.5px] leading-[1.95] text-ink-muted">{p.bio}</p>}
+        {m.expertise.length > 0 && (
+          <div className="mt-7">
+            <h4 className="text-[12px] text-ink-faint" data-no-translate={fa ? '' : undefined}>{t.expertise}</h4>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {m.expertise.map((x) => <li key={x} dir="auto" className="rounded-full border border-cyan/25 bg-cyan/[0.06] px-3 py-1 text-[13px] text-cyan-soft">{x}</li>)}
+            </ul>
+          </div>
+        )}
+        {m.experience.length > 0 && (
+          <div className="mt-7">
+            <h4 className="flex items-center gap-2 text-[12px] text-ink-faint" data-no-translate={fa ? '' : undefined}><BriefcaseIcon className="h-3.5 w-3.5" />{t.experience}</h4>
+            <Experience key={m.id} items={m.experience} reduce={reduce} />
+          </div>
+        )}
+        {m.education && (
+          <div className="mt-7">
+            <h4 className="flex items-center gap-2 text-[12px] text-ink-faint" data-no-translate={fa ? '' : undefined}><GraduationCapIcon className="h-3.5 w-3.5" />{t.education}</h4>
+            <p dir="auto" style={align} className="mt-3 whitespace-pre-line text-[14px] leading-relaxed text-ink-muted">{m.education}</p>
+          </div>
+        )}
+        {(m.resume || m.linkedin || m.email) && (
+          <div className="mt-auto flex flex-wrap gap-2.5 pt-8">
+            {m.resume && (
+              <a href={m.resume} target="_blank" rel="noreferrer" download className="inline-flex h-11 items-center gap-2 rounded-full bg-blue px-5 text-[13.5px] font-medium text-white hover:bg-blue-soft" data-no-translate={fa ? '' : undefined}>
+                <DownloadIcon className="h-4 w-4" />{t.resume}
+              </a>
+            )}
+            {m.linkedin && (
+              <a href={m.linkedin} target="_blank" rel="noreferrer me" className="inline-flex h-11 items-center gap-2 rounded-full border border-line px-5 text-[13.5px] text-ink hover:border-cyan/60">
+                <LinkedinIcon className="h-4 w-4" />LinkedIn
+              </a>
+            )}
+            {m.email && (
+              <a href={`mailto:${m.email}`} dir="ltr" className="inline-flex h-11 items-center gap-2 rounded-full border border-line px-5 text-[13.5px] text-ink hover:border-cyan/60">
+                <MailIcon className="h-4 w-4" />{m.email}
+              </a>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export function TeamSection() {
@@ -109,10 +165,12 @@ export function TeamSection() {
   const t = fa ? COPY.fa : COPY.en;
   const reduce = !!useReducedMotion();
   const [active, setActive] = useState(0);
+  const [open, setOpen] = useState(false);
   const count = team?.length ?? 0;
   const dragStart = useRef<{ x: number; y: number } | null>(null);
+  const swiped = useRef(false);
   const ring = useRef<HTMLDivElement | null>(null);
-  const [cardWidth, setCardWidth] = useState(800);
+  const [cardWidth, setCardWidth] = useState(240);
   useEffect(() => {
     const el = ring.current;
     if (!el) return;
@@ -120,30 +178,37 @@ export function TeamSection() {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-  const swiped = useRef(false);
 
   const show = useCallback((n: number) => { if (count) setActive(((n % count) + count) % count); }, [count]);
   const next = () => show(active + 1);
   const prev = () => show(active - 1);
 
-  // A link to /company#member-id opens on that person.
+  // A link to /company#member-id opens that person's résumé.
   useEffect(() => {
     const fromHash = () => {
       const id = decodeURIComponent(window.location.hash.slice(1));
       const i = team.findIndex((m) => m.id === id);
-      if (i >= 0) { setActive(i); document.getElementById('team')?.scrollIntoView({ block: 'start' }); }
+      if (i >= 0) { setActive(i); setOpen(true); document.getElementById('team')?.scrollIntoView({ block: 'start' }); }
     };
     fromHash();
     window.addEventListener('hashchange', fromHash);
     return () => window.removeEventListener('hashchange', fromHash);
   }, [team]);
 
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open]);
+
   if (!count) return null;
-  const align: React.CSSProperties = { textAlign: fa ? 'right' : 'left' };
+  const current = team[active];
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowLeft') prev();
     if (e.key === 'ArrowRight') next();
+    if (e.key === 'Enter' && !open) setOpen(true);
   };
   const onPointerDown = (e: React.PointerEvent) => { dragStart.current = { x: e.clientX, y: e.clientY }; };
   const onPointerUp = (e: React.PointerEvent) => {
@@ -152,7 +217,6 @@ export function TeamSection() {
     if (!s) return;
     const dx = e.clientX - s.x;
     const dy = e.clientY - s.y;
-    // A sideways swipe turns the cylinder; an up-down one scrolls the résumé.
     swiped.current = Math.abs(dx) >= SWIPE && Math.abs(dx) > Math.abs(dy);
     if (!swiped.current) return;
     if (dx < 0) next(); else prev();
@@ -172,8 +236,8 @@ export function TeamSection() {
         </div>
       </div>
 
-      <div className="relative mx-auto max-w-[1500px] px-4 pb-20 pt-12 sm:px-6 lg:px-10 lg:pb-24">
-        {/* The stage runs left to right in every language, like the product slider: the next person comes in from the right. */}
+      <div className={`relative mx-auto max-w-[1500px] px-4 pb-16 pt-14 transition-[min-height] duration-500 sm:px-6 lg:px-10 lg:pb-20 ${open ? 'min-h-[min(760px,92vh)] md:min-h-[660px]' : ''}`}>
+        {/* The ring runs left to right in every language, like the product slider. */}
         <div
           dir="ltr"
           tabIndex={0}
@@ -184,84 +248,30 @@ export function TeamSection() {
           onClickCapture={onClickCapture}
           aria-roledescription="carousel"
           aria-label={t.title}
-          className="relative touch-pan-y select-none outline-none"
-          style={{ perspective: '2400px', perspectiveOrigin: '50% 50%' }}
+          className={`relative touch-pan-y select-none outline-none transition-[opacity,visibility] duration-500 ${open ? 'pointer-events-none invisible opacity-0' : 'visible opacity-100'}`}
+          style={{ perspective: '1100px' }}
         >
-          <div ref={ring} className="relative mx-auto h-[720px] w-[82%] max-w-[920px] sm:h-[640px] sm:w-[70%] lg:h-[580px] lg:w-[56%]" style={{ transformStyle: 'preserve-3d' }}>
+          <div ref={ring} className="relative mx-auto h-[300px] w-[170px] sm:h-[360px] sm:w-[210px] lg:h-[400px] lg:w-[240px]" style={{ transformStyle: 'preserve-3d' }}>
             {team.map((m, i) => {
               const offset = offsetOf(i, active, count);
-              const current = offset === 0;
+              const front = offset === 0;
               const p = pick(m, fa);
               return (
-                <article
+                <button
                   key={m.id}
-                  id={m.id}
-                  aria-hidden={!current}
-                  aria-roledescription="slide"
-                  aria-label={`${i + 1} / ${count}: ${p.name}`}
-                  onClick={() => { if (!current) show(i); }}
-                  style={{ ...cardStyle(offset, cardWidth, reduce), transition: `transform .8s ${EASE}, opacity .8s ${EASE}`, backfaceVisibility: 'hidden' }}
-                  className={`absolute inset-0 grid grid-rows-[300px_minmax(0,1fr)] overflow-hidden rounded-[26px] border bg-[#070b18] will-change-transform sm:grid-rows-[340px_minmax(0,1fr)] md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:grid-rows-1 ${current ? 'border-cyan/60' : 'cursor-pointer border-cyan/25'}`}
+                  type="button"
+                  tabIndex={-1}
+                  aria-label={`${p.name}${p.role ? ` — ${p.role}` : ''}`}
+                  onClick={() => { show(i); setOpen(true); }}
+                  style={{ ...cardStyle(offset, cardWidth, reduce), transition: `transform .8s ${EASE}, opacity .8s ${EASE}` }}
+                  className={`group absolute inset-0 overflow-hidden rounded-[22px] border bg-[#070b18] text-start will-change-transform ${front ? 'border-cyan/70' : 'border-white/10'}`}
                 >
-                  {/* The portrait, whole and untinted. */}
-                  <div className={`relative overflow-hidden bg-[#e8e6e4] ${fa ? 'md:order-2' : ''}`}>
-                    <Portrait m={m} name={p.name} eager={Math.abs(offset) <= 1} />
-                    {/* The sides show who is there: a name over the photo. */}
-                    <div className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-5 transition-opacity duration-500 md:hidden ${current ? 'opacity-0' : 'opacity-100'}`}>
-                      <span dir="auto" className="block text-[18px] font-semibold text-white">{p.name}</span>
-                    </div>
-                  </div>
-
-                  <div dir={fa ? 'rtl' : 'ltr'} className={`flex min-h-0 flex-col overflow-y-auto p-6 sm:p-9 ${fa ? 'md:order-1' : ''} ${current ? '' : 'pointer-events-none'}`}>
-                    <h3 dir="auto" style={align} className="font-display text-[26px] font-semibold leading-tight text-ink sm:text-[32px]">{p.name}</h3>
-                    {p.other && <p dir="auto" style={align} className="mt-1.5 text-[14px] text-ink-faint">{p.other}</p>}
-                    {p.role && <p dir="auto" style={align} className="mt-3 text-[16px] text-cyan-soft">{p.role}</p>}
-                    {p.bio && <p dir="auto" style={align} className="mt-5 whitespace-pre-line text-[14.5px] leading-[1.95] text-ink-muted">{p.bio}</p>}
-
-                    {m.expertise.length > 0 && (
-                      <div className="mt-7">
-                        <h4 className="text-[12px] text-ink-faint" data-no-translate={fa ? '' : undefined}>{t.expertise}</h4>
-                        <ul className="mt-3 flex flex-wrap gap-2">
-                          {m.expertise.map((x) => <li key={x} dir="auto" className="rounded-full border border-cyan/25 bg-cyan/[0.06] px-3 py-1 text-[13px] text-cyan-soft">{x}</li>)}
-                        </ul>
-                      </div>
-                    )}
-
-                    {m.experience.length > 0 && (
-                      <div className="mt-7">
-                        <h4 className="flex items-center gap-2 text-[12px] text-ink-faint" data-no-translate={fa ? '' : undefined}><BriefcaseIcon className="h-3.5 w-3.5" />{t.experience}</h4>
-                        {current && <Experience key={`${m.id}-${active}`} items={m.experience} reduce={reduce} />}
-                      </div>
-                    )}
-
-                    {m.education && (
-                      <div className="mt-7">
-                        <h4 className="flex items-center gap-2 text-[12px] text-ink-faint" data-no-translate={fa ? '' : undefined}><GraduationCapIcon className="h-3.5 w-3.5" />{t.education}</h4>
-                        <p dir="auto" style={align} className="mt-3 whitespace-pre-line text-[14px] leading-relaxed text-ink-muted">{m.education}</p>
-                      </div>
-                    )}
-
-                    {(m.resume || m.linkedin || m.email) && (
-                      <div className="mt-auto flex flex-wrap gap-2.5 pt-8">
-                        {m.resume && (
-                          <a href={m.resume} target="_blank" rel="noreferrer" download tabIndex={current ? 0 : -1} className="inline-flex h-11 items-center gap-2 rounded-full bg-blue px-5 text-[13.5px] font-medium text-white hover:bg-blue-soft" data-no-translate={fa ? '' : undefined}>
-                            <DownloadIcon className="h-4 w-4" />{t.resume}
-                          </a>
-                        )}
-                        {m.linkedin && (
-                          <a href={m.linkedin} target="_blank" rel="noreferrer me" tabIndex={current ? 0 : -1} className="inline-flex h-11 items-center gap-2 rounded-full border border-line px-5 text-[13.5px] text-ink hover:border-cyan/60">
-                            <LinkedinIcon className="h-4 w-4" />LinkedIn
-                          </a>
-                        )}
-                        {m.email && (
-                          <a href={`mailto:${m.email}`} dir="ltr" tabIndex={current ? 0 : -1} className="inline-flex h-11 items-center gap-2 rounded-full border border-line px-5 text-[13.5px] text-ink hover:border-cyan/60">
-                            <MailIcon className="h-4 w-4" />{m.email}
-                          </a>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </article>
+                  <Portrait m={m} name={p.name} eager={Math.abs(offset) <= 2} className="transition-transform duration-700 group-hover:scale-[1.04]" />
+                  <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-4 pb-4 pt-12" dir={fa ? 'rtl' : 'ltr'}>
+                    <span dir="auto" className="block truncate text-[16px] font-semibold text-white" style={{ textAlign: fa ? 'right' : 'left' }}>{p.name}</span>
+                    {p.role && <span dir="auto" className="mt-0.5 block truncate text-[12.5px] text-cyan-soft" style={{ textAlign: fa ? 'right' : 'left' }}>{p.role}</span>}
+                  </span>
+                </button>
               );
             })}
           </div>
@@ -269,11 +279,11 @@ export function TeamSection() {
           {count > 1 && (
             <>
               <button type="button" onClick={prev} aria-label={t.prev}
-                className="absolute left-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-cyan/60 bg-space-1/95 text-cyan shadow-[0_0_30px_rgba(42,211,240,.12)] transition hover:bg-cyan hover:text-space-0 lg:flex">
+                className="absolute left-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-cyan/60 bg-space-1/95 text-cyan transition hover:bg-cyan hover:text-space-0 lg:flex">
                 <ChevronLeftIcon className="h-5 w-5" />
               </button>
               <button type="button" onClick={next} aria-label={t.next}
-                className="absolute right-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-cyan/60 bg-space-1/95 text-cyan shadow-[0_0_30px_rgba(42,211,240,.12)] transition hover:bg-cyan hover:text-space-0 lg:flex">
+                className="absolute right-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-cyan/60 bg-space-1/95 text-cyan transition hover:bg-cyan hover:text-space-0 lg:flex">
                 <ChevronRightIcon className="h-5 w-5" />
               </button>
             </>
@@ -281,7 +291,7 @@ export function TeamSection() {
         </div>
 
         {count > 1 && (
-          <div dir="ltr" className="mt-8 flex items-center justify-center gap-5" data-no-translate={fa ? '' : undefined}>
+          <div dir="ltr" className={`mt-10 flex items-center justify-center gap-5 transition-opacity ${open ? 'opacity-0' : ''}`} data-no-translate={fa ? '' : undefined}>
             <button type="button" onClick={prev} aria-label={t.prev} className="grid h-10 w-10 place-items-center rounded-full border border-line text-ink-muted hover:text-cyan lg:hidden"><ChevronLeftIcon className="h-5 w-5" /></button>
             <div className="flex items-center gap-2">
               {team.map((x, i) => (
@@ -295,6 +305,48 @@ export function TeamSection() {
             <button type="button" onClick={next} aria-label={t.next} className="grid h-10 w-10 place-items-center rounded-full border border-line text-ink-muted hover:text-cyan lg:hidden"><ChevronRightIcon className="h-5 w-5" /></button>
           </div>
         )}
+
+        {/* The chosen card comes forward out of the ring with the whole résumé. */}
+        <AnimatePresence>
+          {open && current && (
+            <motion.div
+              key="front"
+              className="absolute inset-x-3 top-4 z-40 mx-auto max-w-[1000px] sm:inset-x-6 lg:top-6"
+              style={{ perspective: 1200 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.div
+                role="dialog"
+                aria-modal="false"
+                aria-label={pick(current, fa).name}
+                initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.55, z: -300, rotateY: -12 }}
+                animate={{ opacity: 1, scale: 1, z: 0, rotateY: 0 }}
+                exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.6, z: -300 }}
+                transition={{ type: 'spring', stiffness: 170, damping: 22 }}
+                className="relative h-[min(640px,82vh)] overflow-hidden rounded-[26px] border border-cyan/60 bg-[#070b18] md:h-[560px]"
+              >
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div key={current.id} className="h-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
+                    <Resume m={current} fa={fa} t={t} reduce={reduce} />
+                  </motion.div>
+                </AnimatePresence>
+                <button type="button" onClick={() => setOpen(false)} aria-label={t.close}
+                  className="absolute end-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-black/50 text-white hover:border-cyan">
+                  <XIcon className="h-5 w-5" />
+                </button>
+                {count > 1 && (
+                  <div dir="ltr" className="absolute bottom-3 left-3 z-10 flex gap-2">
+                    <button type="button" onClick={prev} aria-label={t.prev} className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-black/50 text-white hover:border-cyan"><ChevronLeftIcon className="h-5 w-5" /></button>
+                    <button type="button" onClick={next} aria-label={t.next} className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-black/50 text-white hover:border-cyan"><ChevronRightIcon className="h-5 w-5" /></button>
+                  </div>
+                )}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {open && <button type="button" aria-label={t.close} onClick={() => setOpen(false)} className="absolute inset-0 z-30 cursor-default" tabIndex={-1} />}
       </div>
     </section>
   );
