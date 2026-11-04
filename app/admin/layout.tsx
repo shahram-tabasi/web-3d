@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function AdminRootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div dir="rtl" lang="fa" className="admin-root min-h-screen bg-space-0 text-ink" style={{ fontFamily: "'Vazirmatn', Tahoma, system-ui, sans-serif" }}>
+    <div dir="rtl" lang="fa" className="admin-root min-h-screen bg-space-0 text-ink" style={{ fontFamily: "'Vazirmatn Variable', 'Vazirmatn', Tahoma, system-ui, sans-serif" }}>
       {children}
     </div>
   );

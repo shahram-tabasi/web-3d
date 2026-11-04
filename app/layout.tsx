@@ -1,5 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
+import '@fontsource-variable/inter/wght.css';
+import '@fontsource-variable/inter-tight/wght.css';
+import '@fontsource-variable/vazirmatn/wght.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
 import '../src/index.css';
 import { getContent } from '@/src/content/store';
 import { absoluteUrl, siteUrl } from '@/src/seo/metadata';

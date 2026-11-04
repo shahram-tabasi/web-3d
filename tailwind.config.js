@@ -35,9 +35,11 @@ export default {content: [
         },
       },
       fontFamily: {
-        display: ['"Inter Tight"', 'system-ui', 'sans-serif'],
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+        // Vazirmatn after each Latin face: Persian words on an English page
+        // (the company name, a person's name) are drawn in it, not a system font.
+        display: ['"Inter Tight Variable"', '"Inter Tight"', '"Vazirmatn Variable"', 'system-ui', 'sans-serif'],
+        sans: ['"Inter Variable"', 'Inter', '"Vazirmatn Variable"', 'system-ui', 'sans-serif'],
+        mono: ['"IBM Plex Mono"', '"Vazirmatn Variable"', 'ui-monospace', 'monospace'],
       },
       letterSpacing: {
         label: '0.18em',

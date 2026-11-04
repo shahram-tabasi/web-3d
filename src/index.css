@@ -1,5 +1,6 @@
-/* @import url() FONT IMPORTS MUST ALWAYS BE AT THE VERY TOP OF THIS FILE, ABOVE THE TAILWIND IMPORTS — DO NOT DELETE THIS COMMENT */
-@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Vazirmatn:wght@400;500;600;700&display=swap');
+/* Fonts are served by the site itself (app/layout.tsx imports them from
+   @fontsource), not from Google Fonts: from inside Iran Google is often slow or
+   blocked, and an @import that hangs holds back the whole page. */
 
 /* CRITICAL: THE FOLLOWING TAILWIND IMPORTS MUST NEVER BE DELETED OR REORDERED — DO NOT DELETE THIS COMMENT */
 @import 'tailwindcss/base';
@@ -25,7 +26,7 @@ html {
 body {
   /* No background here: it would paint over the fixed sky (z-index -10); html carries the base colour. */
   color: #e7edff;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Inter Variable', 'Inter', 'Vazirmatn Variable', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 ::selection {
@@ -66,10 +67,19 @@ body {
 ::-webkit-scrollbar-thumb { background: #16224a; border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: #22336b; }
 
-html[dir='rtl'] body, body.locale-fa { font-family: 'Vazirmatn', Tahoma, Arial, sans-serif; }
-html[dir='rtl'] .font-display { font-family: 'Vazirmatn', Tahoma, Arial, sans-serif; }
-html[dir='rtl'] .font-mono { font-family: 'Vazirmatn', Tahoma, Arial, sans-serif; }
-html[dir='rtl'] .tracking-label { letter-spacing: 0; }
+/* ── Persian and Arabic ───────────────────────────────────────────────────
+   One face for the whole page, whatever font class an element carries. */
+html[dir='rtl'] body, body.locale-fa,
+html[dir='rtl'] .font-sans, html[dir='rtl'] .font-display, html[dir='rtl'] .font-mono {
+  font-family: 'Vazirmatn Variable', 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+}
+/* Letter-spacing pulls joined Persian letters apart: none in right-to-left
+   text. Left-to-right islands (product names, e-mail addresses) keep theirs. */
+html[dir='rtl'] [class*='tracking-']:not([dir='ltr']):not([dir='ltr'] *) { letter-spacing: 0; }
+/* Persian has tall ascenders and deep descenders: headings need more air
+   than the tight Latin leading they were set with. */
+html[dir='rtl'] :is(h1, h2, h3) { line-height: 1.45; }
+html[dir='rtl'] body { font-feature-settings: 'kern'; text-rendering: optimizeLegibility; }
 
 /* ── Site-wide sky ─────────────────────────────────────────────────────────
    A faint nebula under the fixed starfield; page sections become slightly
@@ -112,7 +122,7 @@ footer.bg-space-1 { background-color: rgb(7 11 24 / 0.6); }
 /* Article bodies (Markdown from the admin). */
 .sim-prose { color: #b9c6e6; font-size: 16.5px; line-height: 1.85; }
 .sim-prose > * + * { margin-top: 1.15em; }
-.sim-prose h2 { margin-top: 2em; font-family: 'Inter Tight', system-ui, sans-serif; font-size: 1.6em; font-weight: 600; line-height: 1.25; color: #e7edff; letter-spacing: -0.01em; }
+.sim-prose h2 { margin-top: 2em; font-family: 'Inter Tight Variable', 'Inter Tight', 'Vazirmatn Variable', system-ui, sans-serif; font-size: 1.6em; font-weight: 600; line-height: 1.25; color: #e7edff; letter-spacing: -0.01em; }
 .sim-prose h3 { margin-top: 1.7em; font-size: 1.25em; font-weight: 600; color: #e7edff; }
 .sim-prose h4 { margin-top: 1.5em; font-weight: 600; color: #e7edff; }
 .sim-prose a { color: #7ce6f7; text-decoration: underline; text-underline-offset: 3px; }
