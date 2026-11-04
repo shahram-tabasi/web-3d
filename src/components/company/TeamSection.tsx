@@ -66,7 +66,7 @@ function Portrait({ m, name, className = '', sizes }: { m: TeamMember; name: str
   }
   return (
     <div className={`relative grid h-full w-full place-items-center overflow-hidden bg-[radial-gradient(120%_90%_at_30%_10%,#1d3570_0%,#0b1226_55%,#060a16_100%)] ${className}`} role="img" aria-label={name}>
-      <img src="/brand/sti-mark-light.png" alt="" aria-hidden className="absolute -bottom-6 -end-8 w-[85%] opacity-[0.07]" />
+      <img src="/brand/mark-light.png" alt="" aria-hidden className="absolute -bottom-6 -end-8 w-[85%] opacity-[0.07]" />
       <span className="font-display text-5xl font-semibold tracking-tight text-ink/80">{initials(m)}</span>
     </div>
   );

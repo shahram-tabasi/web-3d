@@ -13,7 +13,6 @@ export const BRAND = {
     'Simorgh AI',
     'SimorghAI',
     'سیمرغ AI',
-    'STI',
   ],
-  logoSquare: '/brand/sti-logo-square.png',
+  logoSquare: '/brand/logo-square.png',
 } as const;
