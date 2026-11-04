@@ -5,11 +5,11 @@
 # Idempotent: what exists is updated in place. Nothing secret is printed.
 #
 #   deploy/keycloak/setup-website-realm.sh realm          # realm, role, client; secret into the website's Secret
-#   deploy/keycloak/setup-website-realm.sh admin EMAIL    # an administrator (asks for a first password;
+#   deploy/keycloak/setup-website-realm.sh admin EMAIL|USERNAME  # an administrator (asks for a first password;
 #                                                         # an authenticator app is set up at first sign-in)
 #   deploy/keycloak/setup-website-realm.sh revoke EMAIL   # take website-admin away (the account stays)
 #   deploy/keycloak/setup-website-realm.sh list           # the administrators (email, enabled, two-step set up)
-#   deploy/keycloak/setup-website-realm.sh reset EMAIL [--otp]
+#   deploy/keycloak/setup-website-realm.sh reset EMAIL|USERNAME [--otp]
 #                                                         # a forgotten password: asks for a new one, lifts a
 #                                                         # lockout; --otp also for a lost phone (the
 #                                                         # authenticator app is set up again at the next sign-in)
@@ -62,7 +62,11 @@ else
 fi
 
 client_id() { kc get clients -r "$REALM" -q clientId="$CLIENT" --fields id --format csv --noquotes | head -1 | tr -d '\r'; }
-user_id() { kc get users -r "$REALM" -q email="$1" -q exact=true --fields id --format csv --noquotes | head -1 | tr -d '\r'; }
+# A user by email, or by username when there is no @ in it (an administrator may have a plain username).
+user_id() {
+  if [[ "$1" == *@* ]]; then kc get users -r "$REALM" -q email="$1" -q exact=true --fields id --format csv --noquotes | head -1 | tr -d '\r'
+  else kc get users -r "$REALM" -q username="$1" -q exact=true --fields id --format csv --noquotes | head -1 | tr -d '\r'; fi
+}
 
 realm() {
   say "realm $REALM"
@@ -124,7 +128,7 @@ realm() {
 }
 
 admin() {
-  local email="${1:?usage: $0 admin EMAIL}" id p1 p2
+  local email="${1:?usage: $0 admin EMAIL|USERNAME}" id p1 p2
   say "administrator $email"
   id="$(user_id "$email")"
   if [ -z "$id" ]; then
@@ -132,12 +136,19 @@ admin() {
     local first last
     read -rp "First name: " first; read -rp "Last name: " last
     [ -n "$first" ] && [ -n "$last" ] || { echo "both names are needed"; exit 1; }
-    kc create users -r "$REALM" -s username="$email" -s email="$email" -s emailVerified=true -s enabled=true \
-      -s firstName="$first" -s lastName="$last" -s 'requiredActions=["CONFIGURE_TOTP"]' >/dev/null
+    if [[ "$email" == *@* ]]; then
+      kc create users -r "$REALM" -s username="$email" -s email="$email" -s emailVerified=true -s enabled=true \
+        -s firstName="$first" -s lastName="$last" -s 'requiredActions=["CONFIGURE_TOTP"]' >/dev/null
+    else
+      # A plain username (no email): signs in with it; the authenticator app is still required.
+      kc create users -r "$REALM" -s username="$email" -s enabled=true \
+        -s firstName="$first" -s lastName="$last" -s 'requiredActions=["CONFIGURE_TOTP"]' >/dev/null
+    fi
     id="$(user_id "$email")"
     read -rsp "First password for $email (12+ characters): " p1; echo
     read -rsp "Again: " p2; echo
     [ -n "$p1" ] && [ "$p1" = "$p2" ] || { echo "passwords empty or different"; exit 1; }
+    [ "${#p1}" -ge 12 ] || { echo "12 characters or more (the realm refuses shorter)"; exit 1; }
     set_password "$id" "$p1"
     unset p1 p2
     echo "created; at first sign-in they set up an authenticator app (Google/Microsoft Authenticator)"
@@ -162,14 +173,14 @@ list() {
   ids="$(kc get "roles/$ROLE/users" -r "$REALM" --fields id --format csv --noquotes | tr -d '\r')"
   for id in $ids; do
     local row otp
-    row="$(kc get "users/$id" -r "$REALM" --fields email,enabled --format csv --noquotes | tr -d '\r')"
+    row="$(kc get "users/$id" -r "$REALM" --fields username,email,enabled --format csv --noquotes | tr -d '\r')"
     otp="$(kc get "users/$id/credentials" -r "$REALM" --fields type --format csv --noquotes | tr -d '\r' | grep -c '^otp$' || true)"
     echo "$row, two-step: $([ "$otp" -gt 0 ] && echo yes || echo 'not yet')"
   done
 }
 
 reset() {
-  local email="${1:?usage: $0 reset EMAIL [--otp]}" id p1 p2 c
+  local email="${1:?usage: $0 reset EMAIL|USERNAME [--otp]}" id p1 p2 c
   id="$(user_id "$email")"
   [ -n "$id" ] || { echo "no user $email in realm $REALM ($0 list shows who there is)"; exit 1; }
   say "new password for $email"
