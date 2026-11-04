@@ -60,9 +60,22 @@ function initials(m: TeamMember) {
 }
 
 /** The portrait, or a monogram on the brand's night-blue when there is no photo yet. */
-function Portrait({ m, name, className = '', sizes }: { m: TeamMember; name: string; className?: string; sizes?: string }) {
+function Portrait({ m, name, className = '', sizes, side }: {
+  m: TeamMember; name: string; className?: string; sizes?: string;
+  /** Show the whole portrait at this side of a wide box, fading into it, instead of filling the box. */
+  side?: 'left' | 'right';
+}) {
   if (m.photo) {
-    return <img src={m.photo} alt={name} sizes={sizes} loading="lazy" decoding="async" className={`h-full w-full object-cover ${className}`} />;
+    if (side) {
+      // The image box is the photo itself, so its inner edge can fade into the card.
+      const fade = `linear-gradient(to ${side === 'right' ? 'left' : 'right'}, #000 70%, transparent)`;
+      return (
+        <img src={m.photo} alt={name} sizes={sizes} loading="lazy" decoding="async"
+          style={{ maskImage: fade, WebkitMaskImage: fade }}
+          className={`absolute bottom-0 h-full w-auto max-w-none ${side === 'right' ? 'right-0' : 'left-0'} ${className}`} />
+      );
+    }
+    return <img src={m.photo} alt={name} sizes={sizes} loading="lazy" decoding="async" style={{ objectFit: 'cover', objectPosition: '50% 18%' }} className={`h-full w-full ${className}`} />;
   }
   return (
     <div className={`relative grid h-full w-full place-items-center overflow-hidden bg-[radial-gradient(120%_90%_at_30%_10%,#1d3570_0%,#0b1226_55%,#060a16_100%)] ${className}`} role="img" aria-label={name}>
@@ -129,12 +142,14 @@ export function TeamSection() {
           {team.map((m, i) => {
             const p = pick(m, fa);
             const on = i === active;
+            // Open, a photo stands whole at the far side and the words take the near side.
+            const wide = on && !!m.photo;
             return (
               <li
                 key={m.id}
                 id={m.id}
                 onMouseEnter={() => setActive(i)}
-                className={`group relative min-w-0 overflow-hidden rounded-[22px] border transition-[flex-grow,border-color] duration-700 ease-[cubic-bezier(.22,1,.36,1)] motion-reduce:transition-none ${on ? 'grow-[4] border-cyan/40' : 'grow border-line'}`}
+                className={`group relative min-w-0 overflow-hidden rounded-[22px] border transition-[flex-grow,border-color] duration-700 ease-[cubic-bezier(.22,1,.36,1)] motion-reduce:transition-none ${on ? 'grow-[4] border-cyan/40' : 'grow border-line'} ${wide ? 'bg-[radial-gradient(90%_100%_at_70%_30%,#1b3466_0%,#0b182e_60%,#070d1c_100%)]' : ''}`}
                 style={{ flexBasis: 0 }}>
                 <button
                   type="button"
@@ -143,19 +158,19 @@ export function TeamSection() {
                   aria-label={`${p.name}${p.role ? ` — ${p.role}` : ''}: ${t.open}`}
                   className="absolute inset-0 block h-full w-full text-start focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-inset">
                   <motion.div layoutId={reduce ? undefined : `photo-${m.id}`} className="absolute inset-0">
-                    <Portrait m={m} name={p.name} sizes="(min-width:1024px) 40vw, 80vw"
+                    <Portrait m={m} name={p.name} sizes="(min-width:1024px) 40vw, 80vw" side={wide ? (fa ? 'left' : 'right') : undefined}
                       className={`transition-[filter,transform] duration-700 ease-[cubic-bezier(.22,1,.36,1)] ${on ? 'scale-100 grayscale-0' : 'scale-[1.06] grayscale brightness-[.7]'}`} />
                   </motion.div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#04060e] via-[#04060e]/35 to-transparent" />
+                  <div className={`absolute inset-0 transition-opacity duration-500 bg-gradient-to-t from-[#04060e] via-[#04060e]/35 to-transparent ${wide ? 'opacity-0' : 'opacity-100'}`} />
                   {/* Collapsed: the name runs up the panel. */}
                   <span className={`absolute inset-x-0 bottom-7 flex justify-center transition-opacity duration-300 ${on ? 'opacity-0' : 'opacity-100 delay-200'}`}>
                     <span className="max-h-[300px] overflow-hidden whitespace-nowrap font-display text-[15px] font-medium text-ink/90 [writing-mode:vertical-rl]">{p.name}</span>
                   </span>
                   {/* Expanded: a glass caption. */}
-                  <span className={`absolute inset-x-4 bottom-4 rounded-2xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur-xl transition-[opacity,transform] duration-500 ${on ? 'translate-y-0 opacity-100 delay-200' : 'pointer-events-none translate-y-4 opacity-0'}`}>
+                  <span className={`absolute bottom-4 start-4 rounded-2xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur-xl transition-[opacity,transform] duration-500 ${wide ? 'w-[46%]' : 'end-4'} ${on ? 'translate-y-0 opacity-100 delay-200' : 'pointer-events-none translate-y-4 opacity-0'}`}>
                     <span className="block font-display text-[22px] font-semibold leading-tight text-ink">{p.name}</span>
                     {p.role && <span className="mt-1.5 block text-[13px] text-cyan-soft">{p.role}</span>}
-                    {p.bio && <span className="mt-3 line-clamp-2 block max-w-md text-[13.5px] leading-relaxed text-ink-muted">{p.bio}</span>}
+                    {p.bio && <span className="mt-3 line-clamp-3 block max-w-md text-[13.5px] leading-relaxed text-ink-muted">{p.bio}</span>}
                     <span className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-gold">
                       {t.open}<ArrowUpRightIcon className="h-3.5 w-3.5 rtl:-scale-x-100" />
                     </span>
