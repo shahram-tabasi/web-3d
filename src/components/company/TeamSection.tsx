@@ -1,16 +1,17 @@
 'use client';
 
-// The team, with each person's résumé.
+// The team, one person at a time, paged like the product slider: arrows,
+// dots, a row of faces to jump to anyone, swipe on touch screens and the
+// arrow keys. Each page is the person's résumé in full: the portrait as it
+// was taken (never cropped to a band or tinted), name, role, bio, expertise,
+// experience by role and years, education and the résumé file.
 //
-// Desktop: a row of tall portrait panels; the one under the pointer (or
-// keyboard focus) widens and comes into colour, showing the role and a line
-// of the bio. Phone: the same cards in a swipeable strip. Choosing a person
-// opens their résumé sheet, the portrait carried across with a shared-layout
-// animation (framer-motion layoutId).
+// Text the admin types may be in either language whatever page it sits on,
+// so each piece takes its own direction (dir="auto") and stays in its box.
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ArrowUpRightIcon, BriefcaseIcon, DownloadIcon, GraduationCapIcon, LinkedinIcon, MailIcon, XIcon } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion, type PanInfo } from 'framer-motion';
+import { BriefcaseIcon, ChevronLeftIcon, ChevronRightIcon, DownloadIcon, GraduationCapIcon, LinkedinIcon, MailIcon } from 'lucide-react';
 import { useContent } from '../../content/ContentProvider';
 import { useI18n } from '../../i18n';
 import type { TeamMember } from '../../content/types';
@@ -20,33 +21,32 @@ const COPY = {
     index: 'TEAM',
     title: 'The people behind Simorgh',
     lead: 'Electrical, process and software engineers, and the AI researchers who work beside them.',
-    open: 'View résumé',
     resume: 'Download résumé (PDF)',
     expertise: 'Expertise',
     experience: 'Experience',
     education: 'Education',
-    close: 'Close',
-    join: 'Want to work with this team?',
-    joinCta: 'Get in touch',
+    prev: 'Previous person',
+    next: 'Next person',
+    people: 'PEOPLE',
   },
   fa: {
     index: 'تیم ما',
     title: 'افرادی که سیمرغ را می‌سازند',
     lead: 'مهندسان برق، فرآیند و نرم‌افزار، و پژوهشگران هوش مصنوعی که کنار آن‌ها کار می‌کنند.',
-    open: 'مشاهده رزومه',
     resume: 'دریافت رزومه (PDF)',
     expertise: 'تخصص‌ها',
     experience: 'سوابق کاری',
     education: 'تحصیلات',
-    close: 'بستن',
-    join: 'می‌خواهید با این تیم همکاری کنید؟',
-    joinCta: 'با ما در تماس باشید',
+    prev: 'نفر قبلی',
+    next: 'نفر بعدی',
+    people: 'نفر',
   },
 };
 
 function pick(m: TeamMember, fa: boolean) {
   return {
     name: (fa ? m.nameFa || m.name : m.name || m.nameFa) || '—',
+    other: fa ? (m.nameFa && m.name ? m.name : '') : (m.name && m.nameFa ? m.nameFa : ''),
     role: fa ? m.roleFa || m.role : m.role || m.roleFa,
     bio: fa ? m.bioFa || m.bio : m.bio || m.bioFa,
   };
@@ -59,23 +59,10 @@ function initials(m: TeamMember) {
   return m.nameFa.trim().charAt(0) || '·';
 }
 
-/** The portrait, or a monogram on the brand's night-blue when there is no photo yet. */
-function Portrait({ m, name, className = '', sizes, side }: {
-  m: TeamMember; name: string; className?: string; sizes?: string;
-  /** Show the whole portrait at this side of a wide box, fading into it, instead of filling the box. */
-  side?: 'left' | 'right';
-}) {
+/** The portrait as taken, or a monogram on night blue when there is no photo yet. */
+function Portrait({ m, name, className = '', eager = false }: { m: TeamMember; name: string; className?: string; eager?: boolean }) {
   if (m.photo) {
-    if (side) {
-      // The image box is the photo itself, so its inner edge can fade into the card.
-      const fade = `linear-gradient(to ${side === 'right' ? 'left' : 'right'}, #000 70%, transparent)`;
-      return (
-        <img src={m.photo} alt={name} sizes={sizes} loading="lazy" decoding="async"
-          style={{ maskImage: fade, WebkitMaskImage: fade }}
-          className={`absolute bottom-0 h-full w-auto max-w-none ${side === 'right' ? 'right-0' : 'left-0'} ${className}`} />
-      );
-    }
-    return <img src={m.photo} alt={name} sizes={sizes} loading="lazy" decoding="async" style={{ objectFit: 'cover', objectPosition: '50% 18%' }} className={`h-full w-full ${className}`} />;
+    return <img src={m.photo} alt={name} loading={eager ? 'eager' : 'lazy'} decoding="async" draggable={false} className={`h-full w-full object-cover object-top ${className}`} />;
   }
   return (
     <div className={`relative grid h-full w-full place-items-center overflow-hidden bg-[radial-gradient(120%_90%_at_30%_10%,#1d3570_0%,#0b1226_55%,#060a16_100%)] ${className}`} role="img" aria-label={name}>
@@ -85,216 +72,195 @@ function Portrait({ m, name, className = '', sizes, side }: {
   );
 }
 
+const SWIPE = 60;
+
 export function TeamSection() {
   const { team } = useContent();
-  const { locale } = useI18n();
-  const fa = locale === 'fa';
+  const fa = useI18n().locale === 'fa';
   const t = fa ? COPY.fa : COPY.en;
-  const reduce = useReducedMotion();
-  const [active, setActive] = useState(0);
-  const [open, setOpen] = useState<string | null>(null);
-  const opener = useRef<HTMLElement | null>(null);
+  const reduce = !!useReducedMotion();
+  const [[index, dir], setPage] = useState<[number, number]>([0, 0]);
+  const count = team?.length ?? 0;
 
-  const close = useCallback(() => {
-    setOpen(null);
-    // Back to the card that opened the sheet, for keyboard users.
-    requestAnimationFrame(() => opener.current?.focus());
-  }, []);
+  const go = useCallback((n: number, d?: number) => {
+    if (!count) return;
+    setPage(([cur]) => {
+      const next = ((n % count) + count) % count;
+      return [next, d ?? (next > cur ? 1 : -1)];
+    });
+  }, [count]);
+  const next = () => go(index + 1, 1);
+  const prev = () => go(index - 1, -1);
 
-  // A link to /company#member-id opens that person's résumé.
+  // A link to /company#member-id opens on that person.
   useEffect(() => {
     const fromHash = () => {
       const id = decodeURIComponent(window.location.hash.slice(1));
-      if (team.some((m) => m.id === id)) setOpen(id);
+      const i = team.findIndex((m) => m.id === id);
+      if (i >= 0) { setPage([i, 0]); document.getElementById('team')?.scrollIntoView({ block: 'start' }); }
     };
     fromHash();
     window.addEventListener('hashchange', fromHash);
     return () => window.removeEventListener('hashchange', fromHash);
   }, [team]);
 
-  if (!team?.length) return null;
-  const current = team.find((m) => m.id === open);
+  const stage = useRef<HTMLDivElement | null>(null);
+  const align: React.CSSProperties = { textAlign: fa ? 'right' : 'left' };
+  if (!count) return null;
+  const m = team[index];
+  const p = pick(m, fa);
 
-  const show = (m: TeamMember, el: HTMLElement) => {
-    opener.current = el;
-    setOpen(m.id);
+  // In right-to-left pages "next" lies to the left: arrows, keys and swipes follow the reading direction.
+  const forward = fa ? -1 : 1;
+  const onKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowRight') (forward === 1 ? next : prev)();
+    if (e.key === 'ArrowLeft') (forward === 1 ? prev : next)();
+  };
+  const onDragEnd = (_: unknown, info: PanInfo) => {
+    if (info.offset.x < -SWIPE) (forward === 1 ? next : prev)();
+    else if (info.offset.x > SWIPE) (forward === 1 ? prev : next)();
+  };
+  const slide = {
+    enter: (d: number) => ({ opacity: 0, x: reduce ? 0 : d * forward * 80 }),
+    center: { opacity: 1, x: 0 },
+    exit: (d: number) => ({ opacity: 0, x: reduce ? 0 : -d * forward * 80 }),
   };
 
   return (
-    <section id="team" className="relative scroll-mt-24 border-b border-line bg-space-0" data-no-translate={fa ? '' : undefined}>
+    <section id="team" className="relative scroll-mt-20 border-b border-line bg-space-0">
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(60%_100%_at_50%_0%,rgba(43,107,255,.14),transparent)]" />
       <div className="relative mx-auto max-w-shell px-5 py-20 lg:px-10 lg:py-24">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between" data-no-translate={fa ? '' : undefined}>
           <div className="max-w-3xl">
-            <div className="mb-5 flex items-center gap-3 font-mono text-[11px] text-cyan/80">
-              <span>{t.index}</span><span className="h-px w-10 bg-cyan/30" />
-            </div>
+            <div className="mb-5 flex items-center gap-3 font-mono text-[11px] text-cyan/80"><span>{t.index}</span><span className="h-px w-10 bg-cyan/30" /></div>
             <h2 className="font-display text-3xl font-semibold leading-[1.15] tracking-tight text-ink sm:text-4xl lg:text-[44px]">{t.title}</h2>
             <p className="mt-5 text-base leading-relaxed text-ink-muted lg:text-[17px]">{t.lead}</p>
           </div>
-          <span className="font-mono text-[11px] tracking-label text-ink-faint" aria-hidden>
-            {String(team.length).padStart(2, '0')} / {fa ? 'نفر' : 'PEOPLE'}
-          </span>
+          {/* Faces: jump to anyone. */}
+          {count > 1 && (
+            <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label={t.index}>
+              {team.map((x, i) => (
+                <button key={x.id} type="button" role="tab" aria-selected={i === index} aria-label={pick(x, fa).name} title={pick(x, fa).name} onClick={() => go(i)}
+                  className={`relative h-12 w-12 overflow-hidden rounded-full border-2 transition-[transform,border-color,opacity] duration-300 ${i === index ? 'scale-110 border-gold opacity-100' : 'border-white/10 opacity-60 hover:opacity-100'}`}>
+                  <span className="absolute inset-0 [&_span]:text-[15px]"><Portrait m={x} name={pick(x, fa).name} /></span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Desktop: expanding portrait panels. */}
-        <ul className="mt-14 hidden h-[540px] gap-3 lg:flex">
-          {team.map((m, i) => {
-            const p = pick(m, fa);
-            const on = i === active;
-            // Open, a photo stands whole at the far side and the words take the near side.
-            const wide = on && !!m.photo;
-            return (
-              <li
-                key={m.id}
-                id={m.id}
-                onMouseEnter={() => setActive(i)}
-                className={`group relative min-w-0 overflow-hidden rounded-[22px] border transition-[flex-grow,border-color] duration-700 ease-[cubic-bezier(.22,1,.36,1)] motion-reduce:transition-none ${on ? 'grow-[4] border-cyan/40' : 'grow border-line'} ${wide ? 'bg-[radial-gradient(90%_100%_at_70%_30%,#1b3466_0%,#0b182e_60%,#070d1c_100%)]' : ''}`}
-                style={{ flexBasis: 0 }}>
-                <button
-                  type="button"
-                  onFocus={() => setActive(i)}
-                  onClick={(e) => show(m, e.currentTarget)}
-                  aria-label={`${p.name}${p.role ? ` — ${p.role}` : ''}: ${t.open}`}
-                  className="absolute inset-0 block h-full w-full text-start focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-inset">
-                  <motion.div layoutId={reduce ? undefined : `photo-${m.id}`} className="absolute inset-0">
-                    <Portrait m={m} name={p.name} sizes="(min-width:1024px) 40vw, 80vw" side={wide ? (fa ? 'left' : 'right') : undefined}
-                      className={`transition-[filter,transform] duration-700 ease-[cubic-bezier(.22,1,.36,1)] ${on ? 'scale-100 grayscale-0' : 'scale-[1.06] grayscale brightness-[.7]'}`} />
-                  </motion.div>
-                  <div className={`absolute inset-0 transition-opacity duration-500 bg-gradient-to-t from-[#04060e] via-[#04060e]/35 to-transparent ${wide ? 'opacity-0' : 'opacity-100'}`} />
-                  {/* Collapsed: the name runs up the panel. */}
-                  <span className={`absolute inset-x-0 bottom-7 flex justify-center transition-opacity duration-300 ${on ? 'opacity-0' : 'opacity-100 delay-200'}`}>
-                    <span className="max-h-[300px] overflow-hidden whitespace-nowrap font-display text-[15px] font-medium text-ink/90 [writing-mode:vertical-rl]">{p.name}</span>
-                  </span>
-                  {/* Expanded: a glass caption. */}
-                  <span className={`absolute bottom-4 start-4 rounded-2xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur-xl transition-[opacity,transform] duration-500 ${wide ? 'w-[46%]' : 'end-4'} ${on ? 'translate-y-0 opacity-100 delay-200' : 'pointer-events-none translate-y-4 opacity-0'}`}>
-                    <span className="block font-display text-[22px] font-semibold leading-tight text-ink">{p.name}</span>
-                    {p.role && <span className="mt-1.5 block text-[13px] text-cyan-soft">{p.role}</span>}
-                    {p.bio && <span className="mt-3 line-clamp-3 block max-w-md text-[13.5px] leading-relaxed text-ink-muted">{p.bio}</span>}
-                    <span className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-gold">
-                      {t.open}<ArrowUpRightIcon className="h-3.5 w-3.5 rtl:-scale-x-100" />
-                    </span>
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+        <div ref={stage} tabIndex={0} onKeyDown={onKey} aria-roledescription="carousel" aria-label={t.title}
+          className="relative mt-12 outline-none focus-visible:ring-2 focus-visible:ring-cyan/60 rounded-[28px]">
+          <AnimatePresence mode="wait" initial={false} custom={dir}>
+            <motion.article
+              key={m.id}
+              id={m.id}
+              custom={dir}
+              variants={slide}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              drag={count > 1 && !reduce ? 'x' : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.18}
+              onDragEnd={onDragEnd}
+              aria-roledescription="slide"
+              aria-label={`${index + 1} / ${count}: ${p.name}`}
+              className="grid cursor-grab touch-pan-y select-none overflow-hidden rounded-[28px] border border-cyan/25 bg-space-1/95 shadow-[0_30px_80px_-30px_rgba(0,0,0,.8)] active:cursor-grabbing md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]"
+            >
+              {/* The portrait, whole and untinted. */}
+              <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#e8e6e4] md:aspect-auto md:min-h-[560px]">
+                <Portrait m={m} name={p.name} eager />
+              </div>
 
-        {/* Phone and tablet: a swipeable strip. */}
-        <ul className="-mx-5 mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-5 px-5 pb-4 [scrollbar-width:none] lg:hidden">
-          {team.map((m) => {
-            const p = pick(m, fa);
-            return (
-              <li key={m.id} className="w-[78%] max-w-[340px] shrink-0 snap-start">
-                <button type="button" onClick={(e) => show(m, e.currentTarget)} className="relative block aspect-[4/5] w-full overflow-hidden rounded-[20px] border border-line text-start focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan">
-                  <motion.div layoutId={reduce ? undefined : `photo-m-${m.id}`} className="absolute inset-0"><Portrait m={m} name={p.name} sizes="80vw" /></motion.div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#04060e] via-transparent to-transparent" />
-                  <span className="absolute inset-x-3 bottom-3 rounded-2xl border border-white/10 bg-white/[0.06] p-4 backdrop-blur-xl">
-                    <span className="block font-display text-[18px] font-semibold text-ink">{p.name}</span>
-                    {p.role && <span className="mt-1 block text-[12.5px] text-cyan-soft">{p.role}</span>}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+              <div className="flex max-h-none flex-col p-7 sm:p-10 md:max-h-[640px] md:overflow-y-auto">
+                <h3 dir="auto" style={align} className="font-display text-[30px] font-semibold leading-tight text-ink lg:text-[36px]">{p.name}</h3>
+                {p.other && <p dir="auto" style={align} className="mt-1.5 text-[14px] text-ink-faint">{p.other}</p>}
+                {p.role && <p dir="auto" style={align} className="mt-3 text-[16px] text-cyan-soft">{p.role}</p>}
+                {p.bio && <p dir="auto" style={align} className="mt-6 whitespace-pre-line text-[15px] leading-[1.95] text-ink-muted">{p.bio}</p>}
 
-      <AnimatePresence>
-        {current && <ResumeSheet m={current} fa={fa} t={t} reduce={!!reduce} onClose={close} />}
-      </AnimatePresence>
-    </section>
-  );
-}
+                {m.expertise.length > 0 && (
+                  <div className="mt-8">
+                    <h4 className="text-[12px] text-ink-faint" data-no-translate={fa ? '' : undefined}>{t.expertise}</h4>
+                    <ul className="mt-3 flex flex-wrap gap-2">
+                      {m.expertise.map((x) => <li key={x} dir="auto" className="rounded-full border border-cyan/25 bg-cyan/[0.06] px-3 py-1 text-[13px] text-cyan-soft">{x}</li>)}
+                    </ul>
+                  </div>
+                )}
 
-function ResumeSheet({ m, fa, t, reduce, onClose }: { m: TeamMember; fa: boolean; t: typeof COPY.en; reduce: boolean; onClose: () => void }) {
-  const p = pick(m, fa);
-  const panel = useRef<HTMLDivElement>(null);
-  const [desktop, setDesktop] = useState(true);
+                {m.experience.length > 0 && (
+                  <div className="mt-8">
+                    <h4 className="flex items-center gap-2 text-[12px] text-ink-faint" data-no-translate={fa ? '' : undefined}><BriefcaseIcon className="h-3.5 w-3.5" />{t.experience}</h4>
+                    <Experience key={m.id} items={m.experience} reduce={reduce} />
+                  </div>
+                )}
 
-  useEffect(() => {
-    setDesktop(window.matchMedia('(min-width: 1024px)').matches);
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', onKey);
-    const overflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    panel.current?.focus();
-    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = overflow; };
-  }, [onClose]);
+                {m.education && (
+                  <div className="mt-8">
+                    <h4 className="flex items-center gap-2 text-[12px] text-ink-faint" data-no-translate={fa ? '' : undefined}><GraduationCapIcon className="h-3.5 w-3.5" />{t.education}</h4>
+                    <p dir="auto" className="mt-3 whitespace-pre-line text-[14px] style={align} leading-relaxed text-ink-muted">{m.education}</p>
+                  </div>
+                )}
 
-  return (
-    <motion.div className="fixed inset-0 z-[70] flex items-end justify-center p-0 sm:items-center sm:p-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <div className="absolute inset-0 bg-[#02040a]/80 backdrop-blur-md" onClick={onClose} aria-hidden />
-      <motion.div
-        ref={panel}
-        role="dialog"
-        aria-modal="true"
-        aria-label={p.name}
-        tabIndex={-1}
-        dir={fa ? 'rtl' : 'ltr'}
-        initial={reduce ? false : { y: 40, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={reduce ? { opacity: 0 } : { y: 30, opacity: 0 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 30 }}
-        className="relative grid max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-t-[28px] border border-line bg-space-1 shadow-[0_40px_120px_rgba(0,0,0,.6)] focus:outline-none sm:rounded-[28px] md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-        <div className="relative h-64 md:h-auto md:min-h-[560px]">
-          <motion.div layoutId={reduce ? undefined : `photo-${desktop ? '' : 'm-'}${m.id}`} className="absolute inset-0"><Portrait m={m} name={p.name} sizes="40vw" /></motion.div>
-          <div className="absolute inset-0 bg-gradient-to-t from-space-1 via-transparent to-transparent md:bg-gradient-to-l md:rtl:bg-gradient-to-r" />
+                {(m.resume || m.linkedin || m.email) && (
+                  <div className="mt-auto flex flex-wrap gap-2.5 pt-10">
+                    {m.resume && (
+                      <a href={m.resume} target="_blank" rel="noreferrer" download className="inline-flex h-11 items-center gap-2 rounded-full bg-blue px-5 text-[13.5px] font-medium text-white hover:bg-blue-soft" data-no-translate={fa ? '' : undefined}>
+                        <DownloadIcon className="h-4 w-4" />{t.resume}
+                      </a>
+                    )}
+                    {m.linkedin && (
+                      <a href={m.linkedin} target="_blank" rel="noreferrer me" className="inline-flex h-11 items-center gap-2 rounded-full border border-line px-5 text-[13.5px] text-ink hover:border-cyan/60">
+                        <LinkedinIcon className="h-4 w-4" />LinkedIn
+                      </a>
+                    )}
+                    {m.email && (
+                      <a href={`mailto:${m.email}`} dir="ltr" className="inline-flex h-11 items-center gap-2 rounded-full border border-line px-5 text-[13.5px] text-ink hover:border-cyan/60">
+                        <MailIcon className="h-4 w-4" />{m.email}
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            </motion.article>
+          </AnimatePresence>
+
+          {count > 1 && (
+            <>
+              <button type="button" onClick={prev} aria-label={t.prev}
+                className="absolute start-0 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-cyan/50 bg-space-1 text-cyan shadow-[0_0_30px_rgba(42,211,240,.15)] transition hover:bg-cyan hover:text-space-0 lg:flex ltr:-translate-x-1/2 rtl:translate-x-1/2">
+                {fa ? <ChevronRightIcon className="h-5 w-5" /> : <ChevronLeftIcon className="h-5 w-5" />}
+              </button>
+              <button type="button" onClick={next} aria-label={t.next}
+                className="absolute end-0 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-cyan/50 bg-space-1 text-cyan shadow-[0_0_30px_rgba(42,211,240,.15)] transition hover:bg-cyan hover:text-space-0 lg:flex ltr:translate-x-1/2 rtl:-translate-x-1/2">
+                {fa ? <ChevronLeftIcon className="h-5 w-5" /> : <ChevronRightIcon className="h-5 w-5" />}
+              </button>
+            </>
+          )}
         </div>
 
-        <div className="overflow-y-auto p-7 sm:p-10">
-          <button type="button" onClick={onClose} aria-label={t.close} className="absolute end-4 top-4 grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-black/40 text-ink backdrop-blur hover:border-cyan/50">
-            <XIcon className="h-5 w-5" strokeWidth={1.6} />
-          </button>
-          <h3 className="font-display text-[30px] font-semibold leading-tight text-ink">{p.name}</h3>
-          {fa ? (m.name && <p className="mt-1 text-[13px] text-ink-faint"><bdi>{m.name}</bdi></p>) : (m.nameFa && <p className="mt-1 text-[13px] text-ink-faint"><bdi>{m.nameFa}</bdi></p>)}
-          {p.role && <p className="mt-3 text-[15px] text-cyan-soft">{p.role}</p>}
-          {p.bio && <p className="mt-6 whitespace-pre-line text-[15px] leading-[1.9] text-ink-muted">{p.bio}</p>}
-
-          {m.expertise.length > 0 && (
-            <div className="mt-8">
-              <h4 className="font-mono text-[11px] tracking-label text-ink-faint">{t.expertise}</h4>
-              <ul className="mt-3 flex flex-wrap gap-2">
-                {m.expertise.map((x) => <li key={x} className="rounded-full border border-cyan/25 bg-cyan/[0.06] px-3 py-1 text-[12.5px] text-cyan-soft">{x}</li>)}
-              </ul>
+        {count > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-5" data-no-translate={fa ? '' : undefined}>
+            <button type="button" onClick={prev} aria-label={t.prev} className="grid h-10 w-10 place-items-center rounded-full border border-line text-ink-muted hover:text-cyan lg:hidden">
+              {fa ? <ChevronRightIcon className="h-5 w-5" /> : <ChevronLeftIcon className="h-5 w-5" />}
+            </button>
+            <div className="flex items-center gap-2">
+              {team.map((x, i) => (
+                <button key={x.id} type="button" onClick={() => go(i)} aria-label={pick(x, fa).name}
+                  className={`h-2 rounded-full transition-all duration-300 ${i === index ? 'w-8 bg-cyan' : 'w-2 bg-white/25 hover:bg-white/50'}`} />
+              ))}
             </div>
-          )}
-
-          {m.experience.length > 0 && (
-            <div className="mt-8">
-              <h4 className="flex items-center gap-2 font-mono text-[11px] tracking-label text-ink-faint"><BriefcaseIcon className="h-3.5 w-3.5" />{t.experience}</h4>
-              <Experience items={m.experience} fa={fa} reduce={reduce} />
-            </div>
-          )}
-
-          {m.education && (
-            <div className="mt-8">
-              <h4 className="flex items-center gap-2 font-mono text-[11px] tracking-label text-ink-faint"><GraduationCapIcon className="h-3.5 w-3.5" />{t.education}</h4>
-              <p className="mt-3 whitespace-pre-line text-[14px] leading-relaxed text-ink-muted">{m.education}</p>
-            </div>
-          )}
-
-          <div className="mt-10 flex flex-wrap gap-2.5">
-            {m.resume && (
-              <a href={m.resume} target="_blank" rel="noreferrer" download className="inline-flex h-11 items-center gap-2 rounded-full bg-blue px-5 text-[13.5px] font-medium text-white hover:bg-blue-soft">
-                <DownloadIcon className="h-4 w-4" />{t.resume}
-              </a>
-            )}
-            {m.linkedin && (
-              <a href={m.linkedin} target="_blank" rel="noreferrer me" className="inline-flex h-11 items-center gap-2 rounded-full border border-line px-5 text-[13.5px] text-ink hover:border-cyan/60">
-                <LinkedinIcon className="h-4 w-4" />LinkedIn
-              </a>
-            )}
-            {m.email && (
-              <a href={`mailto:${m.email}`} className="inline-flex h-11 items-center gap-2 rounded-full border border-line px-5 text-[13.5px] text-ink hover:border-cyan/60" dir="ltr">
-                <MailIcon className="h-4 w-4" />{m.email}
-              </a>
-            )}
+            <span className="font-mono text-[11px] tabular-nums text-ink-faint">
+              {fa ? `${(index + 1).toLocaleString('fa-IR')} / ${count.toLocaleString('fa-IR')}` : `${String(index + 1).padStart(2, '0')} / ${String(count).padStart(2, '0')}`}
+            </span>
+            <button type="button" onClick={next} aria-label={t.next} className="grid h-10 w-10 place-items-center rounded-full border border-line text-ink-muted hover:text-cyan lg:hidden">
+              {fa ? <ChevronLeftIcon className="h-5 w-5" /> : <ChevronRightIcon className="h-5 w-5" />}
+            </button>
           </div>
-        </div>
-      </motion.div>
-    </motion.div>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -311,7 +277,7 @@ function yearsOf(period: string): number | null {
  * gets a bar as long as its years, filling in as the sheet opens; otherwise
  * (dates, places) a plain timeline.
  */
-function Experience({ items, fa, reduce }: { items: TeamMember['experience']; fa: boolean; reduce: boolean }) {
+function Experience({ items, reduce }: { items: TeamMember['experience']; reduce: boolean }) {
   const years = items.map((x) => yearsOf(x.period));
   const max = Math.max(0, ...years.map((y) => y ?? 0));
   if (max > 0 && years.every((y) => y !== null)) {
@@ -320,7 +286,7 @@ function Experience({ items, fa, reduce }: { items: TeamMember['experience']; fa
         {items.map((x, i) => (
           <li key={i}>
             <div className="flex items-baseline justify-between gap-4">
-              <span className="text-[14.5px] text-ink">{x.title}</span>
+              <span dir="auto" className="min-w-0 text-[14.5px] text-ink">{x.title}</span>
               <span className="shrink-0 text-[13px] tabular-nums text-gold">{x.period}</span>
             </div>
             {x.org && <div className="mt-0.5 text-[12.5px] text-ink-faint">{x.org}</div>}
@@ -342,7 +308,7 @@ function Experience({ items, fa, reduce }: { items: TeamMember['experience']; fa
       {items.map((x, i) => (
         <li key={i} className="relative pb-5 last:pb-0">
           <span className="absolute -start-[29px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-space-1 bg-gold" />
-          <div className="text-[14.5px] text-ink">{x.title}</div>
+          <div dir="auto" className="text-[14.5px] text-ink">{x.title}</div>
           {(x.org || x.period) && (
             <div className="mt-0.5 text-[13px] text-ink-muted">
               {x.org}{x.org && x.period && ' · '}{x.period && <span className="text-ink-faint">{x.period}</span>}
