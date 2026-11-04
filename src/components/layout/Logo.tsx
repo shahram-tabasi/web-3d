@@ -14,10 +14,10 @@ export function Logo({ compact = false }: {compact?: boolean;}) {
       <Image
         src="/brand/mark-light.png"
         alt={fa ? `لوگوی ${BRAND.nameFa}` : `${BRAND.nameEn} logo`}
-        width={1085}
-        height={834}
+        width={1084}
+        height={832}
         priority
-        className="h-9 w-auto shrink-0 object-contain drop-shadow-[0_0_10px_rgba(160,215,255,0.35)] transition-transform duration-300 ease-sim group-hover:scale-105" />
+        className="h-11 w-auto shrink-0 sm:h-12 object-contain drop-shadow-[0_0_10px_rgba(160,215,255,0.35)] transition-transform duration-300 ease-sim group-hover:scale-105" />
       <span className="flex flex-col leading-none" data-no-translate>
         {fa ?
         <>
