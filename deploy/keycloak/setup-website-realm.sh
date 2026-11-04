@@ -8,6 +8,11 @@
 #   deploy/keycloak/setup-website-realm.sh admin EMAIL    # an administrator (asks for a first password;
 #                                                         # an authenticator app is set up at first sign-in)
 #   deploy/keycloak/setup-website-realm.sh revoke EMAIL   # take website-admin away (the account stays)
+#   deploy/keycloak/setup-website-realm.sh list           # the administrators (email, enabled, two-step set up)
+#   deploy/keycloak/setup-website-realm.sh reset EMAIL [--otp]
+#                                                         # a forgotten password: asks for a new one, lifts a
+#                                                         # lockout; --otp also for a lost phone (the
+#                                                         # authenticator app is set up again at the next sign-in)
 #
 # realm   brute-force lockout (5 wrong passwords: wait, growing to 15 min),
 #         passwords of 12+ characters, no self-registration, Persian first,
@@ -151,11 +156,49 @@ revoke() {
   echo "$email no longer has $ROLE"
 }
 
+list() {
+  say "administrators of realm $REALM (role $ROLE)"
+  local ids id
+  ids="$(kc get "roles/$ROLE/users" -r "$REALM" --fields id --format csv --noquotes | tr -d '\r')"
+  for id in $ids; do
+    local row otp
+    row="$(kc get "users/$id" -r "$REALM" --fields email,enabled --format csv --noquotes | tr -d '\r')"
+    otp="$(kc get "users/$id/credentials" -r "$REALM" --fields type --format csv --noquotes | tr -d '\r' | grep -c '^otp$' || true)"
+    echo "$row, two-step: $([ "$otp" -gt 0 ] && echo yes || echo 'not yet')"
+  done
+}
+
+reset() {
+  local email="${1:?usage: $0 reset EMAIL [--otp]}" id p1 p2 c
+  id="$(user_id "$email")"
+  [ -n "$id" ] || { echo "no user $email in realm $REALM ($0 list shows who there is)"; exit 1; }
+  say "new password for $email"
+  read -rsp "New password (12+ characters): " p1; echo
+  read -rsp "Again: " p2; echo
+  [ -n "$p1" ] && [ "$p1" = "$p2" ] || { echo "passwords empty or different"; exit 1; }
+  [ "${#p1}" -ge 12 ] || { echo "12 characters or more (the realm refuses shorter)"; exit 1; }
+  set_password "$id" "$p1"
+  unset p1 p2
+  echo "password set"
+  # Wrong tries may have locked the account: lift it.
+  kc delete "attack-detection/brute-force/users/$id" -r "$REALM" >/dev/null 2>&1 && echo "lockout lifted" || true
+  if [ "${2:-}" = "--otp" ]; then
+    for c in $(kc get "users/$id/credentials" -r "$REALM" --fields id,type --format csv --noquotes | tr -d '\r' | awk -F, '$2=="otp"{print $1}'); do
+      kc delete "users/$id/credentials/$c" -r "$REALM" >/dev/null && echo "authenticator removed"
+    done
+    kc update "users/$id" -r "$REALM" -s 'requiredActions=["CONFIGURE_TOTP"]' >/dev/null
+    echo "at the next sign-in they scan a new QR code with Google/Microsoft Authenticator"
+  fi
+  kc update "users/$id" -r "$REALM" -s enabled=true >/dev/null
+}
+
 login
 trap logout EXIT
 case "${1:-}" in
   realm) realm ;;
   admin) shift; admin "$@" ;;
   revoke) shift; revoke "$@" ;;
-  *) echo "usage: $0 realm | admin EMAIL | revoke EMAIL"; exit 2 ;;
+  list) list ;;
+  reset) shift; reset "$@" ;;
+  *) echo "usage: $0 realm | admin EMAIL | revoke EMAIL | list | reset EMAIL [--otp]"; exit 2 ;;
 esac

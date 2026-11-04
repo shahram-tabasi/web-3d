@@ -185,8 +185,15 @@ deploy/keycloak/setup-website-realm.sh admin someone@simorghai.com
 
 From then on /admin shows one button, "ورود با حساب سیمرغ"; the shared
 ADMIN_PASSWORD no longer works. Wrong passwords lock the account for a while
-(growing to 15 minutes). A forgotten password or a lost phone: reset them in
-the Keycloak console, realm website → Users → the person → Credentials.
+(growing to 15 minutes). A forgotten password or a lost phone:
+
+```bash
+deploy/keycloak/setup-website-realm.sh list                     # who the administrators are
+deploy/keycloak/setup-website-realm.sh reset you@simorghai.com  # asks for a new password, lifts a lockout
+deploy/keycloak/setup-website-realm.sh reset you@simorghai.com --otp   # lost phone: new authenticator at the next sign-in
+```
+
+(or in the Keycloak console: realm website → Users → the person → Credentials).
 
 ## 8. ArvanCloud (panel → domain simorghai.com)
 
