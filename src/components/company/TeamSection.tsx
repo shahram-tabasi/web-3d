@@ -249,15 +249,7 @@ function ResumeSheet({ m, fa, t, reduce, onClose }: { m: TeamMember; fa: boolean
           {m.experience.length > 0 && (
             <div className="mt-8">
               <h4 className="flex items-center gap-2 font-mono text-[11px] tracking-label text-ink-faint"><BriefcaseIcon className="h-3.5 w-3.5" />{t.experience}</h4>
-              <ol className="relative mt-4 border-s border-line ps-6">
-                {m.experience.map((x, i) => (
-                  <li key={i} className="relative pb-5 last:pb-0">
-                    <span className="absolute -start-[29px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-space-1 bg-gold" />
-                    <div className="text-[14.5px] text-ink">{x.title}</div>
-                    <div className="mt-0.5 text-[13px] text-ink-muted">{x.org}{x.period && <span className="text-ink-faint"> · {x.period}</span>}</div>
-                  </li>
-                ))}
-              </ol>
+              <Experience items={m.experience} fa={fa} reduce={reduce} />
             </div>
           )}
 
@@ -288,5 +280,61 @@ function ResumeSheet({ m, fa, t, reduce, onClose }: { m: TeamMember; fa: boolean
         </div>
       </motion.div>
     </motion.div>
+  );
+}
+
+const PERSIAN_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
+/** "۱۴ سال" / "14 years" → 14; anything else (a date range) → null. */
+function yearsOf(period: string): number | null {
+  const latin = period.replace(/[۰-۹]/g, (d) => String(PERSIAN_DIGITS.indexOf(d)));
+  const m = /(\d+(?:[.,]\d+)?)\s*(?:\+\s*)?(?:سال|years?|yrs?)/i.exec(latin);
+  return m ? Number(m[1].replace(',', '.')) : null;
+}
+
+/**
+ * Experience by role. When the periods are durations ("۱۴ سال"), each role
+ * gets a bar as long as its years, filling in as the sheet opens; otherwise
+ * (dates, places) a plain timeline.
+ */
+function Experience({ items, fa, reduce }: { items: TeamMember['experience']; fa: boolean; reduce: boolean }) {
+  const years = items.map((x) => yearsOf(x.period));
+  const max = Math.max(0, ...years.map((y) => y ?? 0));
+  if (max > 0 && years.every((y) => y !== null)) {
+    return (
+      <ul className="mt-4 grid gap-4">
+        {items.map((x, i) => (
+          <li key={i}>
+            <div className="flex items-baseline justify-between gap-4">
+              <span className="text-[14.5px] text-ink">{x.title}</span>
+              <span className="shrink-0 text-[13px] tabular-nums text-gold">{x.period}</span>
+            </div>
+            {x.org && <div className="mt-0.5 text-[12.5px] text-ink-faint">{x.org}</div>}
+            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+              <motion.div
+                className={`h-full rounded-full bg-gradient-to-r from-gold/70 to-cyan/80 rtl:bg-gradient-to-l`}
+                initial={reduce ? false : { width: 0 }}
+                animate={{ width: `${((years[i] ?? 0) / max) * 100}%` }}
+                transition={{ duration: 0.9, delay: 0.25 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+              />
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  return (
+    <ol className="relative mt-4 border-s border-line ps-6">
+      {items.map((x, i) => (
+        <li key={i} className="relative pb-5 last:pb-0">
+          <span className="absolute -start-[29px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-space-1 bg-gold" />
+          <div className="text-[14.5px] text-ink">{x.title}</div>
+          {(x.org || x.period) && (
+            <div className="mt-0.5 text-[13px] text-ink-muted">
+              {x.org}{x.org && x.period && ' · '}{x.period && <span className="text-ink-faint">{x.period}</span>}
+            </div>
+          )}
+        </li>
+      ))}
+    </ol>
   );
 }

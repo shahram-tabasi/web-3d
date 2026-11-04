@@ -52,15 +52,17 @@ export function TeamEditor() {
             <Area label="درباره (فارسی)" value={m.bioFa} onChange={p('bioFa')} rows={4} max={600} />
             <Area label="Bio (English)" value={m.bio} onChange={p('bio')} rows={4} ltr max={600} />
             <Tags label="تخصص‌ها" value={m.expertise} onChange={p('expertise')} hint="مثلاً: EPLAN، هوش مصنوعی، طراحی تابلو برق" />
-            <ListEditor label="سوابق کاری" items={m.experience} onChange={p('experience')} make={() => ({ period: '', title: '', org: '' })}
+            <ListEditor label="سوابق کاری" hint="به تفکیک نقش و مدت، مثلاً «مهندسی برق و نرم‌افزارهای مهندسی» و «۱۴ سال». وقتی مدت‌ها به سال باشند، روی سایت برای هر نقش یک نوار به اندازه‌ی سال‌هایش کشیده می‌شود."
+              items={m.experience} onChange={p('experience')} make={() => ({ period: '', title: '', org: '' })}
               itemTitle={(x) => x.title || 'سابقه'}
               render={(x, setX) => (
                 <Grid cols={3}>
-                  <Text label="عنوان شغلی" value={x.title} onChange={(title) => setX({ ...x, title })} />
-                  <Text label="شرکت / سازمان" value={x.org} onChange={(org) => setX({ ...x, org })} />
-                  <Text label="بازه زمانی" value={x.period} onChange={(period) => setX({ ...x, period })} placeholder="۱۳۹۸ تا اکنون" />
+                  <Text label="نقش / حوزه" value={x.title} onChange={(title) => setX({ ...x, title })} placeholder="مهندسی برق و نرم‌افزارهای مهندسی" />
+                  <Text label="مدت یا بازه" value={x.period} onChange={(period) => setX({ ...x, period })} placeholder="۱۴ سال" />
+                  <Text label="شرکت (اختیاری)" value={x.org} onChange={(org) => setX({ ...x, org })} />
                 </Grid>
               )} />
+            <QuickExperience onAdd={(rows) => p('experience')([...m.experience, ...rows])} />
             <Area label="تحصیلات" value={m.education} onChange={p('education')} rows={2} />
             <Grid>
               <Text label="LinkedIn" value={m.linkedin} onChange={p('linkedin')} ltr placeholder="https://www.linkedin.com/in/…" />
@@ -95,5 +97,30 @@ export function TeamEditor() {
         ))}
       </div>
     </div>
+  );
+}
+
+/** Paste a list ("نقش – ۱۴ سال", one per line) and add it all at once. */
+function QuickExperience({ onAdd }: { onAdd: (rows: TeamMember['experience']) => void }) {
+  const [text, setText] = useState('');
+  const rows = text.split('\n')
+    .map((l) => l.replace(/^[\s*•\-–—]+/, '').trim())
+    .filter(Boolean)
+    .map((l) => {
+      const parts = l.split(/\s+[–—-]\s+|\s*[:：]\s*/);
+      return parts.length > 1
+        ? { title: parts.slice(0, -1).join(' – ').trim(), period: parts[parts.length - 1].trim(), org: '' }
+        : { title: l, period: '', org: '' };
+    });
+  return (
+    <details className="rounded-lg border border-dashed border-line p-3">
+      <summary className="cursor-pointer text-[12.5px] text-ink-muted">افزودن سریع: فهرست را یک‌جا بچسبانید</summary>
+      <Area label="هر سابقه در یک خط: نقش – مدت" value={text} onChange={setText} rows={5}
+        placeholder={'مهندسی برق و نرم‌افزارهای مهندسی – ۱۴ سال\nمدیریت آموزش فنی و مهندسی – ۵ سال'} />
+      <div className="mt-2 flex items-center justify-between gap-3">
+        <span className="text-[11.5px] text-ink-faint">{rows.length ? `${rows.length} سابقه خوانده شد` : ''}</span>
+        <Btn small kind="primary" disabled={!rows.length} onClick={() => { onAdd(rows); setText(''); }}>افزودن به سوابق</Btn>
+      </div>
+    </details>
   );
 }
