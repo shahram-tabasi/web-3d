@@ -220,13 +220,22 @@ export function Tags({ label, value, onChange, hint }: { label: string; value: s
     <Field label={label} hint={hint}>
       <div className="flex flex-wrap gap-1.5 rounded-md border border-line bg-space-0/70 p-2">
         {value.map((t) => (
-          <span key={t} className="inline-flex items-center gap-1 rounded bg-space-3 px-2 py-0.5 text-[12px] text-ink">
+          <span key={t} dir="auto" className="inline-flex max-w-full items-center gap-1 break-words rounded bg-space-3 px-2 py-0.5 text-[12px] text-ink">
             {t}
             <button type="button" aria-label="حذف" onClick={() => onChange(value.filter((x) => x !== t))} className="text-ink-faint hover:text-red-300"><XIcon className="h-3 w-3" /></button>
           </span>
         ))}
-        <input className="min-w-[8rem] flex-1 bg-transparent px-1 text-[13px] text-ink outline-none" value={text} placeholder="بنویسید و Enter بزنید"
+        <input className="min-w-[8rem] flex-1 bg-transparent px-1 text-[13px] text-ink outline-none" value={text} placeholder="بنویسید و Enter بزنید؛ یا فهرست را بچسبانید"
           onChange={(e) => setText(e.target.value)} onBlur={add}
+          // A one-line input turns a pasted list's line breaks into spaces, so
+          // twelve skills became one; split the pasted text here instead.
+          onPaste={(e) => {
+            const pasted = e.clipboardData.getData('text');
+            if (!/[\n,،;•]/.test(pasted)) return;
+            e.preventDefault();
+            const parts = pasted.split(/[\n,،;•]+/).map((x) => x.replace(/^[\s*\-–—]+/, '').trim()).filter(Boolean);
+            onChange([...value, ...parts.filter((x) => !value.includes(x))]);
+          }}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(); } }} />
       </div>
     </Field>

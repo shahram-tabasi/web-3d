@@ -112,7 +112,7 @@ function Resume({ m, fa, t, reduce }: { m: TeamMember; fa: boolean; t: typeof CO
           <div className="mt-7">
             <h4 className="text-[12px] text-ink-faint" data-no-translate={fa ? '' : undefined}>{t.expertise}</h4>
             <ul className="mt-3 flex flex-wrap gap-2">
-              {m.expertise.map((x) => <li key={x} dir="auto" className="rounded-full border border-cyan/25 bg-cyan/[0.06] px-3 py-1 text-[13px] text-cyan-soft">{x}</li>)}
+              {m.expertise.map((x) => <li key={x} dir="auto" className={`max-w-full break-words border border-cyan/25 bg-cyan/[0.06] px-3 py-1 text-[13px] leading-relaxed text-cyan-soft ${x.length > 40 ? 'rounded-xl' : 'rounded-full'}`}>{x}</li>)}
             </ul>
           </div>
         )}
