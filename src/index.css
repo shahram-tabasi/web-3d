@@ -131,3 +131,38 @@ footer.bg-space-1 { background-color: rgb(7 11 24 / 0.6); }
 .sim-prose th, .sim-prose td { border: 1px solid rgba(120,160,255,0.14); padding: 0.55em 0.8em; text-align: start; }
 .sim-prose th { background: rgba(120,160,255,0.06); color: #e7edff; }
 .sim-prose hr { border: 0; border-top: 1px solid rgba(120,160,255,0.14); margin: 2.5em 0; }
+
+/* ── Home: motion that costs the compositor only ─────────────────────── */
+.sim-kenburns { animation: sim-kenburns 28s ease-in-out infinite alternate; transform-origin: 60% 40%; will-change: transform; }
+@keyframes sim-kenburns { from { transform: scale(1.02) translate3d(0, 0, 0); } to { transform: scale(1.12) translate3d(-1.5%, -1%, 0); } }
+
+.sim-aurora {
+  /* Soft by its gradients alone: a blur filter here costs half the frame rate. */
+  background: radial-gradient(40% 60% at 30% 50%, rgba(43,107,255,.30), rgba(43,107,255,.08) 45%, transparent 75%),
+              radial-gradient(35% 55% at 70% 45%, rgba(42,211,240,.22), rgba(42,211,240,.06) 45%, transparent 75%),
+              radial-gradient(30% 50% at 50% 60%, rgba(232,182,90,.12), transparent 75%);
+  animation: sim-aurora 18s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes sim-aurora { from { transform: translate3d(-6%, 0, 0) scale(1); } to { transform: translate3d(6%, -4%, 0) scale(1.1); } }
+
+.sim-shine { animation: sim-shine 7s linear infinite; }
+@keyframes sim-shine { to { background-position: 200% center; } }
+
+.sim-marquee { animation: sim-marquee 40s linear infinite; will-change: transform; }
+.sim-marquee:hover { animation-play-state: paused; }
+@keyframes sim-marquee { to { transform: translate3d(-50%, 0, 0); } }
+[dir='rtl'] .sim-marquee { animation-name: sim-marquee-rtl; }
+@keyframes sim-marquee-rtl { to { transform: translate3d(50%, 0, 0); } }
+
+/* A card's border lights up where the pointer is (--gx/--gy set on pointer move). */
+.sim-glow-card { position: relative; isolation: isolate; }
+.sim-glow-card::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; z-index: -1;
+  background: radial-gradient(280px circle at var(--gx, 50%) var(--gy, 0%), rgba(124,230,247,.55), rgba(120,160,255,.12) 45%, rgba(120,160,255,.08));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sim-kenburns, .sim-aurora, .sim-shine, .sim-marquee { animation: none; }
+}

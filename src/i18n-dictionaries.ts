@@ -20,33 +20,33 @@ export type Dictionary = {
 
 export const dictionaries: Record<Locale, Dictionary> = {
   en: {
-    nav: { Products: 'Products', Solutions: 'Solutions', Industries: 'Industries', Technology: 'Technology', Insights: 'Insights', Company: 'Company' },
+    nav: { Services: 'Services', Contact: 'Contact', Products: 'Products', Solutions: 'Solutions', Industries: 'Industries', Technology: 'Technology', Insights: 'Insights', Company: 'Company' },
     common: { requestDemo: 'Request Demo', exploreTechnology: 'Explore Our Technology', exploreProducts: 'Explore Products', home: 'Home' },
     hero: {
-      eyebrow: 'SIMORGH INTELLIGENT TECHNOLOGY',
-      headline: 'Engineering Intelligence',
-      accent: 'for a Smarter World',
-      subtitle: 'AI-powered software, intelligent engineering systems, digital twins and smart infrastructure for industry, utilities and cities.',
-      primary: 'Explore Our Technology',
-      secondary: 'Explore Products',
-      kicker: 'AI · INDUSTRY · DIGITAL TWIN · SMART GRID'
+      eyebrow: 'Simorgh Intelligent Iranian Technology',
+      headline: 'Bridging industry, process engineering',
+      accent: 'and advanced AI',
+      subtitle: 'Strategic consulting, process engineering, digital solutions and industrial AI — from the first diagnosis to a system working on your site.',
+      primary: 'Our services',
+      secondary: 'Products',
+      kicker: 'CONSULTING · PROCESS ENGINEERING · DIGITAL SOLUTIONS · INDUSTRIAL AI'
     }
   },
   fa: {
-    nav: { Products: 'محصولات', Solutions: 'راهکارها', Industries: 'صنایع', Technology: 'فناوری', Insights: 'مقالات', Company: 'درباره ما' },
+    nav: { Services: 'خدمات', Contact: 'تماس با ما', Products: 'محصولات', Solutions: 'راهکارها', Industries: 'صنایع', Technology: 'فناوری', Insights: 'مقالات', Company: 'درباره ما' },
     common: { requestDemo: 'درخواست دمو', exploreTechnology: 'فناوری سیمرغ', exploreProducts: 'مشاهده محصولات', home: 'خانه' },
     hero: {
-      eyebrow: 'فناوری هوشمند سیمرغ',
-      headline: 'هوشمندی مهندسی',
-      accent: 'برای جهانی هوشمندتر',
-      subtitle: 'نرم‌افزارهای مبتنی بر هوش مصنوعی، سیستم‌های مهندسی هوشمند، دوقلوی دیجیتال و زیرساخت هوشمند برای صنعت، انرژی و شهرها.',
-      primary: 'فناوری سیمرغ',
-      secondary: 'مشاهده محصولات',
-      kicker: 'هوش مصنوعی · صنعت · دوقلوی دیجیتال · شبکه هوشمند'
+      eyebrow: 'سیمرغ فن‌آوری هوشمند ایرانیان',
+      headline: 'پل ارتباطی میان صنعت، مهندسی فرآیند',
+      accent: 'و هوش مصنوعی پیشرفته',
+      subtitle: 'مشاوره‌ی راهبردی، مهندسی فرآیند، توسعه‌ی راهکارهای دیجیتال و هوش مصنوعی صنعتی؛ از عارضه‌یابی تا سیستمی که در محل شما کار می‌کند.',
+      primary: 'خدمات ما',
+      secondary: 'محصولات',
+      kicker: 'مشاوره · مهندسی فرآیند · راهکار دیجیتال · هوش مصنوعی صنعتی'
     }
   },
   ar: {
-    nav: { Products: 'المنتجات', Solutions: 'الحلول', Industries: 'الصناعات', Technology: 'التقنية', Insights: 'المقالات', Company: 'الشركة' },
+    nav: { Services: 'الخدمات', Contact: 'اتصل بنا', Products: 'المنتجات', Solutions: 'الحلول', Industries: 'الصناعات', Technology: 'التقنية', Insights: 'المقالات', Company: 'الشركة' },
     common: { requestDemo: 'طلب عرض تجريبي', exploreTechnology: 'استكشف تقنيتنا', exploreProducts: 'استكشف المنتجات', home: 'الرئيسية' },
     hero: {
       eyebrow: 'تقنية سيمورغ الذكية',
@@ -59,7 +59,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     }
   },
   tr: {
-    nav: { Products: 'Ürünler', Solutions: 'Çözümler', Industries: 'Sektörler', Technology: 'Teknoloji', Insights: 'İçgörüler', Company: 'Şirket' },
+    nav: { Services: 'Hizmetler', Contact: 'İletişim', Products: 'Ürünler', Solutions: 'Çözümler', Industries: 'Sektörler', Technology: 'Teknoloji', Insights: 'İçgörüler', Company: 'Şirket' },
     common: { requestDemo: 'Demo Talep Et', exploreTechnology: 'Teknolojimizi Keşfet', exploreProducts: 'Ürünleri Keşfet', home: 'Ana Sayfa' },
     hero: {
       eyebrow: 'SIMORGH AKILLI TEKNOLOJİ', headline: 'Mühendislik Zekâsı', accent: 'Daha Akıllı Bir Dünya İçin',
@@ -67,7 +67,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     }
   },
   de: {
-    nav: { Products: 'Produkte', Solutions: 'Lösungen', Industries: 'Branchen', Technology: 'Technologie', Insights: 'Insights', Company: 'Unternehmen' },
+    nav: { Services: 'Leistungen', Contact: 'Kontakt', Products: 'Produkte', Solutions: 'Lösungen', Industries: 'Branchen', Technology: 'Technologie', Insights: 'Insights', Company: 'Unternehmen' },
     common: { requestDemo: 'Demo anfragen', exploreTechnology: 'Technologie entdecken', exploreProducts: 'Produkte entdecken', home: 'Startseite' },
     hero: {
       eyebrow: 'SIMORGH INTELLIGENTE TECHNOLOGIE', headline: 'Engineering Intelligence', accent: 'für eine intelligentere Welt',
@@ -75,7 +75,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     }
   },
   fr: {
-    nav: { Products: 'Produits', Solutions: 'Solutions', Industries: 'Industries', Technology: 'Technologie', Insights: 'Analyses', Company: 'Entreprise' },
+    nav: { Services: 'Services', Contact: 'Contact', Products: 'Produits', Solutions: 'Solutions', Industries: 'Industries', Technology: 'Technologie', Insights: 'Analyses', Company: 'Entreprise' },
     common: { requestDemo: 'Demander une démo', exploreTechnology: 'Découvrir notre technologie', exploreProducts: 'Découvrir les produits', home: 'Accueil' },
     hero: {
       eyebrow: 'TECHNOLOGIE INTELLIGENTE SIMORGH', headline: 'Intelligence d’ingénierie', accent: 'pour un monde plus intelligent',
@@ -83,7 +83,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     }
   },
   es: {
-    nav: { Products: 'Productos', Solutions: 'Soluciones', Industries: 'Industrias', Technology: 'Tecnología', Insights: 'Perspectivas', Company: 'Empresa' },
+    nav: { Services: 'Servicios', Contact: 'Contacto', Products: 'Productos', Solutions: 'Soluciones', Industries: 'Industrias', Technology: 'Tecnología', Insights: 'Perspectivas', Company: 'Empresa' },
     common: { requestDemo: 'Solicitar demo', exploreTechnology: 'Explorar tecnología', exploreProducts: 'Explorar productos', home: 'Inicio' },
     hero: {
       eyebrow: 'TECNOLOGÍA INTELIGENTE SIMORGH', headline: 'Inteligencia de ingeniería', accent: 'para un mundo más inteligente',
@@ -91,7 +91,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     }
   },
   zh: {
-    nav: { Products: '产品', Solutions: '解决方案', Industries: '行业', Technology: '技术', Insights: '洞察', Company: '公司' },
+    nav: { Services: '服务', Contact: '联系我们', Products: '产品', Solutions: '解决方案', Industries: '行业', Technology: '技术', Insights: '洞察', Company: '公司' },
     common: { requestDemo: '申请演示', exploreTechnology: '探索技术', exploreProducts: '探索产品', home: '首页' },
     hero: {
       eyebrow: 'SIMORGH 智能科技', headline: '工程智能', accent: '让世界更加智能',
@@ -99,7 +99,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     }
   },
   ja: {
-    nav: { Products: '製品', Solutions: 'ソリューション', Industries: '産業', Technology: 'テクノロジー', Insights: 'インサイト', Company: '会社情報' },
+    nav: { Services: 'サービス', Contact: 'お問い合わせ', Products: '製品', Solutions: 'ソリューション', Industries: '産業', Technology: 'テクノロジー', Insights: 'インサイト', Company: '会社情報' },
     common: { requestDemo: 'デモを依頼', exploreTechnology: '技術を見る', exploreProducts: '製品を見る', home: 'ホーム' },
     hero: {
       eyebrow: 'SIMORGH インテリジェントテクノロジー', headline: 'エンジニアリング・インテリジェンス', accent: 'よりスマートな世界へ',
@@ -107,7 +107,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     }
   },
   ru: {
-    nav: { Products: 'Продукты', Solutions: 'Решения', Industries: 'Отрасли', Technology: 'Технологии', Insights: 'Статьи', Company: 'Компания' },
+    nav: { Services: 'Услуги', Contact: 'Контакты', Products: 'Продукты', Solutions: 'Решения', Industries: 'Отрасли', Technology: 'Технологии', Insights: 'Статьи', Company: 'Компания' },
     common: { requestDemo: 'Запросить демо', exploreTechnology: 'Изучить технологии', exploreProducts: 'Изучить продукты', home: 'Главная' },
     hero: {
       eyebrow: 'ИНТЕЛЛЕКТУАЛЬНЫЕ ТЕХНОЛОГИИ SIMORGH', headline: 'Инженерный интеллект', accent: 'для более умного мира',

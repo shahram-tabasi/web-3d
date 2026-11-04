@@ -92,13 +92,13 @@ export function Starfield({ density = 0.00032, className = '', meteors = false, 
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
       width = rect.width;
       height = rect.height;
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const count = Math.min(900, Math.round(width * height * density));
+      const count = Math.min(520, Math.round(width * height * density));
       stars = Array.from({ length: count }, () => randomStar());
     };
 
@@ -122,6 +122,21 @@ export function Starfield({ density = 0.00032, className = '', meteors = false, 
         width: 1.4 + Math.random() * 1.2,
       });
     };
+
+    // ~30 frames a second is plenty for drift and twinkle, and halves the
+    // work; and nothing is drawn while the sky is off screen or the tab hidden.
+    let visible = true;
+    let lastPaint = 0;
+    const loop = (now: number) => {
+      frame = requestAnimationFrame(loop);
+      if (now - lastPaint < 31) return;
+      lastPaint = now;
+      draw(now);
+    };
+    const start = () => { cancelAnimationFrame(frame); if (visible && !document.hidden) { last = performance.now(); frame = requestAnimationFrame(loop); } };
+    const io = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; start(); });
+    io.observe(canvas);
+    document.addEventListener('visibilitychange', start);
 
     const draw = (now: number) => {
       const dt = Math.min((now - last) / 1000, 0.05);
@@ -206,15 +221,16 @@ export function Starfield({ density = 0.00032, className = '', meteors = false, 
 
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = 'source-over';
-      if (!reduced) frame = requestAnimationFrame(draw);
     };
 
     resize();
-    frame = requestAnimationFrame(draw);
+    start();
     window.addEventListener('resize', resize);
     window.addEventListener('pointermove', onPointer, { passive: true });
     return () => {
       cancelAnimationFrame(frame);
+      io.disconnect();
+      document.removeEventListener('visibilitychange', start);
       window.removeEventListener('resize', resize);
       window.removeEventListener('pointermove', onPointer);
     };

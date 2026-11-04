@@ -24,9 +24,8 @@ const columns = (products: { short: string; slug: string }[], industries: { name
   links: [
   { label: 'About SIMORGH', to: '/company' },
   { label: 'Our Team', to: '/company#team' },
-  { label: 'Technology', to: '/technology' },
+  { label: 'Services', to: '/solutions' },
   { label: 'Insights', to: '/insights' },
-  { label: 'Careers', to: '/company' },
   { label: 'Contact', to: '/contact' },
   { label: 'Request a Demo', to: '/request-demo' }]
 

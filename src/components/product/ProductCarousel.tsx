@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from '../layout/LocaleLink';
 import { ArrowRightIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { useContent } from '../../content/ContentProvider';
+import { useI18n } from '../../i18n';
 
 const AUTOPLAY_MS = 3000;
 const SWIPE_PX = 50;
@@ -41,12 +42,13 @@ function cardStyle(offset: number): React.CSSProperties {
     transform: `translateX(${side * 62}%) scale(0.78) rotateY(${side * -18}deg)`,
     opacity: 0.45,
     zIndex: 2,
-    filter: 'saturate(0.6)',
   };
 }
 
-export function ProductCarousel() {
+export function ProductCarousel({ heading = 'h1' }: { heading?: 'h1' | 'h2' }) {
   const { products: slides, pages } = useContent();
+  const fa = useI18n().locale === 'fa';
+  const Heading = heading;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const dragStart = useRef<number | null>(null);
@@ -94,22 +96,24 @@ export function ProductCarousel() {
       <img src={pages.products.heroImage} alt="" aria-hidden="true" className={`pointer-events-none absolute inset-0 h-full w-full object-cover opacity-35 ${pages.products.heroFlip ? '-scale-y-100' : ''}`} />
       }
       <div className="pointer-events-none absolute inset-0 opacity-40">
-        <div className="absolute left-1/2 top-1/2 h-[700px] w-[1100px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan/10 blur-[120px]" />
+        <div className="absolute left-1/2 top-1/2 h-[700px] w-[1100px] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(closest-side,rgba(42,211,240,.12),transparent)]" />
         <div className="sim-grid-lines absolute inset-0 opacity-25" />
       </div>
 
       <div className="relative mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-10">
-        <div className="mx-auto mb-9 max-w-3xl text-center lg:mb-12">
+        <div className="mx-auto mb-9 max-w-3xl text-center lg:mb-12" data-no-translate={fa ? '' : undefined}>
           <div className="mb-4 inline-flex items-center gap-4 font-mono text-[10px] font-medium tracking-[0.35em] text-cyan">
             <span className="h-px w-12 bg-cyan/60" />
-            OUR PRODUCTS
+            {fa ? 'محصولات ما' : 'OUR PRODUCTS'}
             <span className="h-px w-12 bg-cyan/60" />
           </div>
-          <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl lg:text-5xl">
-            Intelligent Solutions for a <span className="text-cyan">Smarter Industry</span>
-          </h1>
+          <Heading className="font-display text-3xl font-semibold leading-[1.3] tracking-tight text-ink sm:text-4xl lg:text-5xl">
+            {fa ? <>نرم‌افزارهایی که <span className="text-cyan">در صنعت کار می‌کنند</span></> : <>Software that <span className="text-cyan">works on the shop floor</span></>}
+          </Heading>
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-ink-muted sm:text-base">
-            From electrical design to digital twin, our products help you build, monitor and optimize industrial infrastructure with confidence.
+            {fa
+              ? 'از طراحی خودکار تابلو برق تا ERP تولیدی و دستیار هوش مصنوعی؛ روی سرورهای خود شما.'
+              : 'From automatic switchboard design to manufacturing ERP and an AI assistant — on your own servers.'}
           </p>
         </div>
 
@@ -130,7 +134,7 @@ export function ProductCarousel() {
           onClickCapture={onClickCapture}
         >
           <div
-            className="relative mx-auto h-[460px] w-[86%] max-w-[860px] sm:h-[420px] sm:w-[80%] lg:h-[400px] lg:w-[62%]"
+            className="relative mx-auto h-[480px] w-[88%] max-w-[860px] sm:h-[420px] sm:w-[80%] lg:h-[420px] lg:w-[62%]"
             style={{ transformStyle: 'preserve-3d' }}
           >
             {slides.map((slide, index) => {
@@ -142,9 +146,9 @@ export function ProductCarousel() {
                   aria-hidden={!current}
                   style={{
                     ...cardStyle(offset),
-                    transition: `transform .7s ${EASE}, opacity .7s ${EASE}, filter .7s ${EASE}`,
+                    transition: `transform .7s ${EASE}, opacity .7s ${EASE}`,
                   }}
-                  className="absolute inset-0 overflow-hidden rounded-2xl border border-cyan/70 bg-space-1 shadow-[0_25px_70px_-15px_rgba(0,0,0,.8),0_0_70px_rgba(42,211,240,.13)] will-change-transform"
+                  className={`absolute inset-0 overflow-hidden rounded-2xl border bg-space-1 will-change-transform ${current ? 'border-cyan/70 shadow-[0_20px_50px_-20px_rgba(0,0,0,.8)]' : 'border-cyan/30'}`}
                 >
                   <Link
                     href={`/products/${slide.slug}`}
@@ -168,28 +172,31 @@ export function ProductCarousel() {
                       className="object-cover"
                     />
                     }
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#020713]/95 via-[#020713]/65 to-transparent" />
+                    <div className={`absolute inset-0 ${fa ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[#020713]/95 via-[#020713]/75 to-[#020713]/10`} />
+                    {/* On a phone the text covers the whole banner, and the banner carries words of its own. */}
+                    <div className="absolute inset-0 bg-[#020713]/55 sm:hidden" />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#020713]/75 via-transparent to-transparent" />
 
                     <div
                       style={{ transition: `opacity .5s ${EASE} ${current ? '.2s' : '0s'}` }}
-                      className={`absolute inset-y-0 left-0 flex w-full max-w-[500px] flex-col justify-center p-6 sm:p-10 lg:p-12 ${current ? 'opacity-100' : 'opacity-0'}`}
+                      dir={fa ? 'rtl' : 'ltr'}
+                      className={`absolute inset-y-0 flex w-full max-w-[520px] flex-col justify-center overflow-hidden p-6 sm:p-10 lg:p-11 ${fa ? 'right-0' : 'left-0'} ${current ? 'opacity-100' : 'opacity-0'}`}
                     >
-                      <span className="font-mono text-[9px] font-medium tracking-[0.28em] text-cyan sm:text-[10px]">
+                      <span className="truncate font-mono text-[9px] font-medium tracking-[0.2em] text-cyan sm:text-[10px]">
                         {slide.accent}
                       </span>
-                      <h2 className="mt-3 font-display text-2xl font-semibold tracking-tight text-white sm:text-4xl" data-no-translate>
+                      <h3 className="mt-3 font-display text-2xl font-semibold tracking-tight text-white sm:text-4xl" data-no-translate dir="ltr" style={{ textAlign: fa ? 'right' : 'left' }}>
                         {slide.name}
-                      </h2>
-                      <p className="mt-2 text-base font-medium text-cyan sm:text-lg">
+                      </h3>
+                      <p className="mt-2 line-clamp-2 text-base font-medium leading-7 text-cyan sm:text-lg">
                         {slide.tagline}
                       </p>
-                      <p className="mt-4 max-w-[430px] text-sm leading-6 text-white/75">
+                      <p className="mt-3 line-clamp-4 max-w-[440px] text-sm leading-6 text-white/75 sm:line-clamp-3">
                         {slide.summary}
                       </p>
-                      <span className="mt-6 inline-flex w-fit items-center gap-2 rounded-full border border-cyan bg-blue/80 px-5 py-2.5 text-sm font-medium text-white shadow-[0_0_28px_rgba(43,107,255,.35)] transition hover:bg-cyan hover:text-space-0">
-                        View Details
-                        <ArrowRightIcon className="h-4 w-4" />
+                      <span className="mt-6 inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-cyan bg-blue/80 px-5 py-2.5 text-sm font-medium text-white shadow-[0_0_28px_rgba(43,107,255,.35)] transition hover:bg-cyan hover:text-space-0">
+                        {fa ? 'مشاهده جزئیات' : 'View details'}
+                        <ArrowRightIcon className="h-4 w-4 rtl:-scale-x-100" />
                       </span>
                     </div>
 

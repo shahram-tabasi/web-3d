@@ -19,24 +19,14 @@ function buildNavigation(content: PublicContent): NavItem[] {
       to: '/products',
       children: content.products.map((p) => ({ label: p.short, to: `/products/${p.slug}`, note: p.tagline })),
     },
-    {
-      label: 'Solutions',
-      to: '/solutions',
-      children: [
-        { label: 'Multi-company organisation', to: '/solutions', note: 'One screen for every company you run.' },
-        { label: 'Specification to EPLAN', to: '/solutions', note: 'Document to design, without transcription.' },
-        { label: 'Knowledge that answers', to: '/solutions', note: 'Your documents, answered with citations.' },
-        { label: 'Process intelligence', to: '/solutions', note: 'Test changes on a calibrated model first.' },
-      ],
-    },
+    { label: 'Services', to: '/solutions' },
     {
       label: 'Industries',
       to: '/industries',
       children: content.industries.slice(0, 6).map((i) => ({ label: i.name, to: `/industries/${i.slug}` })),
     },
-    { label: 'Technology', to: '/technology' },
-    { label: 'Insights', to: '/insights' },
     { label: 'Company', to: '/company' },
+    { label: 'Contact', to: '/contact' },
   ];
 }
 

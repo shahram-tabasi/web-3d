@@ -110,19 +110,29 @@ export function MeteorShower() {
       }
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = 'source-over';
-      frame = requestAnimationFrame(draw);
+      // An empty sky costs nothing: sleep until the next meteor is due.
+      if (meteors.length) frame = requestAnimationFrame(draw);
+      else wake(next - now);
+    };
+
+    let timer = 0;
+    const wake = (ms: number) => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => { last = performance.now(); frame = requestAnimationFrame(draw); }, Math.max(0, ms));
     };
 
     const onVisibility = () => {
       cancelAnimationFrame(frame);
-      if (!document.hidden) { last = performance.now(); next = last + 1500; frame = requestAnimationFrame(draw); }
+      window.clearTimeout(timer);
+      if (!document.hidden) { last = performance.now(); next = last + 1500; wake(1500); }
     };
 
-    frame = requestAnimationFrame(draw);
+    wake(1800);
     window.addEventListener('resize', size);
     document.addEventListener('visibilitychange', onVisibility);
     return () => {
       cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
       window.removeEventListener('resize', size);
       document.removeEventListener('visibilitychange', onVisibility);
     };

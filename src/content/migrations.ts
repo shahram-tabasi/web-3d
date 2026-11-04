@@ -8,6 +8,7 @@ import { simodArticle } from './seed/article-simod';
 import { designSuiteUpdate, erpProduct, karaUpdate, productOrder } from './seed/products-2026-11';
 import { designToDeliveryArticle } from './seed/article-design-to-delivery';
 import type { SiteContent } from './types';
+import { dictionaries } from '../i18n-dictionaries';
 
 interface Migration {
   id: string;
@@ -137,6 +138,32 @@ export const MIGRATIONS: Migration[] = [
       // The share card with the new logo, unless the admin chose their own.
       if (!seo.ogImage || seo.ogImage === '/images/og-default.jpg') seo.ogImage = '/brand/og-sti.jpg';
       return { ...c, settings, seo };
+    },
+  },
+  {
+    // November 2026: the home page tells the brochure's story. The hero's
+    // English and Persian texts change unless the admin had rewritten them;
+    // its first button goes to the services page; Solutions becomes Services.
+    id: '2026-11-home-brochure',
+    apply: (c) => {
+      const old: Record<string, string> = { en: 'Engineering Intelligence', fa: 'هوشمندی مهندسی' };
+      const text = { ...c.hero.text };
+      for (const code of ['en', 'fa'] as const) {
+        if (!text[code] || text[code].headline === old[code]) text[code] = { ...dictionaries[code].hero };
+      }
+      const hero = { ...c.hero, text, primaryTo: c.hero.primaryTo === '/technology' ? '/solutions' : c.hero.primaryTo };
+      const pages = { ...c.pages };
+      if (pages.solutions?.seo.title === 'Solutions') {
+        pages.solutions = {
+          ...pages.solutions,
+          seo: {
+            ...pages.solutions.seo,
+            title: 'Services',
+            description: 'Strategic consulting, process engineering, digital solutions, industrial AI and smart retrofit of existing equipment — from diagnosis to a working system.',
+          },
+        };
+      }
+      return { ...c, hero, pages };
     },
   },
 ];

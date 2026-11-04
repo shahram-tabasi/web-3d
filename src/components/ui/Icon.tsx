@@ -1,7 +1,7 @@
 'use client';
 
 import React from "react";
-import { BrainCircuitIcon, DraftingCompassIcon, NetworkIcon, BoxesIcon, ReceiptTextIcon, UsersIcon, PenToolIcon, CloudIcon, BuildingIcon, ZapIcon, CpuIcon, LayoutPanelLeftIcon, FactoryIcon, FuelIcon, PickaxeIcon, RouteIcon, BoxIcon, LucideIcon } from "lucide-react";
+import { BrainCircuitIcon, DraftingCompassIcon, NetworkIcon, BoxesIcon, ReceiptTextIcon, UsersIcon, PenToolIcon, CloudIcon, BuildingIcon, ZapIcon, CpuIcon, LayoutPanelLeftIcon, FactoryIcon, FuelIcon, PickaxeIcon, RouteIcon, BoxIcon, CompassIcon, WorkflowIcon, CodeXmlIcon, DropletIcon, LucideIcon } from "lucide-react";
 const registry: Record<string, LucideIcon> = {
   ai: BrainCircuitIcon,
   drafting: DraftingCompassIcon,
@@ -18,7 +18,13 @@ const registry: Record<string, LucideIcon> = {
   factory: FactoryIcon,
   rig: FuelIcon,
   mining: PickaxeIcon,
-  bridge: RouteIcon
+  bridge: RouteIcon,
+  compass: CompassIcon,
+  workflow: WorkflowIcon,
+  code: CodeXmlIcon,
+  brain: BrainCircuitIcon,
+  cpu: CpuIcon,
+  drop: DropletIcon
 };
 export const iconNames = Object.keys(registry);
 interface IconProps {

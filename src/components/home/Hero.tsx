@@ -1,140 +1,140 @@
 'use client';
 
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { ArrowRightIcon } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { ArrowRightIcon, ChevronDownIcon } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { Starfield } from '../ui/Starfield';
 import { useContent } from '../../content/ContentProvider';
 import { useI18n } from '../../i18n';
+
+// The first screen. It should feel alive without costing frames: the picture
+// breathes (a slow CSS zoom), a soft light follows the pointer (one CSS
+// variable, written at most once a frame), the words arrive one after another
+// and the industry line turns over every few seconds. Everything that moves is
+// a transform or an opacity, so the compositor does the work.
+
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+function RotatingWord({ words }: { words: string[] }) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const t = window.setInterval(() => setI((v) => (v + 1) % words.length), 2800);
+    return () => window.clearInterval(t);
+  }, [words.length]);
+  return (
+    <span className="relative inline-grid h-[1.6em] overflow-hidden align-bottom">
+      {words.map((w, k) => (
+        <span
+          key={w}
+          aria-hidden={k !== i}
+          className="col-start-1 row-start-1 whitespace-nowrap text-gold transition-[transform,opacity] duration-700 ease-[cubic-bezier(.22,1,.36,1)]"
+          style={{ transform: `translateY(${k === i ? 0 : k === (i + words.length - 1) % words.length ? -110 : 110}%)`, opacity: k === i ? 1 : 0 }}
+        >
+          {w}
+        </span>
+      ))}
+    </span>
+  );
+}
 
 export function Hero() {
   const ref = useRef<HTMLElement | null>(null);
   const reduced = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
-  const mediaY = useTransform(scrollYProgress, [0, 1], ['0%', reduced ? '0%' : '9%']);
-  const mediaScale = useTransform(scrollYProgress, [0, 1], [1, reduced ? 1 : 1.06]);
-  const copyOpacity = useTransform(scrollYProgress, [0, 0.7], [1, reduced ? 1 : 0]);
-
   const { locale } = useI18n();
+  const fa = locale === 'fa';
   const { hero } = useContent();
   const text = hero.text[locale] ?? hero.text.en;
   const isVideo = /\.(mp4|webm)(\?|$)/i.test(hero.image);
-  const media = {
-    type: isVideo ? 'video' : 'image',
-    desktop: hero.image,
-    tablet: hero.image,
-    mobile: hero.mobileImage || hero.image,
-    videoMp4: /\.mp4/i.test(hero.image) ? hero.image : undefined,
-    videoWebm: /\.webm/i.test(hero.image) ? hero.image : undefined,
-    focal: hero.focal,
-  };
+
+  // The light that follows the pointer.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || reduced || !window.matchMedia('(pointer: fine)').matches) return;
+    let raf = 0;
+    const move = (e: PointerEvent) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const r = el.getBoundingClientRect();
+        el.style.setProperty('--mx', `${((e.clientX - r.left) / r.width) * 100}%`);
+        el.style.setProperty('--my', `${((e.clientY - r.top) / r.height) * 100}%`);
+      });
+    };
+    el.addEventListener('pointermove', move, { passive: true });
+    return () => { el.removeEventListener('pointermove', move); cancelAnimationFrame(raf); };
+  }, [reduced]);
+
+  const lead = fa ? 'در خدمت' : 'Working for';
+  const words = fa
+    ? ['صنایع تولیدی', 'برق و انرژی', 'نفت، گاز و معدن', 'شهرهای هوشمند']
+    : ['manufacturing', 'power & energy', 'oil, gas & mining', 'smart cities'];
+  const rise = (delay: number) => ({
+    initial: { opacity: 0, y: 22 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.8, delay, ease: EASE },
+  });
 
   return (
-    <section ref={ref} className="relative min-h-[100svh] w-full overflow-hidden bg-space-0" aria-label="SIMORGH" data-no-simorgh>
-      {/* Media layer — mobile gets its own composition band, desktop is full bleed 16:9 */}
-      <motion.div
-        style={{ y: mediaY, scale: mediaScale }}
-        className="absolute inset-x-0 top-0 h-[62svh] lg:inset-0 lg:h-full">
-        
-        {media.type === 'video' ?
-        <video
-          className="h-full w-full object-cover"
-          style={{ objectPosition: media.focal }}
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster={hero.mobileImage || undefined}>
-          
-            {media.videoWebm && <source src={media.videoWebm} type="video/webm" />}
-            {media.videoMp4 && <source src={media.videoMp4} type="video/mp4" />}
-          </video> :
-
-        <picture>
-            <source media="(min-width: 1024px)" srcSet={media.desktop} />
-            <source media="(min-width: 640px)" srcSet={media.tablet} />
-            <img
-            src={media.mobile}
-            alt="A luminous Simorgh formed of light and data rising between a human and an artificial intelligence above a digital Earth"
-            className="h-full w-full object-cover"
-            style={{ objectPosition: media.focal }}
-            fetchPriority="high" />
-          
+    <section
+      ref={ref}
+      className="relative min-h-[100svh] w-full overflow-hidden bg-space-0 [--mx:62%] [--my:40%]"
+      aria-label={fa ? 'سیمرغ' : 'SIMORGH'}
+      data-no-simorgh
+      data-no-translate={fa ? '' : undefined}
+    >
+      <div className="absolute inset-0 sim-kenburns">
+        {isVideo ? (
+          <video className="h-full w-full object-cover" style={{ objectPosition: hero.focal }} autoPlay muted loop playsInline poster={hero.mobileImage || undefined}>
+            <source src={hero.image} type={/\.webm/i.test(hero.image) ? 'video/webm' : 'video/mp4'} />
+          </video>
+        ) : (
+          <picture>
+            <source media="(min-width: 640px)" srcSet={hero.image} />
+            <img src={hero.mobileImage || hero.image} alt="" className="h-full w-full object-cover" style={{ objectPosition: hero.focal }} fetchPriority="high" />
           </picture>
-        }
-      </motion.div>
+        )}
+      </div>
 
-      <Starfield className="lg:opacity-70" />
+      {/* Scrims, then the pointer light and a slow aurora. */}
+      <div className="absolute inset-0 bg-gradient-to-t from-space-0 via-space-0/60 to-space-0/30" style={{ opacity: Math.min(1, hero.overlay + 0.4) }} />
+      <div aria-hidden className="pointer-events-none absolute inset-0 hidden bg-[radial-gradient(520px_circle_at_var(--mx)_var(--my),rgba(124,230,247,.13),transparent_70%)] lg:block" />
+      <div aria-hidden className="sim-aurora pointer-events-none absolute -inset-x-1/4 bottom-[-30%] h-[70%] opacity-60" />
 
-      {/* Scrims: vertical on mobile, directional on desktop so the Simorgh stays uncovered */}
-      <div
-        className="absolute inset-0 bg-gradient-to-t from-space-0 via-space-0/70 to-transparent lg:bg-gradient-to-r lg:from-space-0 lg:via-space-0/55 lg:to-transparent"
-        style={{ opacity: hero.overlay + 0.35 }} />
-      
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-space-0 to-transparent" />
-      <div className="pointer-events-none absolute inset-0 hidden lg:block lg:bg-[radial-gradient(60%_50%_at_58%_45%,rgba(42,211,240,0.10),transparent_70%)]" />
+      <div className="relative mx-auto flex min-h-[100svh] max-w-shell flex-col items-center justify-end px-5 pb-24 pt-28 text-center lg:justify-center lg:px-10 lg:pb-10">
+        <motion.div {...rise(0)} className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 backdrop-blur-md">
+          <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan opacity-60" /><span className="relative inline-flex h-2 w-2 rounded-full bg-cyan" /></span>
+          <span className="text-[12px] tracking-wide text-ink-muted">{text.eyebrow}</span>
+        </motion.div>
 
-      <div className="relative mx-auto flex min-h-[100svh] max-w-shell flex-col items-center justify-end px-5 pb-16 pt-28 text-center lg:justify-center lg:px-10 lg:pb-0">
-        <motion.div style={{ opacity: copyOpacity }} className="mx-auto max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-            className="flex items-center justify-center gap-3">
-            
-            <span className="h-px w-8 bg-cyan" />
-            <span className="font-mono text-[10.5px] tracking-label text-cyan">{text.eyebrow}</span>
-          </motion.div>
+        <h1 className="mt-7 max-w-5xl font-display text-[36px] font-semibold leading-[1.15] tracking-tight text-white sm:text-[52px] lg:text-[66px]">
+          <motion.span {...rise(0.1)} className="block">{text.headline}</motion.span>
+          <motion.span {...rise(0.22)} className="sim-shine block text-transparent [-webkit-background-clip:text] [background-clip:text] [background-image:linear-gradient(92deg,#7ce6f7,#5c8dff_40%,#e8b65a_60%,#7ce6f7_80%)] [background-size:200%_auto]">
+            {text.accent}
+          </motion.span>
+        </h1>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.34, delay: 0.06, ease: [0.23, 1, 0.32, 1] }}
-            className="mt-6 font-display text-[40px] font-semibold leading-[1.03] tracking-tight text-white sm:text-[54px] lg:text-[68px]">
-            
-            {text.headline}
-            <span className="block text-transparent [-webkit-background-clip:text] [background-clip:text] [background-image:linear-gradient(92deg,#7ce6f7,#5c8dff_55%,#a48bff)]">
-              {text.accent}
-            </span>
-          </motion.h1>
+        <motion.p {...rise(0.34)} className="mx-auto mt-6 max-w-2xl text-[15px] leading-[1.9] text-ink-muted sm:text-[17px]">
+          {text.subtitle}
+        </motion.p>
 
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.34, delay: 0.12, ease: [0.23, 1, 0.32, 1] }}
-            className="mx-auto mt-7 max-w-2xl text-[15px] leading-relaxed text-ink-muted sm:text-[17px]">
-            
-            {text.subtitle}
-          </motion.p>
+        <motion.div {...rise(0.44)} className="mt-6 text-[15px] text-ink sm:text-[17px]">
+          {lead} <RotatingWord words={words} />
+        </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.34, delay: 0.18, ease: [0.23, 1, 0.32, 1] }}
-            className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:items-center">
-            
-            <Button to={hero.primaryTo} size="lg">
-              {text.primary}
-              <ArrowRightIcon className="h-4 w-4" strokeWidth={1.6} />
-            </Button>
-            <Button to={hero.secondaryTo} size="lg" variant="outline">
-              {text.secondary}
-            </Button>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.26 }}
-            className="mt-12 font-mono text-[10.5px] tracking-label text-ink-faint">
-            
-            {text.kicker}
-          </motion.div>
+        <motion.div {...rise(0.54)} className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Button to={hero.primaryTo} size="lg">
+            {text.primary}
+            <ArrowRightIcon className="h-4 w-4 rtl:-scale-x-100" strokeWidth={1.6} />
+          </Button>
+          <Button to={hero.secondaryTo} size="lg" variant="outline">
+            {text.secondary}
+          </Button>
         </motion.div>
       </div>
 
+      <a href="#services" aria-label={fa ? 'ادامه' : 'Scroll down'} className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 text-ink-faint transition-colors hover:text-cyan sm:block">
+        <ChevronDownIcon className="h-6 w-6 animate-bounce" strokeWidth={1.4} />
+      </a>
       <div className="absolute inset-x-0 bottom-0 h-px sim-hairline" />
-    </section>);
-
+    </section>
+  );
 }

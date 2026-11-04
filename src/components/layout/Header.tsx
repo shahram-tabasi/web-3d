@@ -41,7 +41,7 @@ export function Header() {
     <>
       <header
         className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ease-sim ${
-        scrolled || mobileOpen ? 'border-b border-line bg-space-0/92 backdrop-blur-xl' : 'border-b border-transparent'}`
+        scrolled || mobileOpen ? 'border-b border-line bg-space-0/[0.96]' : 'border-b border-transparent'}`
         }
         onMouseLeave={() => setOpenMenu(null)}>
         
@@ -138,7 +138,7 @@ export function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
-            className="hidden border-t border-line bg-space-1/97 backdrop-blur-xl lg:block">
+            className="hidden border-t border-line bg-space-1 lg:block">
             
               <div className="mx-auto grid max-w-shell grid-cols-3 gap-x-10 gap-y-1 px-10 py-8">
                 {navigation.

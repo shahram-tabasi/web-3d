@@ -76,7 +76,7 @@ export function SimorghAIChat() {
 
   return (
     <div className="fixed bottom-5 end-5 z-[80]" dir="ltr" data-no-translate>
-      {!open && <button onClick={() => setOpen(true)} aria-label={copy.open} className="group relative flex h-16 w-16 items-center justify-center rounded-2xl border border-cyan/30 bg-space-1/95 text-cyan shadow-[0_12px_50px_rgba(42,211,240,.18)] backdrop-blur-xl transition hover:-translate-y-1 hover:border-cyan/70">
+      {!open && <button onClick={() => setOpen(true)} aria-label={copy.open} className="group relative flex h-16 w-16 items-center justify-center rounded-2xl border border-cyan/30 bg-space-1/95 text-cyan shadow-[0_12px_50px_rgba(42,211,240,.18)] transition hover:-translate-y-1 hover:border-cyan/70">
         <span className="absolute inset-1 rounded-[14px] border border-white/5" />
         <Image src="/simorgh/logo-mark-192.png" alt="" width={192} height={129} className="h-auto w-10 drop-shadow-[0_0_8px_rgba(160,215,255,0.55)] transition-transform group-hover:scale-110" />
         <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-space-0 bg-cyan" />
