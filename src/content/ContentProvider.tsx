@@ -25,6 +25,7 @@ function buildNavigation(content: PublicContent): NavItem[] {
       to: '/industries',
       children: content.industries.slice(0, 6).map((i) => ({ label: i.name, to: `/industries/${i.slug}` })),
     },
+    { label: 'Insights', to: '/insights' },
     { label: 'Company', to: '/company' },
     { label: 'Contact', to: '/contact' },
   ];

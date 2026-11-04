@@ -4,6 +4,8 @@
 // executed (react-markdown escapes it).
 
 import React from 'react';
+import { getRequestLocale } from '../seo/locale';
+import { FORMATS, topicOf } from '../data/topics';
 import Link from '../components/layout/LocaleLink';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -27,14 +29,18 @@ export async function ArticlePage({ article, thread }: { article: Article; threa
   const content = toPublic(await getContent());
   const related = content.articles.filter((a) => a.slug !== article.slug).slice(0, 3);
   const embed = article.video ? embedUrl(article.video) : null;
+  const fa = (await getRequestLocale()) === 'fa';
+  const topic = topicOf(article);
+  const topicName = fa ? topic.title.fa : topic.title.en;
+  const format = FORMATS[article.kind];
 
   return (
     <>
       <PageHero
-        eyebrow={`${article.kind.toUpperCase()} · ${article.category.toUpperCase()}`}
+        eyebrow={`${(format ? (fa ? format.fa : format.en) : article.kind).toUpperCase()} · ${topicName.toUpperCase()}`}
         title={article.title}
         lead={article.excerpt}
-        crumbs={[{ label: 'Insights', to: '/insights' }, { label: article.category }]}
+        crumbs={[{ label: fa ? 'مقالات' : 'Insights', to: '/insights' }, { label: topicName, to: `/insights?topic=${topic.key}` }]}
         image={article.cover || content.pages.insights.heroImage}
         flip={!article.cover && content.pages.insights.heroFlip}
       />

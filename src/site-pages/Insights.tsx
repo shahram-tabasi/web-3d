@@ -1,92 +1,139 @@
 'use client';
 
-import Link from '../components/layout/LocaleLink';
-import React, { useMemo, useState } from 'react';
-import { PlayIcon, FileTextIcon } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { SearchIcon } from 'lucide-react';
 import { PageHero } from '../components/ui/PageHero';
-import { Reveal } from '../components/ui/Reveal';
+import { Icon } from '../components/ui/Icon';
+import { Tilt } from '../components/fx/Tilt';
+import { ArticleCard } from '../components/insights/ArticleCard';
+import { TopicTabs, countByTopic } from '../components/insights/TopicTabs';
 import { useContent } from '../content/ContentProvider';
+import { useI18n } from '../i18n';
+import { FORMATS, TOPICS, topicOf } from '../data/topics';
 
+// The knowledge centre, arranged so nobody gets lost: the topics first, each
+// with what it covers and how many pieces it holds; then one bar to narrow by
+// topic, format and words; the newest piece large, the rest in a grid.
 export function Insights() {
-  const { pages, articles: insights } = useContent();
-  const [category, setCategory] = useState('All');
-  const categories = useMemo(
-    () => ['All', ...Array.from(new Set(insights.map((i) => i.category).filter(Boolean)))],
-    [insights]
-  );
+  const { pages, articles } = useContent();
+  const fa = useI18n().locale === 'fa';
+  const [topic, setTopic] = useState('all');
+  const [format, setFormat] = useState('all');
+  const [query, setQuery] = useState('');
 
-  const filtered = useMemo(
-    () => category === 'All' ? insights : insights.filter((i) => i.category === category),
-    [category, insights]
-  );
+  // /insights?topic=industrial-ai opens on that topic.
+  useEffect(() => {
+    const t = new URLSearchParams(window.location.search).get('topic');
+    if (t && TOPICS.some((x) => x.key === t)) setTopic(t);
+  }, []);
+  const choose = (t: string) => {
+    setTopic(t);
+    const url = new URL(window.location.href);
+    if (t === 'all') url.searchParams.delete('topic'); else url.searchParams.set('topic', t);
+    window.history.replaceState(null, '', url);
+  };
+
+  const counts = useMemo(() => countByTopic(articles, (a) => topicOf(a).key), [articles]);
+  const formats = useMemo(() => Array.from(new Set(articles.map((a) => a.kind))), [articles]);
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return articles.filter((a) =>
+      (topic === 'all' || topicOf(a).key === topic) &&
+      (format === 'all' || a.kind === format) &&
+      (!q || `${a.title} ${a.excerpt}`.toLowerCase().includes(q)));
+  }, [articles, topic, format, query]);
+  const [featured, ...rest] = filtered;
 
   return (
     <>
-      <PageHero
-        eyebrow="KNOWLEDGE CENTRE"
-        title="Insights"
-        lead="Technical articles, case studies, recorded walkthroughs and whitepapers from the engineering teams building SIMORGH."
-        crumbs={[{ label: 'Insights' }]}
-        image={pages.insights.heroImage}
-        flip={pages.insights.heroFlip} />
-      
+      <div data-no-translate={fa ? '' : undefined}>
+        <PageHero
+          eyebrow={fa ? 'مرکز دانش' : 'KNOWLEDGE CENTRE'}
+          title={fa ? 'مقالات سیمرغ' : 'Insights'}
+          lead={fa
+            ? 'آنچه در پروژه‌ها یاد گرفته‌ایم، دسته‌بندی‌شده بر اساس حوزه‌های کاری ما: هوش مصنوعی صنعتی، اتوماسیون مهندسی، مهندسی فرآیند، ERP و IoT.'
+            : 'What we learn on projects, arranged by the areas we work in: industrial AI, engineering automation, process engineering, ERP and IoT.'}
+          crumbs={[{ label: fa ? 'مقالات' : 'Insights' }]}
+          image={pages.insights.heroImage}
+          flip={pages.insights.heroFlip} />
+      </div>
 
-      <section className="bg-space-0">
-        <div className="mx-auto max-w-shell px-5 py-16 lg:px-10 lg:py-20">
-          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter insights by category">
-            {categories.map((c) =>
-            <button
-              key={c}
-              onClick={() => setCategory(c)}
-              aria-pressed={c === category}
-              className={`border px-3.5 py-2 font-mono text-[10.5px] tracking-label transition-colors duration-150 ease-sim ${
-              c === category ?
-              'border-cyan/60 text-cyan' :
-              'border-line text-ink-faint hover:border-blue/50 hover:text-ink-muted'}`
-              }>
-              
-                {c.toUpperCase()}
-              </button>
-            )}
+      {/* The topics at a glance. */}
+      <section className="border-b border-line bg-space-0" data-no-translate={fa ? '' : undefined}>
+        <div className="mx-auto max-w-shell px-5 py-16 lg:px-10">
+          <h2 className="text-[13px] text-ink-faint">{fa ? 'موضوع‌ها' : 'Topics'}</h2>
+          <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {TOPICS.map((t, i) => {
+              const n = counts[t.key] ?? 0;
+              const on = topic === t.key;
+              return (
+                <motion.li key={t.key} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}>
+                  <Tilt className="h-full rounded-[18px]" max={5}>
+                    <button type="button" onClick={() => { choose(on ? 'all' : t.key); document.getElementById('articles')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
+                      className={`flex h-full w-full items-start gap-4 rounded-[18px] border p-5 text-start transition-colors ${on ? 'bg-space-2' : 'border-line bg-space-1/80 hover:bg-space-2/70'}`}
+                      style={on ? { borderColor: t.color } : undefined}>
+                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl" style={{ background: `${t.color}1f`, color: t.color }}><Icon name={t.icon} className="h-5 w-5" /></span>
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-center justify-between gap-2">
+                          <span className="text-[15.5px] font-semibold text-ink">{fa ? t.title.fa : t.title.en}</span>
+                          <span className="text-[12px] tabular-nums text-ink-faint">{n ? (fa ? `${n.toLocaleString('fa-IR')} مطلب` : `${n} ${n === 1 ? 'piece' : 'pieces'}`) : (fa ? 'به‌زودی' : 'soon')}</span>
+                        </span>
+                        <span className="mt-1.5 block text-[13px] leading-relaxed text-ink-muted">{fa ? t.blurb.fa : t.blurb.en}</span>
+                      </span>
+                    </button>
+                  </Tilt>
+                </motion.li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+
+      <section id="articles" className="scroll-mt-20 bg-space-0">
+        <div className="mx-auto max-w-shell px-5 py-14 lg:px-10 lg:py-16">
+          {/* One bar for everything that narrows the list; it stays in reach while scrolling. */}
+          <div className="sticky top-[72px] z-20 -mx-5 border-b border-line bg-space-0/[0.97] px-5 py-4 lg:mx-0 lg:rounded-2xl lg:border lg:px-5" data-no-translate={fa ? '' : undefined}>
+            <TopicTabs id="page" value={topic} onChange={choose} counts={counts} fa={fa} />
+            <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-wrap gap-1.5">
+                {['all', ...formats].map((f) => (
+                  <button key={f} type="button" onClick={() => setFormat(f)} aria-pressed={format === f}
+                    className={`rounded-full px-3 py-1.5 text-[12.5px] transition-colors ${format === f ? 'bg-white/10 text-ink' : 'text-ink-faint hover:text-ink'}`}>
+                    {f === 'all' ? (fa ? 'همه‌ی قالب‌ها' : 'All formats') : (fa ? FORMATS[f]?.fa : FORMATS[f]?.en) ?? f}
+                  </button>
+                ))}
+              </div>
+              <label className="flex items-center gap-2 rounded-full border border-line px-4 py-2 sm:w-72">
+                <SearchIcon className="h-4 w-4 text-ink-faint" />
+                <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={fa ? 'جستجو در مقالات' : 'Search articles'} className="w-full bg-transparent text-[13.5px] text-ink outline-none placeholder:text-ink-faint" />
+              </label>
+            </div>
           </div>
 
-          <div className="mt-12 border-t border-line">
-            {filtered.length === 0 &&
-            <p className="py-16 text-[14px] text-ink-faint">No published items in this category yet.</p>
-            }
-            {filtered.map((item, i) =>
-            <Reveal key={item.slug} delay={Math.min(i * 0.04, 0.2)}>
-                <article className="border-b border-line">
-                <Link href={`/insights/${item.slug}`} className="group grid gap-5 py-9 lg:grid-cols-[170px_1fr_120px] lg:items-start lg:gap-12">
-                  <div>
-                  <div className="flex items-center gap-2 font-mono text-[10px] tracking-label text-cyan/80">
-                      {item.kind === 'Video' ?
-                    <PlayIcon className="h-3.5 w-3.5" strokeWidth={1.6} aria-hidden="true" /> :
-  
-                    <FileTextIcon className="h-3.5 w-3.5" strokeWidth={1.6} aria-hidden="true" />
-                    }
-                      {item.kind.toUpperCase()}
-                    </div>
-                    {item.cover &&
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.cover} alt="" loading="lazy" className="mt-4 aspect-[16/10] w-full rounded border border-line object-cover" />
-                    }
-                  </div>
-                  <div>
-                    <h2 className="max-w-3xl font-display text-xl font-semibold leading-snug tracking-tight text-ink transition-colors duration-200 ease-sim group-hover:text-cyan-soft lg:text-[24px]">
-                      {item.title}
-                    </h2>
-                    <p className="mt-3 max-w-3xl text-[14px] leading-relaxed text-ink-muted">{item.excerpt}</p>
-                    <div className="mt-5 flex flex-wrap items-center gap-3 font-mono text-[10px] text-ink-faint">
-                      <span>{item.category.toUpperCase()}</span>
-                      <span className="h-px w-5 bg-line" />
-                      <span>{item.readTime}</span>
-                    </div>
-                  </div>
-                  <div className="font-mono text-[11px] text-ink-faint lg:text-right">{item.date}</div>
-                </Link>
-                </article>
-              </Reveal>
+          <div className="mt-10">
+            {!featured && (
+              <p className="rounded-2xl border border-dashed border-line py-16 text-center text-[14px] text-ink-faint" data-no-translate={fa ? '' : undefined}>
+                {fa ? 'در این دسته هنوز مطلبی منتشر نشده است.' : 'Nothing published here yet.'}
+              </p>
+            )}
+            <AnimatePresence mode="popLayout">
+              {featured && (
+                <motion.div key={`f-${featured.slug}`} layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
+                  <ArticleCard item={featured} big />
+                </motion.div>
+              )}
+            </AnimatePresence>
+            {rest.length > 0 && (
+              <div className="mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                <AnimatePresence mode="popLayout">
+                  {rest.map((a, i) => (
+                    <motion.div key={a.slug} layout initial={{ opacity: 0, y: 24, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }} transition={{ duration: 0.45, delay: Math.min(i * 0.05, 0.25), ease: [0.22, 1, 0.36, 1] }}>
+                      <ArticleCard item={a} />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
             )}
           </div>
         </div>

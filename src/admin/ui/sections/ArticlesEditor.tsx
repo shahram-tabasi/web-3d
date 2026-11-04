@@ -8,6 +8,7 @@ import type { Article } from '../../../content/types';
 import { patcher, slugify, useAdmin } from '../AdminStore';
 import { Area, Btn, Card, Field, Grid, ImageField, PageTitle, SeoFields, Select, StatusBadge, Text, inputCls } from '../fields';
 import { MediaPicker } from '../MediaPicker';
+import { TOPICS, topicOf } from '../../../data/topics';
 
 const KINDS: { value: Article['kind']; label: string }[] = [
   { value: 'Technical Article', label: 'مقاله فنی' },
@@ -21,7 +22,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 
 function blankArticle(n: number): Article {
   return {
-    slug: `new-article-${n}`, title: '', kind: 'Technical Article', category: 'Engineering AI', readTime: '5 min', excerpt: '',
+    slug: `new-article-${n}`, title: '', kind: 'Technical Article', category: 'industrial-ai', readTime: '5 min', excerpt: '',
     date: today(), cover: '', author: 'SIMORGH', body: '', video: '', status: 'draft',
     seo: { title: '', description: '', keywords: '', image: '' },
   };
@@ -75,7 +76,7 @@ export function ArticlesEditor() {
             <div className="h-12 w-20 shrink-0 overflow-hidden rounded bg-space-3">{a.cover && <img src={a.cover} alt="" className="h-full w-full object-cover" />}</div>
             <div className="min-w-0 flex-1">
               <div className="truncate text-[14px] text-ink" dir="auto">{a.title || 'بدون عنوان'}</div>
-              <div className="mt-0.5 text-[11.5px] text-ink-faint">{KINDS.find((k) => k.value === a.kind)?.label} · {a.category} · <span dir="ltr">{a.date}</span>{!a.body.trim() && ' · بدون متن کامل'}</div>
+              <div className="mt-0.5 text-[11.5px] text-ink-faint">{KINDS.find((k) => k.value === a.kind)?.label} · {topicOf(a).title.fa} · <span dir="ltr">{a.date}</span>{!a.body.trim() && ' · بدون متن کامل'}</div>
             </div>
             <StatusBadge status={a.status} />
           </button>
@@ -106,7 +107,7 @@ function ArticleForm({ article, onChange, onBack, onDelete }: { article: Article
         <Grid cols={3}>
           <Text label="نامک (slug)" value={article.slug} onChange={(v) => p('slug')(slugify(v))} ltr hint={`/insights/${article.slug}`} />
           <Select label="نوع" value={article.kind} onChange={p('kind')} options={KINDS} />
-          <Text label="دسته‌بندی" value={article.category} onChange={p('category')} />
+          <Select label="موضوع" value={topicOf(article).key} onChange={p('category')} options={TOPICS.map((t) => ({ value: t.key, label: t.title.fa }))} hint="مقاله در صفحه مقالات زیر این موضوع می‌آید." />
           <Text label="تاریخ انتشار" type="date" value={article.date} onChange={p('date')} ltr />
           <Text label="زمان مطالعه" value={article.readTime} onChange={p('readTime')} hint={`پیشنهاد: ${Math.max(1, Math.round(words / 200))} min`} />
           <Text label="نویسنده" value={article.author} onChange={p('author')} />

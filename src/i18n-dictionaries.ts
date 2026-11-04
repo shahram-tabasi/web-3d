@@ -23,26 +23,26 @@ export const dictionaries: Record<Locale, Dictionary> = {
     nav: { Services: 'Services', Contact: 'Contact', Products: 'Products', Solutions: 'Solutions', Industries: 'Industries', Technology: 'Technology', Insights: 'Insights', Company: 'Company' },
     common: { requestDemo: 'Request Demo', exploreTechnology: 'Explore Our Technology', exploreProducts: 'Explore Products', home: 'Home' },
     hero: {
-      eyebrow: 'Simorgh Intelligent Iranian Technology',
-      headline: 'Bridging industry, process engineering',
-      accent: 'and advanced AI',
-      subtitle: 'Strategic consulting, process engineering, digital solutions and industrial AI — from the first diagnosis to a system working on your site.',
+      eyebrow: 'SIMORGH INTELLIGENT TECHNOLOGY',
+      headline: 'Engineering Intelligence',
+      accent: 'for a Smarter World',
+      subtitle: 'AI-powered software, intelligent engineering systems, digital twins and smart infrastructure for industry, utilities and cities.',
       primary: 'Our services',
       secondary: 'Products',
-      kicker: 'CONSULTING · PROCESS ENGINEERING · DIGITAL SOLUTIONS · INDUSTRIAL AI'
+      kicker: 'AI · INDUSTRY · DIGITAL TWIN · SMART GRID'
     }
   },
   fa: {
     nav: { Services: 'خدمات', Contact: 'تماس با ما', Products: 'محصولات', Solutions: 'راهکارها', Industries: 'صنایع', Technology: 'فناوری', Insights: 'مقالات', Company: 'درباره ما' },
     common: { requestDemo: 'درخواست دمو', exploreTechnology: 'فناوری سیمرغ', exploreProducts: 'مشاهده محصولات', home: 'خانه' },
     hero: {
-      eyebrow: 'سیمرغ فن‌آوری هوشمند ایرانیان',
-      headline: 'پل ارتباطی میان صنعت، مهندسی فرآیند',
-      accent: 'و هوش مصنوعی پیشرفته',
-      subtitle: 'مشاوره‌ی راهبردی، مهندسی فرآیند، توسعه‌ی راهکارهای دیجیتال و هوش مصنوعی صنعتی؛ از عارضه‌یابی تا سیستمی که در محل شما کار می‌کند.',
+      eyebrow: 'فناوری هوشمند سیمرغ',
+      headline: 'هوشمندی مهندسی',
+      accent: 'برای جهانی هوشمندتر',
+      subtitle: 'نرم‌افزارهای مبتنی بر هوش مصنوعی، سیستم‌های مهندسی هوشمند، دوقلوی دیجیتال و زیرساخت هوشمند برای صنعت، انرژی و شهرها.',
       primary: 'خدمات ما',
       secondary: 'محصولات',
-      kicker: 'مشاوره · مهندسی فرآیند · راهکار دیجیتال · هوش مصنوعی صنعتی'
+      kicker: 'هوش مصنوعی · صنعت · دوقلوی دیجیتال · شبکه هوشمند'
     }
   },
   ar: {

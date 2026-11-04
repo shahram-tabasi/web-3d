@@ -9,6 +9,7 @@ import { AutoTranslate } from '../i18n/AutoTranslate';
 import { SimorghAIChat } from '../ai/SimorghAIChat';
 import { Starfield } from '../ui/Starfield';
 import { MeteorShower } from '../ui/MeteorShower';
+import { ScrollProgress } from '../fx/ScrollProgress';
 
 export function SiteLayout({ children, locale }: { children: React.ReactNode; locale?: Locale }) {
   const pathname = usePathname();
@@ -24,6 +25,7 @@ export function SiteLayout({ children, locale }: { children: React.ReactNode; lo
         <Starfield fixed />
       </div>
       <div className="relative flex min-h-screen w-full flex-col">
+      <ScrollProgress />
       <Header />
       <AutoTranslate />
       <main className="flex-1">

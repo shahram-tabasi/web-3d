@@ -166,3 +166,12 @@ footer.bg-space-1 { background-color: rgb(7 11 24 / 0.6); }
 @media (prefers-reduced-motion: reduce) {
   .sim-kenburns, .sim-aurora, .sim-shine, .sim-marquee { animation: none; }
 }
+
+/* Tilt cards (components/fx/Tilt): eased back when the pointer leaves, a light under the pointer. */
+.sim-tilt { transition: transform .5s cubic-bezier(.22,1,.36,1); transform-style: preserve-3d; will-change: transform; position: relative; }
+.sim-tilt:hover { transition-duration: .12s; }
+.sim-tilt::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
+  background: radial-gradient(360px circle at var(--lx, 50%) var(--ly, 50%), rgba(255,255,255,.08), transparent 60%);
+}
+.sim-tilt:hover::after { opacity: 1; }

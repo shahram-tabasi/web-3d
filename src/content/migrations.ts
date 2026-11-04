@@ -9,6 +9,7 @@ import { designSuiteUpdate, erpProduct, karaUpdate, productOrder } from './seed/
 import { designToDeliveryArticle } from './seed/article-design-to-delivery';
 import type { SiteContent } from './types';
 import { dictionaries } from '../i18n-dictionaries';
+import { topicOf } from '../data/topics';
 
 interface Migration {
   id: string;
@@ -164,6 +165,25 @@ export const MIGRATIONS: Migration[] = [
         };
       }
       return { ...c, hero, pages };
+    },
+  },
+  {
+    // November 2026, second thoughts: the first screen goes back to its own
+    // slogan ("Engineering Intelligence for a Smarter World"), the brochure's
+    // line moving to a band of its own below it; the buttons stay. Articles
+    // get one of the fixed topics (data/topics.ts) instead of free text.
+    id: '2026-11-slogan-back-topics',
+    apply: (c) => {
+      const brochure: Record<string, string> = { en: 'Bridging industry, process engineering', fa: 'پل ارتباطی میان صنعت، مهندسی فرآیند' };
+      const text = { ...c.hero.text };
+      for (const code of ['en', 'fa'] as const) {
+        if (text[code]?.headline === brochure[code]) {
+          const d = dictionaries[code].hero;
+          text[code] = { ...text[code], eyebrow: d.eyebrow, headline: d.headline, accent: d.accent, subtitle: d.subtitle, kicker: d.kicker };
+        }
+      }
+      const articles = c.articles.map((a) => ({ ...a, category: topicOf(a).key }));
+      return { ...c, hero: { ...c.hero, text }, articles };
     },
   },
 ];
