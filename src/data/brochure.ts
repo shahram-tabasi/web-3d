@@ -6,8 +6,8 @@ export type Bi = { en: string; fa: string };
 
 export const ABOUT: { lead: Bi; belief: Bi; points: Bi[] } = {
   lead: {
-    en: 'We are a group of engineering and technology specialists. By combining deep industrial knowledge with modern artificial intelligence, we solve the hardest infrastructure, industrial and organisational problems.',
-    fa: 'ما در «سیمرغ» گروهی از متخصصان مهندسی و فناوری هستیم که با تلفیق دانش عمیق صنعتی و فناوری‌های نوین هوش مصنوعی، پیچیده‌ترین چالش‌های زیرساختی، صنعتی و سازمانی را حل می‌کنیم.',
+    en: 'Simorgh AI (Simorgh Intelligent Iranian Technology) is a group of engineering and technology specialists. By combining deep industrial knowledge with modern artificial intelligence, we solve the hardest infrastructure, industrial and organisational problems.',
+    fa: 'ما در «سیمرغ AI» (سیمرغ فن‌آوری هوشمند ایرانیان) گروهی از متخصصان مهندسی و فناوری هستیم که با تلفیق دانش عمیق صنعتی و فناوری‌های نوین هوش مصنوعی، پیچیده‌ترین چالش‌های زیرساختی، صنعتی و سازمانی را حل می‌کنیم.',
   },
   belief: {
     en: 'Real digitalisation happens when engineering processes are understood correctly and precisely — and intelligent tools are put to work for productivity.',

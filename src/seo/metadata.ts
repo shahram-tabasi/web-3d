@@ -10,8 +10,14 @@ import { LOCALES, localizePath, OG_LOCALE } from '../i18n-routing';
 import { getRequestLocale } from './locale';
 import { FA_PAGES, titleTemplate, translator } from './localized';
 
+/**
+ * The one public address every canonical link, sitemap entry and hreflang
+ * names. The deployment's NEXT_PUBLIC_SITE_URL wins over the admin setting: a
+ * stale setting (https://www.… while www redirects to the bare domain) would
+ * point Google at addresses that only redirect.
+ */
 export function siteUrl(c: SiteContent) {
-  return (c.settings.siteUrl || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/+$/, '');
+  return (process.env.NEXT_PUBLIC_SITE_URL || c.settings.siteUrl || 'http://localhost:3000').replace(/\/+$/, '');
 }
 
 export function absoluteUrl(c: SiteContent, path: string) {

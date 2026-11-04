@@ -23,7 +23,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     nav: { Services: 'Services', Contact: 'Contact', Products: 'Products', Solutions: 'Solutions', Industries: 'Industries', Technology: 'Technology', Insights: 'Insights', Company: 'Company' },
     common: { requestDemo: 'Request Demo', exploreTechnology: 'Explore Our Technology', exploreProducts: 'Explore Products', home: 'Home' },
     hero: {
-      eyebrow: 'SIMORGH INTELLIGENT TECHNOLOGY',
+      eyebrow: 'Simorgh AI · Intelligent Iranian Technology',
       headline: 'Engineering Intelligence',
       accent: 'for a Smarter World',
       subtitle: 'AI-powered software, intelligent engineering systems, digital twins and smart infrastructure for industry, utilities and cities.',
@@ -36,7 +36,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     nav: { Services: 'خدمات', Contact: 'تماس با ما', Products: 'محصولات', Solutions: 'راهکارها', Industries: 'صنایع', Technology: 'فناوری', Insights: 'مقالات', Company: 'درباره ما' },
     common: { requestDemo: 'درخواست دمو', exploreTechnology: 'فناوری سیمرغ', exploreProducts: 'مشاهده محصولات', home: 'خانه' },
     hero: {
-      eyebrow: 'فناوری هوشمند سیمرغ',
+      eyebrow: 'سیمرغ AI · فن‌آوری هوشمند ایرانیان',
       headline: 'هوشمندی مهندسی',
       accent: 'برای جهانی هوشمندتر',
       subtitle: 'نرم‌افزارهای مبتنی بر هوش مصنوعی، سیستم‌های مهندسی هوشمند، دوقلوی دیجیتال و زیرساخت هوشمند برای صنعت، انرژی و شهرها.',

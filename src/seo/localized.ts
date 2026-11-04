@@ -54,8 +54,8 @@ export async function translator(c: SiteContent, locale: Locale) {
 /** Hand-written Persian titles and descriptions for the fixed pages. */
 export const FA_PAGES: Record<PageKey, { title: string; description: string; keywords?: string }> = {
   home: {
-    title: `${BRAND.nameFa} | هوش مصنوعی صنعتی و اتوماسیون مهندسی`,
-    description: 'سیمرغ فن‌آوری هوشمند ایرانیان: پل ارتباطی میان صنعت، مهندسی فرآیند و هوش مصنوعی. مشاوره راهبردی، اتوماسیون طراحی تابلو برق، ERP صنعتی، دوقلوی دیجیتال و IoT.',
+    title: `سیمرغ AI | ${BRAND.nameFa}، هوش مصنوعی صنعتی و اتوماسیون مهندسی`,
+    description: 'سیمرغ AI (سیمرغ فن‌آوری هوشمند ایرانیان): پل ارتباطی میان صنعت، مهندسی فرآیند و هوش مصنوعی. مشاوره راهبردی، اتوماسیون طراحی تابلو برق، ERP صنعتی، دوقلوی دیجیتال و IoT.',
     keywords: 'سیمرغ, سیمرغ AI, سیمرغ فن آوری هوشمند ایرانیان, هوش مصنوعی صنعتی, اتوماسیون مهندسی, طراحی تابلو برق, ERP صنعتی, دوقلوی دیجیتال',
   },
   products: {
@@ -97,7 +97,7 @@ export const FA_PAGES: Record<PageKey, { title: string; description: string; key
 
 /** "%s | SIMORGH" in each language. */
 export function titleTemplate(c: SiteContent, locale: Locale) {
-  return locale === 'fa' ? `%s | ${BRAND.short_fa}` : c.seo.titleTemplate;
+  return locale === 'fa' ? '%s | سیمرغ AI' : c.seo.titleTemplate;
 }
 
 export function defaultTitle(c: SiteContent, locale: Locale) {

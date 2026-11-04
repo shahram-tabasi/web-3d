@@ -93,6 +93,16 @@ export async function restoreBackup(name: string) {
   return saveContent(merge(defaultContent(), data));
 }
 
+/**
+ * A profile someone actually filled in. The empty templates the site ships
+ * with ("عضو تیم 2"), or a name of just "-" or ".", without a photo, stay off
+ * the page even when published by mistake.
+ */
+function isRealMember(m: { name: string; nameFa: string; photo: string }) {
+  const named = (v: string) => /[\p{L}]{2,}/u.test(v) && !/^عضو تیم\s*[\d۰-۹]*$/.test(v.trim());
+  return !!m.photo || named(m.name) || named(m.nameFa);
+}
+
 /** Published items only, article bodies left out: what every page ships to the browser. */
 export function toPublic(content: SiteContent): PublicContent {
   const live = <T extends { status?: string }>(items: T[]) => items.filter((i) => i.status !== 'draft');
@@ -100,7 +110,7 @@ export function toPublic(content: SiteContent): PublicContent {
     ...content,
     products: live(content.products).sort((a, b) => a.order - b.order),
     industries: live(content.industries).sort((a, b) => a.order - b.order),
-    team: live(content.team ?? []).sort((a, b) => a.order - b.order),
+    team: live(content.team ?? []).filter(isRealMember).sort((a, b) => a.order - b.order),
     articles: live(content.articles)
       .sort((a, b) => b.date.localeCompare(a.date))
       .map(({ body: _body, ...rest }) => rest),

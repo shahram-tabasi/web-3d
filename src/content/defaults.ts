@@ -46,7 +46,7 @@ const page = (heroImage: string, title: string, description: string, heroFlip = 
   ({ heroImage, heroFlip, seo: { title, description, keywords: '', image: '' } });
 
 const pages: Record<PageKey, PageContent> = {
-  home: page(BACKGROUNDS.earthRising, 'SIMORGH — Engineering Intelligence for a Smarter World',
+  home: page(BACKGROUNDS.earthRising, 'Simorgh AI — Industrial AI & Engineering Automation | Simorgh Intelligent Iranian Technology',
     'AI-powered software, intelligent engineering systems, digital twins and smart infrastructure for industry, utilities and cities.'),
   products: page(BACKGROUNDS.earthLight, 'Products',
     'SIMORGH Design Suite, Grid, Digital Twin, Kara, Shop, Draw and Cloud: seven products sharing one intelligence layer, from electrical design to digital twin.'),
@@ -71,8 +71,8 @@ export function defaultContent(): SiteContent {
     version: 1,
     updatedAt: new Date(0).toISOString(),
     settings: {
-      siteName: 'SIMORGH',
-      siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.simorghai.com',
+      siteName: 'Simorgh AI',
+      siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://simorghai.com',
       legalName: 'Simorgh Intelligent Iranian Technology Co.',
       legalNameFa: 'سیمرغ فن‌آوری هوشمند ایرانیان',
       email: 'info@simorghai.com',
@@ -84,8 +84,8 @@ export function defaultContent(): SiteContent {
       verification: { google: '', bing: '', yandex: '' },
     },
     seo: {
-      defaultTitle: 'SIMORGH — Engineering Intelligence for a Smarter World',
-      titleTemplate: '%s | SIMORGH',
+      defaultTitle: 'Simorgh AI — Industrial AI & Engineering Automation | Simorgh Intelligent Iranian Technology',
+      titleTemplate: '%s | Simorgh AI',
       description:
         'SIMORGH builds AI-powered engineering software, digital twins and smart-grid intelligence for industry, utilities and cities — Design Suite, Grid, Digital Twin, Kara, Shop, Draw and Cloud.',
       keywords:

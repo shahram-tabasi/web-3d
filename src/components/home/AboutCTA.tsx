@@ -61,7 +61,7 @@ export function AboutCTA() {
           <ul className="mt-7 grid gap-3 text-[14.5px]" dir="ltr">
             <li><a href={`mailto:${email}`} className="flex items-center gap-3 text-ink hover:text-cyan-soft"><MailIcon className="h-4 w-4 text-cyan" />{email}</a></li>
             <li><a href={`mailto:${sales}`} className="flex items-center gap-3 text-ink hover:text-cyan-soft"><MailIcon className="h-4 w-4 text-cyan" />{sales}</a></li>
-            <li className="flex items-center gap-3 text-ink-muted"><GlobeIcon className="h-4 w-4 text-cyan" />www.simorghai.com</li>
+            <li className="flex items-center gap-3 text-ink-muted"><GlobeIcon className="h-4 w-4 text-cyan" />simorghai.com</li>
           </ul>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button to="/request-demo" size="lg">

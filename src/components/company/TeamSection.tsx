@@ -75,31 +75,24 @@ function Portrait({ m, name, className = '', eager = false }: { m: TeamMember; n
 const SWIPE = 50;
 const EASE = 'cubic-bezier(.22,.61,.36,1)';
 
-/** Where a card sits relative to the centre one: 0 centre, ±1 sides, else behind. */
-function offsetOf(i: number, active: number, count: number) {
-  const half = Math.floor(count / 2);
-  let o = i - active;
-  if (o > half) o -= count;
-  if (o < -half) o += count;
-  return o;
-}
-
 /**
  * Small cards on the inside of a tight cylinder, the reader at its axis: the
  * front card faces them, each card further round turns toward them and comes
  * nearer. `width` is a card's width in pixels; the radius follows from it.
  */
 function cardStyle(offset: number, width: number, reduce: boolean): React.CSSProperties {
-  const radius = width * 1.45;
-  const step = ((width * 1.1) / radius) * (180 / Math.PI);
+  const radius = width * 1.9;
+  const step = ((width * 1.06) / radius) * (180 / Math.PI);
   const far = Math.abs(offset);
   const transform = reduce
     ? `translateX(${offset * 112}%)`
     : `translateZ(${radius}px) rotateY(${-offset * step}deg) translateZ(${-radius}px)`;
   return {
     transform,
-    opacity: far === 0 ? 1 : far === 1 ? 0.8 : far === 2 ? 0.5 : 0,
+    opacity: far === 0 ? 1 : far === 1 ? 0.85 : far === 2 ? 0.6 : 0,
     pointerEvents: far > 2 ? 'none' : undefined,
+    // Cards waiting out of sight are not drawn at all.
+    visibility: far > 2 ? 'hidden' : 'visible',
   };
 }
 
@@ -164,7 +157,9 @@ export function TeamSection() {
   const fa = useI18n().locale === 'fa';
   const t = fa ? COPY.fa : COPY.en;
   const reduce = !!useReducedMotion();
-  const [active, setActive] = useState(0);
+  // An unbounded position: the ring always turns one card at a time the short
+  // way, and wraps round without any card crossing the others.
+  const [pos, setPos] = useState(0);
   const [open, setOpen] = useState(false);
   const count = team?.length ?? 0;
   const dragStart = useRef<{ x: number; y: number } | null>(null);
@@ -179,21 +174,33 @@ export function TeamSection() {
     return () => ro.disconnect();
   }, []);
 
-  const show = useCallback((n: number) => { if (count) setActive(((n % count) + count) % count); }, [count]);
-  const next = () => show(active + 1);
-  const prev = () => show(active - 1);
+  const mod = (n: number) => (count ? ((n % count) + count) % count : 0);
+  const active = mod(pos);
+  /** Turn to person `i` by the shortest way round. */
+  const show = useCallback((i: number) => {
+    if (!count) return;
+    setPos((cur) => {
+      const here = ((cur % count) + count) % count;
+      let d = i - here;
+      if (d > count / 2) d -= count;
+      if (d < -count / 2) d += count;
+      return cur + d;
+    });
+  }, [count]);
+  const next = () => setPos((v) => v + 1);
+  const prev = () => setPos((v) => v - 1);
 
   // A link to /company#member-id opens that person's résumé.
   useEffect(() => {
     const fromHash = () => {
       const id = decodeURIComponent(window.location.hash.slice(1));
       const i = team.findIndex((m) => m.id === id);
-      if (i >= 0) { setActive(i); setOpen(true); document.getElementById('team')?.scrollIntoView({ block: 'start' }); }
+      if (i >= 0) { show(i); setOpen(true); document.getElementById('team')?.scrollIntoView({ block: 'start' }); }
     };
     fromHash();
     window.addEventListener('hashchange', fromHash);
     return () => window.removeEventListener('hashchange', fromHash);
-  }, [team]);
+  }, [team, show]);
 
   useEffect(() => {
     if (!open) return;
@@ -228,7 +235,7 @@ export function TeamSection() {
   return (
     <section id="team" className="relative scroll-mt-20 overflow-hidden border-b border-line bg-space-0">
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(60%_100%_at_50%_0%,rgba(43,107,255,.14),transparent)]" />
-      <div className="relative mx-auto max-w-shell px-5 pt-20 lg:px-10 lg:pt-24">
+      <div className="relative mx-auto max-w-shell px-5 pt-16 lg:px-10 lg:pt-20">
         <div className="mx-auto max-w-3xl text-center" data-no-translate={fa ? '' : undefined}>
           <div className="mb-5 inline-flex items-center gap-4 font-mono text-[11px] text-cyan/80"><span className="h-px w-10 bg-cyan/40" />{t.index}<span className="h-px w-10 bg-cyan/40" /></div>
           <h2 className="font-display text-3xl font-semibold leading-[1.15] tracking-tight text-ink sm:text-4xl lg:text-[44px]">{t.title}</h2>
@@ -236,7 +243,7 @@ export function TeamSection() {
         </div>
       </div>
 
-      <div className={`relative mx-auto max-w-[1500px] px-4 pb-16 pt-14 transition-[min-height] duration-500 sm:px-6 lg:px-10 lg:pb-20 ${open ? 'min-h-[min(760px,92vh)] md:min-h-[660px]' : ''}`}>
+      <div className={`relative mx-auto max-w-[1500px] px-4 pb-14 pt-16 transition-[min-height] duration-500 sm:px-6 lg:px-10 lg:pb-20 ${open ? 'min-h-[min(760px,92vh)] md:min-h-[660px]' : ''}`}>
         {/* The ring runs left to right in every language, like the product slider. */}
         <div
           dir="ltr"
@@ -249,26 +256,29 @@ export function TeamSection() {
           aria-roledescription="carousel"
           aria-label={t.title}
           className={`relative touch-pan-y select-none outline-none transition-[opacity,visibility] duration-500 ${open ? 'pointer-events-none invisible opacity-0' : 'visible opacity-100'}`}
-          style={{ perspective: '1100px' }}
+          style={{ perspective: '1600px' }}
         >
-          <div ref={ring} className="relative mx-auto h-[300px] w-[170px] sm:h-[360px] sm:w-[210px] lg:h-[400px] lg:w-[240px]" style={{ transformStyle: 'preserve-3d' }}>
-            {team.map((m, i) => {
-              const offset = offsetOf(i, active, count);
+          <div ref={ring} className="relative mx-auto h-[290px] w-[210px] sm:h-[380px] sm:w-[280px] lg:h-[460px] lg:w-[340px]" style={{ transformStyle: 'preserve-3d' }}>
+            {/* Seven places round the front one; each card keeps its place in
+                the ring as it turns, and the ones coming round enter unseen. */}
+            {[-3, -2, -1, 0, 1, 2, 3].map((offset) => {
+              const v = pos + offset;
+              const m = team[mod(v)];
               const front = offset === 0;
               const p = pick(m, fa);
               return (
                 <button
-                  key={m.id}
+                  key={v}
                   type="button"
                   tabIndex={-1}
                   aria-label={`${p.name}${p.role ? ` — ${p.role}` : ''}`}
-                  onClick={() => { show(i); setOpen(true); }}
-                  style={{ ...cardStyle(offset, cardWidth, reduce), transition: `transform .8s ${EASE}, opacity .8s ${EASE}` }}
+                  onClick={() => { setPos(v); setOpen(true); }}
+                  style={{ ...cardStyle(offset, cardWidth, reduce), transition: `transform .8s ${EASE}, opacity .8s ${EASE}, visibility .8s` }}
                   className={`group absolute inset-0 overflow-hidden rounded-[22px] border bg-[#070b18] text-start will-change-transform ${front ? 'border-cyan/70' : 'border-white/10'}`}
                 >
-                  <Portrait m={m} name={p.name} eager={Math.abs(offset) <= 2} className="transition-transform duration-700 group-hover:scale-[1.04]" />
+                  <Portrait m={m} name={p.name} eager className="transition-transform duration-700 group-hover:scale-[1.04]" />
                   <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-4 pb-4 pt-12" dir={fa ? 'rtl' : 'ltr'}>
-                    <span dir="auto" className="block truncate text-[16px] font-semibold text-white" style={{ textAlign: fa ? 'right' : 'left' }}>{p.name}</span>
+                    <span dir="auto" className="block truncate text-[17px] font-semibold text-white lg:text-[19px]" style={{ textAlign: fa ? 'right' : 'left' }}>{p.name}</span>
                     {p.role && <span dir="auto" className="mt-0.5 block truncate text-[12.5px] text-cyan-soft" style={{ textAlign: fa ? 'right' : 'left' }}>{p.role}</span>}
                   </span>
                 </button>

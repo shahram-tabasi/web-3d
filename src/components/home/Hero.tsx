@@ -100,14 +100,14 @@ export function Hero() {
       <div aria-hidden className="sim-aurora pointer-events-none absolute -inset-x-1/4 bottom-[-30%] h-[70%] opacity-60" />
 
       <div className="relative mx-auto flex min-h-[100svh] max-w-shell flex-col items-center justify-end px-5 pb-24 pt-28 text-center lg:justify-center lg:px-10 lg:pb-10">
-        <motion.div {...rise(0)} className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 backdrop-blur-md">
-          <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan opacity-60" /><span className="relative inline-flex h-2 w-2 rounded-full bg-cyan" /></span>
-          <span className="text-[12px] tracking-wide text-ink-muted">{text.eyebrow}</span>
-        </motion.div>
-
-        <h1 className="mt-7 max-w-5xl font-display text-[36px] font-semibold leading-[1.15] tracking-tight text-white sm:text-[52px] lg:text-[66px]">
-          <motion.span {...rise(0.1)} className="block">{text.headline}</motion.span>
-          <motion.span {...rise(0.22)} className="sim-shine block text-transparent [-webkit-background-clip:text] [background-clip:text] [background-image:linear-gradient(92deg,#7ce6f7,#5c8dff_40%,#e8b65a_60%,#7ce6f7_80%)] [background-size:200%_auto]">
+        {/* The brand opens the page's one heading: what a search for "سیمرغ AI" should find. */}
+        <h1 className="max-w-5xl font-display font-semibold tracking-tight text-white">
+          <motion.span {...rise(0)} className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 align-middle text-[12.5px] font-medium leading-normal tracking-wide text-ink-muted backdrop-blur-md">
+            <span aria-hidden className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan opacity-60" /><span className="relative inline-flex h-2 w-2 rounded-full bg-cyan" /></span>
+            {text.eyebrow}
+          </motion.span>
+          <motion.span {...rise(0.1)} className="mt-7 block text-[36px] leading-[1.15] sm:text-[52px] lg:text-[66px]">{text.headline}</motion.span>
+          <motion.span {...rise(0.22)} className="sim-shine block text-[36px] leading-[1.15] text-transparent [-webkit-background-clip:text] [background-clip:text] [background-image:linear-gradient(92deg,#7ce6f7,#5c8dff_40%,#e8b65a_60%,#7ce6f7_80%)] [background-size:200%_auto] sm:text-[52px] lg:text-[66px]">
             {text.accent}
           </motion.span>
         </h1>

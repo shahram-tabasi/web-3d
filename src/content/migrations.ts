@@ -186,6 +186,31 @@ export const MIGRATIONS: Migration[] = [
       return { ...c, hero: { ...c.hero, text }, articles };
     },
   },
+  {
+    // November 2026, search: people look the company up as "سیمرغ AI" /
+    // "Simorgh AI", so the name they type goes into the site name, the home
+    // title and the first line of the home heading. Anything the admin
+    // rewrote stays as it is.
+    id: '2026-11-seo-brand',
+    apply: (c) => {
+      const title = 'Simorgh AI — Industrial AI & Engineering Automation | Simorgh Intelligent Iranian Technology';
+      const settings = { ...c.settings, siteName: c.settings.siteName === 'SIMORGH' ? 'Simorgh AI' : c.settings.siteName };
+      const oldTitle = 'SIMORGH — Engineering Intelligence for a Smarter World';
+      const seo = {
+        ...c.seo,
+        defaultTitle: c.seo.defaultTitle === oldTitle ? title : c.seo.defaultTitle,
+        titleTemplate: c.seo.titleTemplate === '%s | SIMORGH' ? '%s | Simorgh AI' : c.seo.titleTemplate,
+      };
+      const pages = { ...c.pages };
+      if (pages.home?.seo.title === oldTitle) pages.home = { ...pages.home, seo: { ...pages.home.seo, title } };
+      const oldEyebrow: Record<string, string> = { en: 'SIMORGH INTELLIGENT TECHNOLOGY', fa: 'فناوری هوشمند سیمرغ' };
+      const text = { ...c.hero.text };
+      for (const code of ['en', 'fa'] as const) {
+        if (text[code]?.eyebrow === oldEyebrow[code]) text[code] = { ...text[code], eyebrow: dictionaries[code].hero.eyebrow };
+      }
+      return { ...c, settings, seo, pages, hero: { ...c.hero, text } };
+    },
+  },
 ];
 
 /** The migrations not yet applied to `c`, applied in order. */
