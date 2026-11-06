@@ -46,7 +46,6 @@ const COPY = {
 function pick(m: TeamMember, fa: boolean) {
   return {
     name: (fa ? m.nameFa || m.name : m.name || m.nameFa) || '—',
-    other: fa ? (m.nameFa && m.name ? m.name : '') : (m.name && m.nameFa ? m.nameFa : ''),
     role: fa ? m.roleFa || m.role : m.role || m.roleFa,
     bio: fa ? m.bioFa || m.bio : m.bio || m.bioFa,
   };
@@ -104,8 +103,7 @@ function Resume({ m, fa, t, reduce }: { m: TeamMember; fa: boolean; t: typeof CO
     <div dir={fa ? 'rtl' : 'ltr'} className="grid h-full grid-rows-[260px_minmax(0,1fr)] md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:grid-rows-1">
       <div className="relative overflow-hidden bg-[#e8e6e4]"><Portrait m={m} name={p.name} eager /></div>
       <div className="flex min-h-0 flex-col overflow-y-auto p-6 sm:p-9">
-        <h3 dir="auto" style={align} className="font-display text-[26px] font-semibold leading-tight text-ink sm:text-[32px]">{p.name}</h3>
-        {p.other && <p dir="auto" style={align} className="mt-1.5 text-[14px] text-ink-faint">{p.other}</p>}
+        <h3 dir="auto" translate="no" style={align} className="font-display text-[26px] font-semibold leading-tight text-ink sm:text-[32px]">{p.name}</h3>
         {p.role && <p dir="auto" style={align} className="mt-3 text-[16px] text-cyan-soft">{p.role}</p>}
         {p.bio && <p dir="auto" style={align} className="mt-5 whitespace-pre-line text-[14.5px] leading-[1.95] text-ink-muted">{p.bio}</p>}
         {m.expertise.length > 0 && (
@@ -278,7 +276,7 @@ export function TeamSection() {
                 >
                   <Portrait m={m} name={p.name} eager className="transition-transform duration-700 group-hover:scale-[1.04]" />
                   <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-4 pb-4 pt-12" dir={fa ? 'rtl' : 'ltr'}>
-                    <span dir="auto" className="block truncate text-[17px] font-semibold text-white lg:text-[19px]" style={{ textAlign: fa ? 'right' : 'left' }}>{p.name}</span>
+                    <span dir="auto" translate="no" className="block truncate text-[17px] font-semibold text-white lg:text-[19px]" style={{ textAlign: fa ? 'right' : 'left' }}>{p.name}</span>
                     {p.role && <span dir="auto" className="mt-0.5 block truncate text-[12.5px] text-cyan-soft" style={{ textAlign: fa ? 'right' : 'left' }}>{p.role}</span>}
                   </span>
                 </button>
