@@ -2,6 +2,7 @@
 // products, articles, breadcrumbs and FAQs as rich results.
 
 import React from 'react';
+import { socialLinks } from '../data/social';
 import type { Thread } from '../comments/store';
 import type { Article, ProductEntry, SiteContent, TeamMember } from '../content/types';
 import type { Locale } from '../i18n-dictionaries';
@@ -23,7 +24,7 @@ export function JsonLd({ data }: { data: object | object[] }) {
 }
 
 export function organizationLd(c: SiteContent) {
-  const sameAs = Object.values(c.settings.social).filter(Boolean);
+  const sameAs = socialLinks(c.settings.social).map((s) => s.url);
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',

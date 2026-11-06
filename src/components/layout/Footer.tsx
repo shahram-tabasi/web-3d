@@ -9,6 +9,12 @@ import { useI18n, type Locale } from '../../i18n';
 import NextLink from 'next/link';
 import { localizePath } from '../../i18n-routing';
 import { BRAND } from '../../data/brand';
+import { Github, Instagram, Linkedin, PlayCircle, Send, Twitter, Youtube, type LucideIcon } from 'lucide-react';
+import { SOCIAL_LABEL, socialLinks, type SocialKey } from '../../data/social';
+
+const SOCIAL_ICON: Record<SocialKey, LucideIcon> = {
+  linkedin: Linkedin, instagram: Instagram, telegram: Send, x: Twitter, youtube: Youtube, aparat: PlayCircle, github: Github,
+};
 
 const columns = (products: { short: string; slug: string }[], industries: { name: string; slug: string }[]) => [
 {
@@ -33,7 +39,8 @@ const columns = (products: { short: string; slug: string }[], industries: { name
 
 
 export function Footer() {
-  const { products, industries } = useContent();
+  const { products, industries, settings } = useContent();
+  const social = socialLinks(settings.social);
   const { t, locale, path, setLocale } = useI18n();
   return (
     <footer className="relative border-t border-line bg-space-1">
@@ -53,6 +60,23 @@ export function Footer() {
                 </NextLink>
               )}
             </div>
+            {/* The company's profiles (Settings → social links), each opening in a new tab. */}
+            {social.length > 0 && (
+              <ul className="mt-6 flex flex-wrap gap-2" aria-label={locale === 'fa' ? 'سیمرغ در شبکه‌های اجتماعی' : 'SIMORGH on social media'}>
+                {social.map(({ key, url }) => {
+                  const Icon = SOCIAL_ICON[key];
+                  const label = locale === 'fa' ? SOCIAL_LABEL[key].fa : SOCIAL_LABEL[key].en;
+                  return (
+                    <li key={key}>
+                      <a href={url} target="_blank" rel="noopener me" aria-label={label} title={label}
+                        className="flex h-9 w-9 items-center justify-center border border-line text-ink-faint transition-colors duration-150 ease-sim hover:border-cyan/50 hover:text-cyan-soft">
+                        <Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
 
           {columns(products, industries).map((col) =>

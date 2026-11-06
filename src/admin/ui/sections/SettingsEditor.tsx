@@ -72,7 +72,7 @@ export function SettingsEditor() {
 
       <Card title="شبکه‌های اجتماعی" hint="لینک کامل صفحه. به گوگل کمک می‌کند این صفحه‌ها را به برند سیمرغ ربط دهد.">
         <Grid cols={3}>
-          {SOCIAL.map(({ key, label }) => <Text key={key} label={label} value={draft.settings.social[key]} onChange={social(key)} ltr placeholder="https://" />)}
+          {SOCIAL.map(({ key, label }) => <Text key={key} label={label} value={draft.settings.social[key]} onChange={social(key)} ltr placeholder="https://…  یا  @name" />)}
         </Grid>
       </Card>
 
