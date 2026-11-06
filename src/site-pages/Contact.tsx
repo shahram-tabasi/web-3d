@@ -67,7 +67,7 @@ export function Contact() {
                 key={e}
                 onClick={() => setKind(e)}
                 aria-pressed={kind === e}
-                className={`border px-3.5 py-2 font-mono text-[10.5px] tracking-label transition-colors duration-150 ease-sim ${
+                className={`border px-3.5 py-2 font-mono text-[12px] tracking-label transition-colors duration-150 ease-sim ${
                 kind === e ? 'border-cyan/60 text-cyan' : 'border-line text-ink-faint hover:text-ink-muted'}`
                 }>
                 
@@ -111,13 +111,13 @@ export function Contact() {
             <div key={item.label} className="flex items-start gap-4 bg-space-1 p-7">
                 <item.icon className="mt-0.5 h-4 w-4 text-cyan" strokeWidth={1.5} aria-hidden="true" />
                 <div>
-                  <div className="font-mono text-[10px] tracking-label text-ink-faint">{item.label.toUpperCase()}</div>
+                  <div className="font-mono text-[12px] tracking-label text-ink-faint">{item.label.toUpperCase()}</div>
                   <div className="mt-2 text-[14.5px] text-ink">{item.value}</div>
                 </div>
               </div>
             )}
             <div className="bg-space-1 p-7">
-              <div className="font-mono text-[10px] tracking-label text-ink-faint">RESPONSE</div>
+              <div className="font-mono text-[12px] tracking-label text-ink-faint">RESPONSE</div>
               <p className="mt-3 text-[13.5px] leading-relaxed text-ink-muted">
                 Enterprise and partnership enquiries are answered by a named solution architect, in any of the ten
                 languages the platform supports.

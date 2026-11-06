@@ -235,7 +235,7 @@ export function TeamSection() {
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(60%_100%_at_50%_0%,rgba(43,107,255,.14),transparent)]" />
       <div className="relative mx-auto max-w-shell px-5 pt-16 lg:px-10 lg:pt-20">
         <div className="mx-auto max-w-3xl text-center" data-no-translate={fa ? '' : undefined}>
-          <div className="mb-5 inline-flex items-center gap-4 font-mono text-[11px] text-cyan/80"><span className="h-px w-10 bg-cyan/40" />{t.index}<span className="h-px w-10 bg-cyan/40" /></div>
+          <div className="mb-5 inline-flex items-center gap-4 font-mono text-[12px] text-cyan/80"><span className="h-px w-10 bg-cyan/40" />{t.index}<span className="h-px w-10 bg-cyan/40" /></div>
           <h2 className="font-display text-3xl font-semibold leading-[1.15] tracking-tight text-ink sm:text-4xl lg:text-[44px]">{t.title}</h2>
           <p className="mt-5 text-base leading-relaxed text-ink-muted lg:text-[17px]">{t.lead}</p>
         </div>
@@ -287,11 +287,11 @@ export function TeamSection() {
           {count > 1 && (
             <>
               <button type="button" onClick={prev} aria-label={t.prev}
-                className="absolute left-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-cyan/60 bg-space-2 text-cyan transition hover:bg-cyan hover:text-white lg:flex">
+                className="absolute left-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-cyan/60 bg-space-1/95 text-cyan transition hover:bg-cyan hover:text-space-0 lg:flex">
                 <ChevronLeftIcon className="h-5 w-5" />
               </button>
               <button type="button" onClick={next} aria-label={t.next}
-                className="absolute right-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-cyan/60 bg-space-2 text-cyan transition hover:bg-cyan hover:text-white lg:flex">
+                className="absolute right-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-cyan/60 bg-space-1/95 text-cyan transition hover:bg-cyan hover:text-space-0 lg:flex">
                 <ChevronRightIcon className="h-5 w-5" />
               </button>
             </>
@@ -307,7 +307,7 @@ export function TeamSection() {
                   className={`h-2 rounded-full transition-all duration-300 ${i === active ? 'w-8 bg-cyan' : 'w-2 bg-white/25 hover:bg-white/50'}`} />
               ))}
             </div>
-            <span className="font-mono text-[11px] tabular-nums text-ink-faint">
+            <span className="font-mono text-[12px] tabular-nums text-ink-faint">
               {fa ? `${(active + 1).toLocaleString('fa-IR')} / ${count.toLocaleString('fa-IR')}` : `${String(active + 1).padStart(2, '0')} / ${String(count).padStart(2, '0')}`}
             </span>
             <button type="button" onClick={next} aria-label={t.next} className="grid h-10 w-10 place-items-center rounded-full border border-line text-ink-muted hover:text-cyan lg:hidden"><ChevronRightIcon className="h-5 w-5" /></button>
@@ -333,7 +333,7 @@ export function TeamSection() {
                 animate={{ opacity: 1, scale: 1, z: 0, rotateY: 0 }}
                 exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.6, z: -300 }}
                 transition={{ type: 'spring', stiffness: 170, damping: 22 }}
-                className="relative h-[min(640px,82vh)] overflow-hidden rounded-[26px] border border-line bg-space-2 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.55)] md:h-[560px]"
+                className="relative h-[min(640px,82vh)] overflow-hidden rounded-[26px] border border-cyan/60 bg-[#070b18] md:h-[560px]"
               >
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div key={current.id} className="h-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>

@@ -1,161 +1,136 @@
 'use client';
 
-import React from 'react';
-import { ArrowRightIcon } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useReducedMotion } from 'framer-motion';
+import { ArrowRightIcon, ChevronDownIcon } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { useContent } from '../../content/ContentProvider';
 import { useI18n } from '../../i18n';
 
-// The first screen, "Persian night" (2026-11): the Simorgh flies over the
-// earth's horizon under a band of the galaxy, and a constellation of thought —
-// the AI — links the stars around it and sends signals down to the earth.
-// The scene is pure CSS and SVG (no video, no canvas), so the page stays fast,
-// and it moves only gently and not at all under prefers-reduced-motion.
-// The words keep the UX rules: one heading, one sentence, one main action and
-// one quiet one, on plain dark sky with AA contrast.
+// The first screen. It should feel alive without costing frames: the picture
+// breathes (a slow CSS zoom), a soft light follows the pointer (one CSS
+// variable, written at most once a frame) and the industry line turns over every
+// few seconds. The words are there at once (no fade-in: the first paint is the
+// page), and nothing turns over under prefers-reduced-motion. Everything that moves is
+// a transform or an opacity, so the compositor does the work.
 
-/** Faint eight-pointed girih stars in gold: Persian tilework in the night. */
-const GIRIH = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23e4bc62' stroke-width='1'%3E%3Cpath d='M36 6l8.5 21.5L66 36l-21.5 8.5L36 66l-8.5-21.5L6 36l21.5-8.5z'/%3E%3Cpath d='M36 22l4 10 10 4-10 4-4 10-4-10-10-4 10-4z'/%3E%3C/g%3E%3C/svg%3E")`;
-const GIRIH_MASK = 'radial-gradient(ellipse 60% 60% at 50% 30%, #000, transparent)';
-
-/** The AI constellation: stars (nodes) and the lines of thought between them. */
-const NODES: [number, number, number][] = [
-  [60, 90, 3], [150, 40, 2.4], [250, 70, 3.4], [340, 30, 2.2], [420, 110, 3],
-  [90, 210, 2.4], [200, 170, 2.8], [380, 220, 2.6], [460, 260, 2.2], [40, 330, 2.6],
-  [130, 300, 3.2], [300, 330, 2.4], [420, 380, 3], [220, 420, 2.6], [90, 440, 2.2],
-];
-const LINKS: [number, number][] = [
-  [0, 1], [1, 2], [2, 3], [2, 4], [0, 5], [5, 6], [6, 2], [6, 7], [4, 7], [7, 8],
-  [5, 9], [9, 10], [10, 6], [10, 11], [11, 7], [11, 12], [12, 8], [11, 13], [13, 14], [14, 10],
-];
-/** Signals that run through the constellation down toward the earth. */
-const SIGNALS: [number, number][] = [[10, 13], [6, 11], [7, 12]];
-
-/** City lights on the earth's rim (desktop geometry: a 1440-wide earth 160px
- *  above the fold line), and the arcs of data the AI sends between them. */
-const CITIES: [number, number][] = [[250, 192.9], [460, 137.7], [660, 115.3], [870, 121.8], [1050, 152.3], [1240, 211.2]];
-const ARCS = [
-  'M250 192.9 Q455 16.9 660 115.3', 'M460 137.7 Q665 23.4 870 121.8', 'M660 115.3 Q855 21.7 1050 152.3',
-  'M870 121.8 Q1055 33 1240 211.2', 'M250 192.9 Q355 87.3 460 137.7', 'M1050 152.3 Q1145 106.7 1240 211.2',
-];
-
-function EarthNetwork() {
+function RotatingWord({ words }: { words: string[] }) {
+  const [i, setI] = useState(0);
+  const reduced = useReducedMotion();
+  useEffect(() => {
+    if (reduced) return;
+    const t = window.setInterval(() => setI((v) => (v + 1) % words.length), 2800);
+    return () => window.clearInterval(t);
+  }, [words.length, reduced]);
   return (
-    <svg viewBox="0 0 1440 260" preserveAspectRatio="none" className="absolute inset-x-0 bottom-0 hidden h-[260px] w-full lg:block" aria-hidden>
-      <g fill="none" strokeWidth="1" vectorEffect="non-scaling-stroke">
-        {ARCS.map((d, i) => (
-          <path key={d} d={d} stroke={i % 2 ? '#8fe4e0' : '#e4bc62'} opacity="0.45" className="sim-signal" style={{ animationDelay: `${i * 0.5}s` }} vectorEffect="non-scaling-stroke" />
-        ))}
-      </g>
-      {CITIES.map(([x, y], i) => (
-        <g key={i} className="sim-node" style={{ animationDelay: `${i * 0.6}s` }}>
-          <ellipse cx={x} cy={y} rx="9" ry="9" fill="#e4bc62" opacity="0.18" />
-          <ellipse cx={x} cy={y} rx="2.2" ry="2.2" fill="#ffe7b0" />
-        </g>
+    <span className="relative inline-grid h-[1.6em] overflow-hidden align-bottom">
+      {words.map((w, k) => (
+        <span
+          key={w}
+          aria-hidden={k !== i}
+          className="col-start-1 row-start-1 whitespace-nowrap text-gold transition-[transform,opacity] duration-700 ease-[cubic-bezier(.22,1,.36,1)]"
+          style={{ transform: `translateY(${k === i ? 0 : k === (i + words.length - 1) % words.length ? -110 : 110}%)`, opacity: k === i ? 1 : 0 }}
+        >
+          {w}
+        </span>
       ))}
-    </svg>
-  );
-}
-
-function Constellation() {
-  return (
-    <svg viewBox="0 0 500 480" className="absolute inset-0 h-full w-full" aria-hidden>
-      <g stroke="#8fe4e0" strokeWidth="0.8" opacity="0.28">
-        {LINKS.map(([a, b]) => (
-          <line key={`${a}-${b}`} x1={NODES[a][0]} y1={NODES[a][1]} x2={NODES[b][0]} y2={NODES[b][1]} />
-        ))}
-      </g>
-      <g stroke="#e4bc62" strokeWidth="1.2" fill="none" opacity="0.7">
-        {SIGNALS.map(([a, b]) => (
-          <line key={`s${a}-${b}`} className="sim-signal" x1={NODES[a][0]} y1={NODES[a][1]} x2={NODES[b][0]} y2={NODES[b][1]} />
-        ))}
-      </g>
-      {NODES.map(([x, y, r], i) => (
-        <g key={i} className="sim-node" style={{ animationDelay: `${((i * 0.37) % 4).toFixed(2)}s` }}>
-          <circle cx={x} cy={y} r={r * 3} fill="#5fd4cf" opacity="0.10" />
-          <circle cx={x} cy={y} r={r * 0.8} fill={i % 4 === 0 ? '#e4bc62' : '#eef2fb'} />
-        </g>
-      ))}
-    </svg>
+    </span>
   );
 }
 
 export function Hero() {
+  const ref = useRef<HTMLElement | null>(null);
+  const reduced = useReducedMotion();
   const { locale } = useI18n();
   const fa = locale === 'fa';
   const { hero } = useContent();
   const text = hero.text[locale] ?? hero.text.en;
-  const industries = fa
+  const isVideo = /\.(mp4|webm)(\?|$)/i.test(hero.image);
+
+  // The light that follows the pointer.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || reduced || !window.matchMedia('(pointer: fine)').matches) return;
+    let raf = 0;
+    const move = (e: PointerEvent) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const r = el.getBoundingClientRect();
+        el.style.setProperty('--mx', `${((e.clientX - r.left) / r.width) * 100}%`);
+        el.style.setProperty('--my', `${((e.clientY - r.top) / r.height) * 100}%`);
+      });
+    };
+    el.addEventListener('pointermove', move, { passive: true });
+    return () => { el.removeEventListener('pointermove', move); cancelAnimationFrame(raf); };
+  }, [reduced]);
+
+  const lead = fa ? 'در خدمت' : 'Working for';
+  const words = fa
     ? ['صنایع تولیدی', 'برق و انرژی', 'نفت، گاز و معدن', 'شهرهای هوشمند']
-    : ['Manufacturing', 'Power & energy', 'Oil, gas & mining', 'Smart cities'];
+    : ['manufacturing', 'power & energy', 'oil, gas & mining', 'smart cities'];
 
   return (
-    <section className="relative w-full overflow-hidden pt-[72px]" aria-label={fa ? 'سیمرغ' : 'SIMORGH'} data-no-simorgh>
-      {/* The scene, behind everything and hidden from assistive technology. */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="sim-galaxy" />
-        <div
-          className="absolute inset-0 opacity-[0.05]"
-          style={{ backgroundImage: GIRIH, WebkitMaskImage: GIRIH_MASK, maskImage: GIRIH_MASK }}
-        />
-        <span className="sim-meteor" />
-        <div className="sim-earth" />
-        <EarthNetwork />
+    <section
+      ref={ref}
+      className="relative min-h-[100svh] w-full overflow-hidden bg-space-0 [--mx:62%] [--my:40%]"
+      aria-label={fa ? 'سیمرغ' : 'SIMORGH'}
+      data-no-simorgh
+      data-no-translate={fa ? '' : undefined}
+    >
+      <div className="absolute inset-0 sim-kenburns">
+        {isVideo ? (
+          <video className="h-full w-full object-cover" style={{ objectPosition: hero.focal }} autoPlay muted loop playsInline poster={hero.mobileImage || undefined}>
+            <source src={hero.image} type={/\.webm/i.test(hero.image) ? 'video/webm' : 'video/mp4'} />
+          </video>
+        ) : (
+          <picture>
+            <source media="(min-width: 640px)" srcSet={hero.image} />
+            <img src={hero.mobileImage || hero.image} alt="" className="h-full w-full object-cover" style={{ objectPosition: hero.focal }} fetchPriority="high" />
+          </picture>
+        )}
       </div>
 
-      <div className="relative mx-auto grid max-w-shell items-center gap-10 px-5 pb-36 pt-14 sm:pb-40 sm:pt-20 lg:min-h-[calc(100svh-72px)] lg:grid-cols-[1.1fr_0.9fr] lg:gap-14 lg:px-10 lg:pb-48 lg:pt-16">
-        <div>
-          {/* The brand opens the page's one heading: what a search for «سیمرغ AI» should find. */}
-          <h1 className="font-display font-semibold tracking-tight text-ink">
-            <span className="inline-flex items-center gap-2 rounded-full border border-line bg-space-1/70 px-3.5 py-1 align-middle text-[13px] font-medium leading-normal text-ink-muted backdrop-blur">
-              <span className="h-1.5 w-1.5 rounded-full bg-cyan shadow-[0_0_8px_rgba(95,212,207,0.9)]" />
-              {text.eyebrow}
-            </span>
-            <span className="mt-6 block text-[34px] leading-[1.2] sm:text-[46px] lg:text-[58px]">{text.headline}</span>
-            <span className="block bg-gradient-to-r from-cyan-soft via-violet-soft to-gold bg-clip-text pb-1 text-[34px] leading-[1.25] text-transparent sm:text-[46px] lg:text-[58px]">
-              {text.accent}
-            </span>
-          </h1>
+      {/* Scrims, then the pointer light and a slow aurora. */}
+      <div className="absolute inset-0 bg-gradient-to-t from-space-0 via-space-0/60 to-space-0/30" style={{ opacity: Math.min(1, hero.overlay + 0.4) }} />
+      <div aria-hidden className="pointer-events-none absolute inset-0 hidden bg-[radial-gradient(520px_circle_at_var(--mx)_var(--my),rgba(124,230,247,.13),transparent_70%)] lg:block" />
+      <div aria-hidden className="sim-aurora pointer-events-none absolute -inset-x-1/4 bottom-[-30%] h-[70%] opacity-60" />
 
-          <p className="mt-6 max-w-xl text-[17px] leading-[1.9] text-ink-muted sm:text-[18px]">{text.subtitle}</p>
+      <div className="relative mx-auto flex min-h-[100svh] max-w-shell flex-col items-center justify-end px-5 pb-24 pt-28 text-center lg:justify-center lg:px-10 lg:pb-10">
+        {/* The brand opens the page's one heading: what a search for "سیمرغ AI" should find. */}
+        <h1 className="max-w-5xl font-display font-semibold tracking-tight text-white">
+          <span className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 align-middle text-[12.5px] font-medium leading-normal tracking-wide text-ink-muted backdrop-blur-md">
+            <span aria-hidden className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan opacity-60" /><span className="relative inline-flex h-2 w-2 rounded-full bg-cyan" /></span>
+            {text.eyebrow}
+          </span>
+          <span className="mt-7 block text-[36px] leading-[1.15] sm:text-[52px] lg:text-[66px]">{text.headline}</span>
+          <span className="sim-shine block text-[36px] leading-[1.15] text-transparent [-webkit-background-clip:text] [background-clip:text] [background-image:linear-gradient(92deg,#7ce6f7,#5c8dff_40%,#e8b65a_60%,#7ce6f7_80%)] [background-size:200%_auto] sm:text-[52px] lg:text-[66px]">
+            {text.accent}
+          </span>
+        </h1>
 
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Button to={hero.primaryTo} size="lg">
-              {text.primary}
-              <ArrowRightIcon className="h-4 w-4 rtl:-scale-x-100" strokeWidth={1.8} />
-            </Button>
-            <Button to={hero.secondaryTo} size="lg" variant="outline">
-              {text.secondary}
-            </Button>
-          </div>
+        <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-[1.9] text-ink-muted sm:text-[17px]">
+          {text.subtitle}
+        </p>
 
-          <p className="mt-10 text-[14px] text-ink-faint">
-            {fa ? 'در خدمت ' : 'Working for '}
-            {industries.map((w, i) => (
-              <React.Fragment key={w}>
-                <span className="text-ink-muted">{w}</span>
-                {i < industries.length - 1 && <span aria-hidden className="mx-2 text-gold/60">✦</span>}
-              </React.Fragment>
-            ))}
-          </p>
+        <div className="mt-6 text-[15px] text-ink sm:text-[17px]">
+          {lead} <RotatingWord words={words} />
         </div>
 
-        {/* The Simorgh among the stars of thought. Decorative: hidden on phones,
-            where the words must come first and fast. */}
-        <div className="relative mx-auto hidden aspect-[500/480] w-full max-w-[520px] lg:block" aria-hidden>
-          <div className="absolute inset-[10%] rounded-full bg-[radial-gradient(closest-side,rgba(95,212,207,0.18),rgba(79,122,240,0.10)_55%,transparent)]" />
-          <Constellation />
-          <div className="sim-float absolute inset-x-[12%] top-[14%]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/simorgh/simorgh-still.webp"
-              alt=""
-              decoding="async"
-              className="block h-auto w-full drop-shadow-[0_0_28px_rgba(143,228,224,0.35)]"
-            />
-          </div>
+        <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Button to={hero.primaryTo} size="lg">
+            {text.primary}
+            <ArrowRightIcon className="h-4 w-4 rtl:-scale-x-100" strokeWidth={1.6} />
+          </Button>
+          <Button to={hero.secondaryTo} size="lg" variant="outline">
+            {text.secondary}
+          </Button>
         </div>
       </div>
+
+      <a href="#services" aria-label={fa ? 'ادامه' : 'Scroll down'} className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 text-ink-faint transition-colors hover:text-cyan sm:block">
+        <ChevronDownIcon className="h-6 w-6 animate-bounce" strokeWidth={1.4} />
+      </a>
+      <div className="absolute inset-x-0 bottom-0 h-px sim-hairline" />
     </section>
   );
 }

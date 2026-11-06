@@ -16,7 +16,7 @@ export function SectionHeader({ index, title, lead, align = 'left', className = 
   return (
     <div className={`${centered ? 'mx-auto max-w-3xl text-center' : 'max-w-3xl'} ${className}`}>
       {index &&
-      <div className={`mb-5 flex items-center gap-3 font-mono text-[11px] text-cyan/80 ${centered ? 'justify-center' : ''}`}>
+      <div className={`mb-5 flex items-center gap-3 font-mono text-[12px] text-cyan/80 ${centered ? 'justify-center' : ''}`}>
           <span>{index}</span>
           <span className="h-px w-10 bg-cyan/30" />
         </div>

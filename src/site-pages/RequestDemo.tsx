@@ -144,7 +144,7 @@ export function RequestDemo() {
           </div>
 
           <aside className="border border-line bg-space-1 p-8 lg:p-10">
-            <span className="font-mono text-[10px] tracking-label text-cyan/80">WHAT HAPPENS NEXT</span>
+            <span className="font-mono text-[12px] tracking-label text-cyan/80">WHAT HAPPENS NEXT</span>
             <ol className="mt-8">
               {workflow.map((step, i) =>
               <li key={step} className="flex items-start gap-4 pb-6 last:pb-0">
@@ -154,7 +154,7 @@ export function RequestDemo() {
                   </span>
                   <span>
                     <span className="block text-[14px] text-ink">{step}</span>
-                    <span className="mt-1 block font-mono text-[10px] text-ink-faint">
+                    <span className="mt-1 block font-mono text-[12px] text-ink-faint">
                       STAGE {String(i + 1).padStart(2, '0')}
                     </span>
                   </span>

@@ -4,9 +4,9 @@
 # resources on purpose: `kubectl delete -k .` must not take the data with it.
 # Apply it once with `kubectl apply -f 20-storage.yaml`.
 #
-# ReadWriteOnce on Ceph RBD, which is why the Deployment runs one replica with
-# the Recreate strategy: two pods cannot mount the same RBD image, and the app
-# keeps its state in files, not a database, so two copies would disagree anyway.
+# ReadWriteOnce on Ceph RBD: one node at a time. The Deployment's two replicas
+# are both pinned to worker3, so they share it; the app serialises its
+# read-change-write of these files with a lock file on the volume.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

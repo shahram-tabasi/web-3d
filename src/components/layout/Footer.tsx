@@ -55,7 +55,7 @@ export function Footer() {
               {languages.map((l) =>
               <NextLink key={l.code} href={localizePath(path, l.code as Locale)} hrefLang={l.code} title={l.label}
                 onClick={(e) => { e.preventDefault(); setLocale(l.code as Locale); }}
-                className={`border px-2 py-1 font-mono text-[10px] transition-colors hover:text-cyan-soft ${l.code === locale ? 'border-cyan/50 text-cyan-soft' : 'border-line text-ink-faint'}`}>
+                className={`border px-2 py-1 font-mono text-[12px] transition-colors hover:text-cyan-soft ${l.code === locale ? 'border-cyan/50 text-cyan-soft' : 'border-line text-ink-faint'}`}>
                   /{l.code}
                 </NextLink>
               )}
@@ -81,7 +81,7 @@ export function Footer() {
 
           {columns(products, industries).map((col) =>
           <div key={col.title}>
-              <h3 className="font-mono text-[10px] tracking-label text-cyan/80">{(t.nav[col.title] ?? col.title).toUpperCase()}</h3>
+              <h3 className="font-mono text-[12px] tracking-label text-cyan/80">{(t.nav[col.title] ?? col.title).toUpperCase()}</h3>
               <ul className="mt-5 flex flex-col gap-3">
                 {col.links.map((l) =>
               <li key={l.label}>

@@ -27,7 +27,7 @@ function ago(iso: string) {
 const initials = (name: string) => name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase() ?? '').join('');
 
 function Avatar({ name, team, small }: { name: string; team: boolean; small?: boolean }) {
-  const size = small ? 'h-8 w-8 text-[11px]' : 'h-10 w-10 text-[12.5px]';
+  const size = small ? 'h-8 w-8 text-[12px]' : 'h-10 w-10 text-[12.5px]';
   if (team) {
     return (
       <span className={`${size} grid shrink-0 place-items-center rounded-full border border-cyan/40 bg-space-2`}>
@@ -109,7 +109,7 @@ function Composer({ slug, parent, onDone, autoFocus }: { slug: string; parent?: 
                 <div className="flex flex-wrap gap-1.5" role="group" aria-label="What kind of post">
                   {(['comment', 'question', 'idea', 'experience'] as CommentKind[]).map((k) => (
                     <button key={k} type="button" onClick={() => setKind(k)} aria-pressed={kind === k}
-                      className={`border px-2.5 py-1 font-mono text-[10.5px] tracking-label transition-colors ${kind === k ? 'border-cyan/60 bg-cyan/10 text-cyan-soft' : 'border-line text-ink-faint hover:text-ink'}`}>
+                      className={`border px-2.5 py-1 font-mono text-[12px] tracking-label transition-colors ${kind === k ? 'border-cyan/60 bg-cyan/10 text-cyan-soft' : 'border-line text-ink-faint hover:text-ink'}`}>
                       {KIND_LABEL[k].toUpperCase()}
                     </button>
                   ))}
@@ -166,7 +166,7 @@ function Post({ c, slug, onLike, onPosted, reply }: {
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
             <span className="text-[14px] font-semibold text-ink">{c.name}</span>
             {c.team && <BadgeCheckIcon className="h-4 w-4 text-cyan" strokeWidth={2} aria-label="SIMORGH team" />}
-            {c.pinned && <span className="inline-flex items-center gap-1 font-mono text-[10px] tracking-label text-ink-faint"><PinIcon className="h-3 w-3" />PINNED</span>}
+            {c.pinned && <span className="inline-flex items-center gap-1 font-mono text-[12px] tracking-label text-ink-faint"><PinIcon className="h-3 w-3" />PINNED</span>}
             {!reply && c.kind !== 'comment' && (
               <span className="border border-line px-1.5 py-px font-mono text-[9.5px] tracking-label text-ink-muted">{KIND_LABEL[c.kind].toUpperCase()}</span>
             )}
@@ -285,7 +285,7 @@ export function Comments({ slug, title, initial }: { slug: string; title: string
             <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter comments">
               {FILTERS.map((f) => (
                 <button key={f.key} type="button" onClick={() => setFilter(f.key)} aria-pressed={filter === f.key}
-                  className={`border px-3 py-1.5 font-mono text-[10.5px] tracking-label transition-colors ${filter === f.key ? 'border-cyan/60 text-cyan-soft' : 'border-line text-ink-faint hover:text-ink'}`}>
+                  className={`border px-3 py-1.5 font-mono text-[12px] tracking-label transition-colors ${filter === f.key ? 'border-cyan/60 text-cyan-soft' : 'border-line text-ink-faint hover:text-ink'}`}>
                   {f.label.toUpperCase()}
                 </button>
               ))}

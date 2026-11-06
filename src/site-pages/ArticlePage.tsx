@@ -47,7 +47,7 @@ export async function ArticlePage({ article, thread }: { article: Article; threa
 
       <section className="bg-space-0">
         <div className="mx-auto max-w-3xl px-5 py-16 lg:py-20">
-          <div className="flex flex-wrap items-center gap-3 border-b border-line pb-6 font-mono text-[11px] text-ink-faint">
+          <div className="flex flex-wrap items-center gap-3 border-b border-line pb-6 font-mono text-[12px] text-ink-faint">
             <time dateTime={article.date}>{article.date}</time>
             <span className="h-px w-5 bg-line" />
             <span>{article.readTime}</span>
@@ -86,12 +86,12 @@ export async function ArticlePage({ article, thread }: { article: Article; threa
       {related.length > 0 && (
         <section className="border-t border-line bg-space-1">
           <div className="mx-auto max-w-shell px-5 py-16 lg:px-10">
-            <div className="font-mono text-[10px] tracking-label text-cyan/80">RELATED</div>
+            <div className="font-mono text-[12px] tracking-label text-cyan/80">RELATED</div>
             <ul className="mt-8 grid gap-px border border-line bg-line lg:grid-cols-3">
               {related.map((a) => (
                 <li key={a.slug} className="bg-space-1">
                   <Link href={`/insights/${a.slug}`} className="group flex h-full flex-col p-7 transition-colors duration-200 ease-sim hover:bg-space-2">
-                    <span className="font-mono text-[10px] tracking-label text-ink-faint">{a.kind.toUpperCase()}</span>
+                    <span className="font-mono text-[12px] tracking-label text-ink-faint">{a.kind.toUpperCase()}</span>
                     <span className="mt-4 font-display text-[17px] font-semibold leading-snug text-ink group-hover:text-cyan-soft">{a.title}</span>
                     <span className="mt-auto inline-flex items-center gap-2 pt-6 text-[13px] text-cyan-soft">
                       Explore

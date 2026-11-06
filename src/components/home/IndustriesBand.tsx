@@ -23,10 +23,6 @@ export function IndustriesBand() {
           {TARGET_INDUSTRIES.map((x, i) => (
             <motion.li
               key={x.to}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
-              transition={{ duration: 0.55, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
             >
               <Tilt className="h-full rounded-[18px]">
               <Link href={x.to} className="group flex h-full flex-col rounded-[18px] border border-line bg-space-0/60 p-6 transition-[border-color,background-color] duration-300 hover:border-cyan/40 hover:bg-space-2/60">

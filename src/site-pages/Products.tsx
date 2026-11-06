@@ -18,7 +18,7 @@ export function Products() {
         <div className="mx-auto max-w-shell px-5 py-16 lg:px-10 lg:py-20">
           <div className="mb-8 flex flex-col gap-3 border-b border-line pb-6 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <div className="font-mono text-[10px] tracking-[0.3em] text-cyan">FULL PRODUCT ECOSYSTEM</div>
+              <div className="font-mono text-[12px] tracking-[0.3em] text-cyan">FULL PRODUCT ECOSYSTEM</div>
               <h2 className="mt-2 font-display text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Every product, one intelligence layer.</h2>
             </div>
             <p className="max-w-xl text-sm leading-6 text-ink-faint">

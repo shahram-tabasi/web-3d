@@ -48,13 +48,13 @@ export function IndustryDetail({ slug }: { slug: string }) {
 
           <Reveal delay={0.06}>
             <div className="border border-line bg-space-1">
-              <div className="border-b border-line px-5 py-3 font-mono text-[10px] tracking-label text-cyan/80">
+              <div className="border-b border-line px-5 py-3 font-mono text-[12px] tracking-label text-cyan/80">
                 SYSTEMS IN SCOPE
               </div>
               <ol className="p-2">
                 {industry.systems.map((s, i) =>
                 <li key={s} className="flex items-center gap-4 border-b border-line/60 px-4 py-3 last:border-b-0">
-                    <span className="font-mono text-[10px] text-ink-faint/80">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="font-mono text-[12px] text-ink-faint/80">{String(i + 1).padStart(2, '0')}</span>
                     <span className="h-1.5 w-1.5 rotate-45 bg-cyan/70" aria-hidden="true" />
                     <span className="text-[14px] text-ink-muted">{s}</span>
                   </li>
@@ -87,7 +87,7 @@ export function IndustryDetail({ slug }: { slug: string }) {
           {study &&
           <div className="mt-16 grid gap-8 border border-line bg-space-0 p-10 lg:grid-cols-[1fr_200px] lg:items-center">
               <div>
-                <span className="font-mono text-[10px] tracking-label text-cyan/80">CASE STUDY</span>
+                <span className="font-mono text-[12px] tracking-label text-cyan/80">CASE STUDY</span>
                 <h3 className="mt-5 max-w-2xl font-display text-2xl font-semibold leading-snug tracking-tight text-ink">
                   {study.title}
                 </h3>

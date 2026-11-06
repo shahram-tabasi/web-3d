@@ -102,7 +102,7 @@ export function ProductCarousel({ heading = 'h1' }: { heading?: 'h1' | 'h2' }) {
 
       <div className="relative mx-auto max-w-[1500px] px-4 sm:px-6 lg:px-10">
         <div className="mx-auto mb-9 max-w-3xl text-center lg:mb-12" data-no-translate={fa ? '' : undefined}>
-          <div className="mb-4 inline-flex items-center gap-4 font-mono text-[10px] font-medium tracking-[0.35em] text-cyan">
+          <div className="mb-4 inline-flex items-center gap-4 font-mono text-[12px] font-medium tracking-[0.35em] text-cyan">
             <span className="h-px w-12 bg-cyan/60" />
             {fa ? 'محصولات ما' : 'OUR PRODUCTS'}
             <span className="h-px w-12 bg-cyan/60" />
@@ -182,7 +182,7 @@ export function ProductCarousel({ heading = 'h1' }: { heading?: 'h1' | 'h2' }) {
                       dir={fa ? 'rtl' : 'ltr'}
                       className={`absolute inset-y-0 flex w-full max-w-[520px] flex-col justify-center overflow-hidden p-6 sm:p-10 lg:p-11 ${fa ? 'right-0' : 'left-0'} ${current ? 'opacity-100' : 'opacity-0'}`}
                     >
-                      <span className="truncate font-mono text-[9px] font-medium tracking-[0.2em] text-cyan sm:text-[10px]">
+                      <span className="truncate font-mono text-[9px] font-medium tracking-[0.2em] text-cyan sm:text-[12px]">
                         {slide.accent}
                       </span>
                       <h3 className="mt-3 font-display text-2xl font-semibold tracking-tight text-white sm:text-4xl" data-no-translate dir="ltr" style={{ textAlign: fa ? 'right' : 'left' }}>
@@ -247,7 +247,7 @@ export function ProductCarousel({ heading = 'h1' }: { heading?: 'h1' | 'h2' }) {
 
         <div dir="ltr" className="mt-6 flex items-center justify-center gap-3 lg:hidden">
           <button type="button" onClick={previous} className="rounded-full border border-line p-2 text-cyan" aria-label="Previous product"><ChevronLeftIcon className="h-5 w-5" /></button>
-          <span className="font-mono text-[10px] tracking-[0.25em] text-ink-faint">{String(active + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}</span>
+          <span className="font-mono text-[12px] tracking-[0.25em] text-ink-faint">{String(active + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}</span>
           <button type="button" onClick={next} className="rounded-full border border-line p-2 text-cyan" aria-label="Next product"><ChevronRightIcon className="h-5 w-5" /></button>
         </div>
       </div>

@@ -40,10 +40,6 @@ export function Solutions() {
             {PLATFORMS.map((p, i) => (
               <motion.article
                 key={p.icon}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
                 className="flex flex-col rounded-[20px] border border-line bg-space-0/70 p-7 lg:p-8"
               >
                 <Icon name={p.icon} className="h-7 w-7 text-cyan" strokeWidth={1.3} />
@@ -51,9 +47,9 @@ export function Solutions() {
                 <p className="mt-3 text-[14.5px] leading-[1.9] text-ink-muted">{pickBi(p.body, fa)}</p>
                 <div className="mt-auto flex flex-wrap gap-2 pt-7" dir="ltr">
                   {p.examples.map((x) => x.to ? (
-                    <Link key={x.label} href={x.to} className="rounded-full border border-cyan/30 bg-cyan/[0.06] px-3 py-1.5 text-[13px] text-cyan transition-colors hover:border-cyan hover:bg-cyan/10">{x.label}</Link>
+                    <Link key={x.label} href={x.to} className="rounded-full border border-cyan/30 bg-cyan/[0.06] px-3 py-1.5 font-mono text-[12px] tracking-wide text-cyan-soft transition-colors hover:border-cyan hover:text-white">{x.label}</Link>
                   ) : (
-                    <span key={x.label} className="rounded-full border border-line px-3 py-1.5 font-mono text-[11px] text-ink-faint">{x.label}</span>
+                    <span key={x.label} className="rounded-full border border-line px-3 py-1.5 font-mono text-[12px] text-ink-faint">{x.label}</span>
                   ))}
                 </div>
                 {p.examples[0]?.note && <p className="mt-3 text-[13px] text-ink-faint">{pickBi(p.examples[0].note, fa)}</p>}

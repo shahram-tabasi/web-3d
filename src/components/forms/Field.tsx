@@ -31,7 +31,7 @@ export function TextField({
 }: BaseProps & {type?: string;value: string;onChange: (v: string) => void;placeholder?: string;}) {
   return (
     <div className={className}>
-      <label htmlFor={name} className="mb-2 block font-mono text-[10px] tracking-label text-ink-faint">
+      <label htmlFor={name} className="mb-2 block font-mono text-[12px] tracking-label text-ink-faint">
         {label.toUpperCase()}
         {required && <span className="ml-1 text-cyan">*</span>}
       </label>
@@ -47,7 +47,7 @@ export function TextField({
         className={`${inputCls} ${error ? 'border-gold/70' : ''}`} />
       
       {error &&
-      <p id={`${name}-error`} className="mt-1.5 text-[11.5px] text-gold">
+      <p id={`${name}-error`} className="mt-1.5 text-[12.5px] text-gold">
           {error}
         </p>
       }
@@ -71,7 +71,7 @@ export function SelectField({
 }: BaseProps & {value: string;onChange: (v: string) => void;options: string[];}) {
   return (
     <div className={className}>
-      <label htmlFor={name} className="mb-2 block font-mono text-[10px] tracking-label text-ink-faint">
+      <label htmlFor={name} className="mb-2 block font-mono text-[12px] tracking-label text-ink-faint">
         {label.toUpperCase()}
         {required && <span className="ml-1 text-cyan">*</span>}
       </label>
@@ -90,7 +90,7 @@ export function SelectField({
           </option>
         )}
       </select>
-      {error && <p className="mt-1.5 text-[11.5px] text-gold">{error}</p>}
+      {error && <p className="mt-1.5 text-[12.5px] text-gold">{error}</p>}
     </div>);
 
 }
@@ -111,7 +111,7 @@ export function TextArea({
 }: BaseProps & {value: string;onChange: (v: string) => void;rows?: number;}) {
   return (
     <div className={className}>
-      <label htmlFor={name} className="mb-2 block font-mono text-[10px] tracking-label text-ink-faint">
+      <label htmlFor={name} className="mb-2 block font-mono text-[12px] tracking-label text-ink-faint">
         {label.toUpperCase()}
         {required && <span className="ml-1 text-cyan">*</span>}
       </label>
@@ -126,7 +126,7 @@ export function TextArea({
         error ? 'border-gold/70' : ''}`
         } />
       
-      {error && <p className="mt-1.5 text-[11.5px] text-gold">{error}</p>}
+      {error && <p className="mt-1.5 text-[12.5px] text-gold">{error}</p>}
     </div>);
 
 }

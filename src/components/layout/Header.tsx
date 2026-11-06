@@ -81,7 +81,7 @@ export function Header() {
                 className="flex h-9 items-center gap-1.5 px-2 text-ink-muted transition-colors duration-150 ease-sim hover:text-ink">
                 
                 <GlobeIcon className="h-[18px] w-[18px]" strokeWidth={1.5} />
-                <span className="font-mono text-[11px] uppercase" data-no-translate>{lang}</span>
+                <span className="font-mono text-[12px] uppercase" data-no-translate>{lang}</span>
               </button>
               <AnimatePresence>
                 {langOpen &&
@@ -108,7 +108,7 @@ export function Header() {
                       }>
                       
                           <span>{l.label}</span>
-                          <span className="font-mono text-[10px] text-ink-faint">/{l.code}</span>
+                          <span className="font-mono text-[12px] text-ink-faint">/{l.code}</span>
                         </NextLink>
                       </li>
                   )}

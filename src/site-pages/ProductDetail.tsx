@@ -169,7 +169,7 @@ export function ProductDetail({ slug }: { slug: string }) {
               {product.industries.map((ind) =>
               <li key={ind} className="bg-space-1 p-6">
                   <div className="flex items-center gap-3">
-                    <Icon name={product.icon} className="h-4 w-4 text-[#9db4ff]" />
+                    <Icon name={product.icon} className="h-4 w-4 text-blue-soft" />
                     <span className="text-[14px] text-ink">{ind}</span>
                   </div>
                 </li>

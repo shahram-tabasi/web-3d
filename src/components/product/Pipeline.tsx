@@ -15,8 +15,8 @@ export function Pipeline({ steps, label }: Props) {
   return (
     <div className="border border-line bg-space-1">
       <div className="flex items-center justify-between border-b border-line px-5 py-3">
-        <span className="font-mono text-[10px] tracking-label text-cyan/80">{label}</span>
-        <span className="font-mono text-[10px] text-ink-faint">
+        <span className="font-mono text-[12px] tracking-label text-cyan/80">{label}</span>
+        <span className="font-mono text-[12px] text-ink-faint">
           STEP {String(active + 1).padStart(2, '0')} / {String(steps.length).padStart(2, '0')}
         </span>
       </div>
@@ -51,7 +51,7 @@ export function Pipeline({ steps, label }: Props) {
                     
                     {step.label}
                   </span>
-                  <span className="ml-auto font-mono text-[10px] text-ink-faint/70">
+                  <span className="ml-auto font-mono text-[12px] text-ink-faint/70">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                 </button>
@@ -67,7 +67,7 @@ export function Pipeline({ steps, label }: Props) {
           transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
           className="flex flex-col justify-center bg-space-0 p-8 lg:p-10">
           
-          <span className="font-mono text-[10px] tracking-label text-ink-faint">
+          <span className="font-mono text-[12px] tracking-label text-ink-faint">
             {String(active + 1).padStart(2, '0')}
           </span>
           <h3 className="mt-4 font-display text-xl font-semibold tracking-tight text-ink">{steps[active].label}</h3>

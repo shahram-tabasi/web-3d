@@ -7,7 +7,7 @@ import { Btn, Card, PageTitle, inputCls } from '../fields';
 interface Submission { id: string; type: 'contact' | 'demo'; createdAt: string; status: 'new' | 'contacted' | 'qualified' | 'closed'; fields: Record<string, string>; note?: string }
 
 const STATUS = { new: 'جدید', contacted: 'تماس گرفته شد', qualified: 'مشتری بالقوه', closed: 'بسته شد' } as const;
-const STATUS_CLS = { new: 'bg-gold/15 text-gold', contacted: 'bg-blue/20 text-[#9db4ff]', qualified: 'bg-cyan/15 text-cyan', closed: 'bg-space-3 text-ink-faint' } as const;
+const STATUS_CLS = { new: 'bg-gold/15 text-gold', contacted: 'bg-blue/20 text-blue-soft', qualified: 'bg-cyan/15 text-cyan', closed: 'bg-space-3 text-ink-faint' } as const;
 const LABELS: Record<string, string> = {
   name: 'نام', firstName: 'نام', lastName: 'نام خانوادگی', email: 'ایمیل', phone: 'تلفن', company: 'شرکت', organisation: 'سازمان',
   position: 'سمت', country: 'کشور', product: 'محصول', industry: 'صنعت', message: 'پیام', kind: 'موضوع',

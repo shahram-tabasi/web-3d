@@ -27,10 +27,6 @@ export function AboutCTA() {
           <p className="mt-6 max-w-2xl text-[16px] leading-[2] text-ink-muted">{pickBi(ABOUT.lead, fa)}</p>
 
           <motion.blockquote
-            initial={{ opacity: 0, x: fa ? 20 : -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             className="mt-10 border-s-2 border-gold ps-6"
           >
             <span className="text-[12px] text-gold">{fa ? 'باور ما' : 'What we believe'}</span>
@@ -47,11 +43,7 @@ export function AboutCTA() {
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="self-center rounded-[24px] border border-line bg-space-2 p-8 shadow-[0_20px_50px_-28px_rgba(0,0,0,0.55)] lg:p-10"
+          className="self-center rounded-[28px] border border-white/10 bg-gradient-to-b from-space-2/90 to-space-1/95 p-8 shadow-[0_30px_90px_rgba(0,0,0,.45)] lg:p-10"
         >
           <img src="/brand/mark-light.png" alt="" aria-hidden className="h-14 w-auto" />
           <h3 className="mt-7 text-[26px] font-semibold text-ink">{fa ? 'با ما در ارتباط باشید' : 'Let’s talk'}</h3>

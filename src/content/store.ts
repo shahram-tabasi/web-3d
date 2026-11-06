@@ -10,6 +10,7 @@
 // The folder is outside public/ on purpose: Next serves public/ only as it was
 // at build time, and uploads have to appear without a rebuild.
 
+import { randomBytes } from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { defaultContent } from './defaults';
@@ -62,9 +63,38 @@ export async function getContent(): Promise<SiteContent> {
   }
 }
 
+/**
+ * Run `fn` holding an exclusive lock on `file`, across processes and pods (the
+ * website runs two replicas on one node, sharing the data volume). The lock is
+ * a file created with O_EXCL; one older than 30 s was left by a writer that
+ * died and is taken over.
+ */
+export async function withFileLock<T>(file: string, fn: () => Promise<T>): Promise<T> {
+  const lock = `${file}.lock`;
+  await fs.mkdir(path.dirname(file), { recursive: true });
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await (await fs.open(lock, 'wx')).close();
+      break;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+      const age = await fs.stat(lock).then((st) => Date.now() - st.mtimeMs, () => 0);
+      if (age > 30_000) { await fs.unlink(lock).catch(() => undefined); continue; }
+      if (attempt > 300) throw new Error(`lock busy: ${lock}`);
+      await new Promise((r) => setTimeout(r, 20 + Math.random() * 30));
+    }
+  }
+  try {
+    return await fn();
+  } finally {
+    await fs.unlink(lock).catch(() => undefined);
+  }
+}
+
 export async function writeAtomic(file: string, data: string) {
   await fs.mkdir(path.dirname(file), { recursive: true });
-  const tmp = `${file}.${process.pid}.${Date.now()}.tmp`;
+  // Unique per write: two pods both run as pid 1.
+  const tmp = `${file}.${randomBytes(6).toString('hex')}.tmp`;
   await fs.writeFile(tmp, data, 'utf8');
   await fs.rename(tmp, file);
 }
@@ -141,4 +171,13 @@ export async function listSubmissions(): Promise<Submission[]> {
 
 export async function saveSubmissions(items: Submission[]) {
   await writeAtomic(REQUESTS_FILE, JSON.stringify(items, null, 2));
+}
+
+/** Read, change and write the requests under the lock: no request is lost to another pod's write. */
+export function updateSubmissions(fn: (items: Submission[]) => Submission[]): Promise<Submission[]> {
+  return withFileLock(REQUESTS_FILE, async () => {
+    const items = fn(await listSubmissions());
+    await saveSubmissions(items);
+    return items;
+  });
 }

@@ -35,10 +35,6 @@ export function ServicesSection({ more = true }: { more?: boolean }) {
           {SERVICES.map((s, i) => (
             <motion.article
               key={s.icon}
-              initial={{ opacity: 0, y: 26 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              transition={{ duration: 0.6, delay: (i % 3) * 0.08, ease: [0.22, 1, 0.36, 1] }}
               className={`sim-glow-card group rounded-[20px] bg-space-1/90 p-7 transition-colors duration-300 hover:bg-space-2/80 lg:p-8 ${i < 3 ? 'lg:col-span-2' : 'lg:col-span-3'}`}
             >
               <div className="flex items-start justify-between">

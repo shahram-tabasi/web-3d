@@ -1,6 +1,6 @@
 // Server-only: comments on articles, kept in storage/comments.json next to
-// the content. One website pod (Recreate strategy), so a promise chain is
-// enough to keep writes in order.
+// the content. Writes go one at a time: a promise chain within a pod, and a
+// lock file across the two website pods that share the volume.
 //
 // A comment is a top-level post or a reply to one (one level, as on
 // Instagram). Readers post with a name and an email; the email is never
@@ -10,7 +10,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import { STORAGE_DIR, writeAtomic } from '../content/store';
+import { STORAGE_DIR, withFileLock, writeAtomic } from '../content/store';
 
 export type CommentKind = 'comment' | 'question' | 'idea' | 'experience';
 export type CommentStatus = 'pending' | 'approved' | 'hidden';
@@ -88,12 +88,12 @@ async function read(): Promise<CommentsFile> {
 let queue: Promise<unknown> = Promise.resolve();
 /** Read, change and write the file, one change at a time. */
 function update<T>(fn: (f: CommentsFile) => T): Promise<T> {
-  const run = queue.then(async () => {
+  const run = queue.then(() => withFileLock(FILE, async () => {
     const f = await read();
     const result = fn(f);
     await writeAtomic(FILE, JSON.stringify(f, null, 2));
     return result;
-  });
+  }));
   queue = run.catch(() => undefined);
   return run;
 }

@@ -23,7 +23,7 @@ export function ProductPreview({ name, caption, rows, video = false }: Props) {
       <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-blue" />
-          <span className="font-mono text-[10px] tracking-label text-ink-faint">{name}</span>
+          <span className="font-mono text-[12px] tracking-label text-ink-faint">{name}</span>
         </div>
         {video ?
         <span className="inline-flex items-center gap-1.5 font-mono text-[9.5px] tracking-label text-cyan">

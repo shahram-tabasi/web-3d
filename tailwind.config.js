@@ -5,38 +5,33 @@ export default {content: [
   theme: {
     extend: {
       colors: {
-        // "A Persian night" (2026-11): a deep lapis night sky, ivory text, a
-        // turquoise of tilework for links and small headings, gold for the
-        // few things that should shine. Every text pair meets WCAG AA on the
-        // night (ink ≈ 15:1, muted ≈ 9:1, faint ≈ 5.5:1). The names stay
-        // (space = surfaces, ink = text) so every page follows.
         space: {
-          0: '#0a1026', // the night
-          1: '#0e1630', // a section set apart
-          2: '#131d3c', // cards
-          3: '#1b2850', // raised
+          0: '#04060e',
+          1: '#070b18',
+          2: '#0b1226',
+          3: '#101a35',
         },
-        line: 'rgba(186, 204, 255, 0.13)',
+        line: 'rgba(120, 160, 255, 0.14)',
         blue: {
-          DEFAULT: '#3a66e0', // lapis: the one colour of action (white on it ≈ 5:1)
-          soft: '#4f7af0',
-          deep: '#2a4fb8',
+          DEFAULT: '#2b6bff',
+          soft: '#5c8dff',
+          deep: '#1741b8',
         },
         cyan: {
-          DEFAULT: '#5fd4cf', // turquoise tile
-          soft: '#8fe4e0',
+          DEFAULT: '#2ad3f0',
+          soft: '#7ce6f7',
         },
         violet: {
-          DEFAULT: '#a596ff',
-          soft: '#c1b6ff',
+          DEFAULT: '#7c5cff',
+          soft: '#a48bff',
         },
         gold: {
-          DEFAULT: '#e4bc62',
+          DEFAULT: '#e8b65a',
         },
         ink: {
-          DEFAULT: '#eef2fb',
-          muted: '#b8c3de',
-          faint: '#8e9cc0',
+          DEFAULT: '#e7edff',
+          muted: '#9fb0d8',
+          faint: '#6d7fa8',
         },
       },
       fontFamily: {
@@ -44,9 +39,7 @@ export default {content: [
         // (the company name, a person's name) are drawn in it, not a system font.
         display: ['"Inter Tight Variable"', '"Inter Tight"', '"Vazirmatn Variable"', 'system-ui', 'sans-serif'],
         sans: ['"Inter Variable"', 'Inter', '"Vazirmatn Variable"', 'system-ui', 'sans-serif'],
-        // Small labels were set in a typewriter face; they read as machine
-        // output. The same faces as the text now.
-        mono: ['"Inter Variable"', 'Inter', '"Vazirmatn Variable"', 'system-ui', 'sans-serif'],
+        mono: ['"Inter Variable"', 'Inter', '"Vazirmatn Variable"', 'system-ui', 'sans-serif'], // small labels in a reading face, not a typewriter one
       },
       letterSpacing: {
         label: '0.04em',

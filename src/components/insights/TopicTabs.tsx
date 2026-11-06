@@ -21,13 +21,13 @@ export function TopicTabs({ value, onChange, counts, fa, id, hideEmpty = false }
         const on = t.key === value;
         return (
           <button key={t.key} type="button" role="tab" aria-selected={on} onClick={() => onChange(t.key)}
-            className={`relative flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-[13.5px] transition-colors ${on ? 'text-white' : 'text-ink-muted hover:text-ink'} ${t.count === 0 && !on ? 'opacity-50' : ''}`}>
-            {on && <motion.span layoutId={`tab-${id}`} className="absolute inset-0 rounded-full bg-blue" transition={{ type: 'spring', stiffness: 380, damping: 32 }} />}
+            className={`relative flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-[13.5px] transition-colors ${on ? 'text-space-0' : 'text-ink-muted hover:text-ink'} ${t.count === 0 && !on ? 'opacity-50' : ''}`}>
+            {on && <motion.span layoutId={`tab-${id}`} className="absolute inset-0 rounded-full" style={{ background: t.color }} transition={{ type: 'spring', stiffness: 380, damping: 32 }} />}
             {!on && <span className="absolute inset-0 rounded-full border border-line" />}
             <span className="relative flex items-center gap-2">
               {t.icon && <Icon name={t.icon} className="h-4 w-4" />}
               {t.label}
-              <span className={`rounded-full px-1.5 text-[11px] tabular-nums ${on ? 'bg-white/20' : 'bg-space-3 text-ink-faint'}`}>{fa ? t.count.toLocaleString('fa-IR') : t.count}</span>
+              <span className={`rounded-full px-1.5 text-[12px] tabular-nums ${on ? 'bg-black/15' : 'bg-white/5 text-ink-faint'}`}>{fa ? t.count.toLocaleString('fa-IR') : t.count}</span>
             </span>
           </button>
         );

@@ -1,6 +1,5 @@
 'use client';
 
-
 import React, { useEffect, useRef } from 'react';
 
 // Shooting stars, drawn on a clear layer over the page (under the header), so
@@ -13,8 +12,7 @@ type Meteor = { x: number; y: number; vx: number; vy: number; length: number; li
 
 const EVERY: [number, number] = [3.5, 8];
 
-/** The original animation, kept for later use; nothing on the site renders it now. */
-export function MeteorShowerLive() {
+export function MeteorShower() {
   const ref = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -141,10 +139,4 @@ export function MeteorShowerLive() {
   }, []);
 
   return <canvas ref={ref} aria-hidden="true" className="pointer-events-none fixed inset-0 z-[38] h-full w-full" />;
-}
-
-
-/** The calm design (2026-11): nothing moving in the background. */
-export function MeteorShower(_props: Record<string, unknown> = {}): null {
-  return null;
 }

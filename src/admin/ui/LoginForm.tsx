@@ -62,7 +62,7 @@ export function LoginForm({ configured, oidc = false }: { configured: boolean; o
   };
 
   return (
-    <div className="grid min-h-screen place-items-center bg-[radial-gradient(ellipse_at_top,rgba(79,122,240,0.22),transparent_60%)] p-5">
+    <div className="grid min-h-screen place-items-center bg-[radial-gradient(ellipse_at_top,#101a35,transparent_60%)] p-5">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center">
           <img src="/brand/mark-light.png" alt="" className="h-16 w-auto" />

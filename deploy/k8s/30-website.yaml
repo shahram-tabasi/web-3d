@@ -16,11 +16,15 @@ metadata:
     app.kubernetes.io/name: simorgh-website
     app.kubernetes.io/part-of: simorgh-website
 spec:
-  # One: the data volume is ReadWriteOnce (see 20-storage.yaml).
-  replicas: 1
-  # The old pod must let go of the volume before the new one can mount it.
+  # Two, both on worker3 (192.168.1.96): the data volume is ReadWriteOnce,
+  # which is per node, so pods on the same node share it. Writes to the shared
+  # files are atomic renames, and read-change-write goes through a lock file
+  # (src/content/store.ts withFileLock), so the two pods never lose a write.
+  replicas: 2
+  # One new pod at a time, the old ones serving until it is ready: no downtime.
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate: { maxSurge: 1, maxUnavailable: 0 }
   selector:
     matchLabels:
       app.kubernetes.io/name: simorgh-website

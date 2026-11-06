@@ -63,7 +63,7 @@ export function SearchOverlay({ open, onClose }: {open: boolean;onClose: () => v
               className="flex items-center justify-between gap-6 px-5 py-3 text-sm text-ink-muted transition-colors duration-150 ease-sim hover:bg-space-2 hover:text-ink">
               
                 <span className="truncate">{r.label}</span>
-                <span className="shrink-0 font-mono text-[10px] tracking-label text-ink-faint">{r.kind.toUpperCase()}</span>
+                <span className="shrink-0 font-mono text-[12px] tracking-label text-ink-faint">{r.kind.toUpperCase()}</span>
               </Link>
             </li>
           )}

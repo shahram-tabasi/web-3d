@@ -132,7 +132,7 @@ tar -C /opt/simorgh-website/storage -cf - . | kubectl -n simorgh-website exec -i
 kubectl -n simorgh-website exec storage-copy -- chown -R 65532:65532 /data
 
 kubectl -n simorgh-website delete pod storage-copy
-kubectl -n simorgh-website scale deploy/simorgh-website --replicas=1
+kubectl -n simorgh-website scale deploy/simorgh-website --replicas=2
 ```
 
 Then in **/admin → Settings**, make sure *Site URL* is `https://simorghai.com`

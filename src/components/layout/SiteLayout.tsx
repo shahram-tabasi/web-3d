@@ -7,7 +7,6 @@ import { Footer } from './Footer';
 import { I18nProvider, type Locale } from '../../i18n';
 import { AutoTranslate } from '../i18n/AutoTranslate';
 import { SimorghAIChat } from '../ai/SimorghAIChat';
-import { MeteorShower } from '../ui/MeteorShower';
 import { ScrollProgress } from '../fx/ScrollProgress';
 
 export function SiteLayout({ children, locale }: { children: React.ReactNode; locale?: Locale }) {
@@ -19,8 +18,13 @@ export function SiteLayout({ children, locale }: { children: React.ReactNode; lo
 
   return (
     <I18nProvider initial={locale}>
-      {/* The night sky: CSS only, fixed behind every page (index.css .sim-night). */}
-      <div aria-hidden="true" className="sim-night pointer-events-none fixed inset-0 -z-10" />
+      {/* The site-wide sky: fixed behind everything, seen through the translucent sections. */}
+      <div aria-hidden="true" className="sim-sky pointer-events-none fixed inset-0 -z-10">
+        <div className="sim-stars" />
+        <span className="sim-meteor" />
+        <span className="sim-meteor m2" />
+        <span className="sim-meteor m3" />
+      </div>
       <div className="relative flex min-h-screen w-full flex-col">
       <ScrollProgress />
       <Header />
@@ -29,7 +33,6 @@ export function SiteLayout({ children, locale }: { children: React.ReactNode; lo
         {children}
       </main>
       <Footer />
-      <MeteorShower />
       <SimorghAIChat />
       </div>
     </I18nProvider>);

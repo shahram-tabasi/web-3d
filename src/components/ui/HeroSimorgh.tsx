@@ -1,6 +1,5 @@
 'use client';
 
-
 import React, { useEffect, useRef, useState } from 'react';
 
 // The Simorgh keeping the sky of a page header: it flies on the empty side of
@@ -22,8 +21,7 @@ function canPlayAlphaWebm() {
   return document.createElement('video').canPlayType('video/webm; codecs="vp9"') !== '';
 }
 
-/** The original animation, kept for later use; nothing on the site renders it now. */
-export function HeroSimorghLive() {
+export function HeroSimorgh() {
   const areaRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [video, setVideo] = useState(false);
@@ -70,10 +68,4 @@ export function HeroSimorghLive() {
       </div>
     </div>
   );
-}
-
-
-/** The calm design (2026-11): nothing moving in the background. */
-export function HeroSimorgh(_props: Record<string, unknown> = {}): null {
-  return null;
 }

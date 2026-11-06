@@ -68,7 +68,7 @@ export function Insights() {
               const n = counts[t.key] ?? 0;
               const on = topic === t.key;
               return (
-                <motion.li key={t.key} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}>
+                <motion.li key={t.key}>
                   <Tilt className="h-full rounded-[18px]" max={5}>
                     <button type="button" onClick={() => { choose(on ? 'all' : t.key); document.getElementById('articles')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
                       className={`flex h-full w-full items-start gap-4 rounded-[18px] border p-5 text-start transition-colors ${on ? 'bg-space-2' : 'border-line bg-space-1/80 hover:bg-space-2/70'}`}

@@ -41,7 +41,7 @@ export function Technology() {
               key={row.tier}
               className="grid gap-4 border-b border-line bg-space-1 px-6 py-6 last:border-b-0 lg:grid-cols-[60px_200px_1fr] lg:items-center lg:gap-10 lg:px-10">
               
-                <span className="font-mono text-[10px] text-ink-faint">{String(i + 1).padStart(2, '0')}</span>
+                <span className="font-mono text-[12px] text-ink-faint">{String(i + 1).padStart(2, '0')}</span>
                 <span className="font-display text-[17px] font-semibold tracking-tight text-cyan-soft">{row.tier}</span>
                 <span className="text-[14px] leading-relaxed text-ink-muted">{row.body}</span>
               </li>
@@ -62,7 +62,7 @@ export function Technology() {
           <ul className="mt-14 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
             {aiLayers.map((layer, i) =>
             <li key={layer.title} className="flex flex-col bg-space-1 p-7">
-                <span className="font-mono text-[10px] text-ink-faint/80">{String(i + 1).padStart(2, '0')}</span>
+                <span className="font-mono text-[12px] text-ink-faint/80">{String(i + 1).padStart(2, '0')}</span>
                 <h3 className="mt-5 font-display text-[16px] font-semibold tracking-tight text-ink">{layer.title}</h3>
                 <p className="mt-3 text-[13px] leading-relaxed text-ink-faint">{layer.body}</p>
               </li>

@@ -1,6 +1,5 @@
 'use client';
 
-
 import React, { useEffect, useRef } from 'react';
 
 interface Props {
@@ -67,8 +66,7 @@ function randomStar(z = Math.random() * DEPTH + 0.05): Star {
   };
 }
 
-/** The original animation, kept for later use; nothing on the site renders it now. */
-export function StarfieldLive({ density = 0.00032, className = '', meteors = false, meteorEvery = DEFAULT_METEOR_EVERY, fixed = false }: Props) {
+export function Starfield({ density = 0.00032, className = '', meteors = false, meteorEvery = DEFAULT_METEOR_EVERY, fixed = false }: Props) {
   const ref = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -245,10 +243,4 @@ export function StarfieldLive({ density = 0.00032, className = '', meteors = fal
       className={`pointer-events-none ${fixed ? 'fixed' : 'absolute'} inset-0 h-full w-full ${className}`}
     />
   );
-}
-
-
-/** The calm design (2026-11): nothing moving in the background. */
-export function Starfield(_props: Record<string, unknown> = {}): null {
-  return null;
 }

@@ -76,19 +76,20 @@ export function SimorghAIChat() {
 
   return (
     <div className="fixed bottom-5 end-5 z-[80]" dir="ltr" data-no-translate>
-      {!open && <button onClick={() => setOpen(true)} aria-label={copy.open} className="group relative flex h-14 w-14 items-center justify-center rounded-2xl bg-blue sm:h-16 sm:w-16 text-white shadow-[0_12px_32px_-12px_rgba(31,79,168,.6)] transition hover:-translate-y-0.5 hover:bg-blue-soft">
-                <Image src="/simorgh/logo-mark-192.png" alt="" width={192} height={129} className="h-auto w-8 transition-transform group-hover:scale-105 sm:w-10" />
-        <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-space-0 bg-gold" />
+      {!open && <button onClick={() => setOpen(true)} aria-label={copy.open} className="group relative flex h-16 w-16 items-center justify-center rounded-2xl border border-cyan/30 bg-space-1/95 text-cyan shadow-[0_12px_50px_rgba(42,211,240,.18)] transition hover:-translate-y-1 hover:border-cyan/70">
+        <span className="absolute inset-1 rounded-[14px] border border-white/5" />
+        <Image src="/simorgh/logo-mark-192.png" alt="" width={192} height={129} className="h-auto w-10 drop-shadow-[0_0_8px_rgba(160,215,255,0.55)] transition-transform group-hover:scale-110" />
+        <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-space-0 bg-cyan" />
       </button>}
-      {open && <div className={`w-[min(390px,calc(100vw-32px))] overflow-hidden rounded-2xl border border-line bg-space-2 shadow-[0_25px_70px_-25px_rgba(23,35,62,.5)] ${minimized ? 'h-auto' : ''}`}>
+      {open && <div className={`w-[min(390px,calc(100vw-32px))] overflow-hidden rounded-2xl border border-line bg-space-1/98 shadow-[0_25px_90px_rgba(0,0,0,.55)] backdrop-blur-xl ${minimized ? 'h-auto' : ''}`}>
         <div className="flex items-center justify-between border-b border-line px-4 py-3">
-          <div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue"><Image src="/simorgh/logo-mark-192.png" alt="" width={192} height={129} className="h-auto w-6" /></div><div><div className="text-sm font-semibold text-ink">{copy.title}</div><div className="text-[11px] text-ink-faint">{copy.engine}</div></div></div>
-          <div className="flex gap-1"><button onClick={() => setMinimized(v=>!v)} className="p-2 text-ink-faint hover:text-ink" aria-label={copy.minimize}><Minus className="h-4 w-4"/></button><button onClick={() => setOpen(false)} className="p-2 text-ink-faint hover:text-ink" aria-label={copy.close}><X className="h-4 w-4"/></button></div>
+          <div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-xl border border-cyan/25 text-cyan"><Image src="/simorgh/logo-mark-192.png" alt="" width={192} height={129} className="h-auto w-6" /></div><div><div className="text-sm font-semibold text-white">{copy.title}</div><div className="font-mono text-[9px] tracking-[.12em] text-cyan/70">{copy.engine}</div></div></div>
+          <div className="flex gap-1"><button onClick={() => setMinimized(v=>!v)} className="p-2 text-ink-faint hover:text-white" aria-label={copy.minimize}><Minus className="h-4 w-4"/></button><button onClick={() => setOpen(false)} className="p-2 text-ink-faint hover:text-white" aria-label={copy.close}><X className="h-4 w-4"/></button></div>
         </div>
         {!minimized && <><div ref={listRef} className="max-h-[430px] space-y-3 overflow-y-auto p-4">
-          {messages.map((m,i)=><div key={i} className={`flex ${m.role==='user'?'justify-end':'justify-start'}`}><div dir="auto" className={`max-w-[86%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed ${m.role==='user'?'bg-blue text-white whitespace-pre-wrap':'bg-space-2 text-ink-muted border border-line'}`}>{m.role==='assistant'?<ReactMarkdown remarkPlugins={[remarkGfm]} components={answerParts}>{m.content}</ReactMarkdown>:m.content}</div></div>)}
+          {messages.map((m,i)=><div key={i} className={`flex ${m.role==='user'?'justify-end':'justify-start'}`}><div dir="auto" className={`max-w-[86%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed ${m.role==='user'?'bg-cyan/10 text-cyan-soft border border-cyan/15 whitespace-pre-wrap':'bg-space-2 text-ink-muted border border-line'}`}>{m.role==='assistant'?<ReactMarkdown remarkPlugins={[remarkGfm]} components={answerParts}>{m.content}</ReactMarkdown>:m.content}</div></div>)}
           {busy && <div className="text-xs text-ink-faint">{copy.busy}</div>}
-        </div><div className="border-t border-line p-3"><div className="flex items-center gap-2 rounded-xl border border-line bg-space-2 p-2"><input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter')send()}} placeholder={copy.placeholder} className="min-w-0 flex-1 bg-transparent px-2 text-sm text-ink outline-none placeholder:text-ink-faint"/><button onClick={send} disabled={busy||!input.trim()} className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue text-white disabled:opacity-40"><Send className="h-4 w-4"/></button></div></div></>}
+        </div><div className="border-t border-line p-3"><div className="flex items-center gap-2 rounded-xl border border-line bg-space-2 p-2"><input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter')send()}} placeholder={copy.placeholder} className="min-w-0 flex-1 bg-transparent px-2 text-sm text-white outline-none placeholder:text-ink-faint"/><button onClick={send} disabled={busy||!input.trim()} className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan text-space-0 disabled:opacity-40"><Send className="h-4 w-4"/></button></div></div></>}
       </div>}
     </div>
   );

@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from '../layout/LocaleLink';
 import { ChevronRightIcon } from 'lucide-react';
+import { HeroSimorgh } from './HeroSimorgh';
 import { useI18n } from '../../i18n';
 
 interface Crumb {
@@ -21,15 +22,22 @@ interface Props {
   children?: React.ReactNode;
 }
 
-export function PageHero({ eyebrow, title, lead, crumbs = [], children }: Props) {
+export function PageHero({ eyebrow, title, lead, crumbs = [], image, flip = false, children }: Props) {
   const fa = useI18n().locale === 'fa';
   return (
     <section className="relative w-full overflow-hidden border-b border-line bg-space-0 pt-[72px]">
+      {image &&
+      <div className="absolute inset-0">
+          <img src={image} alt="" aria-hidden="true" className={`h-full w-full object-cover opacity-40 ${flip ? '-scale-y-100' : ''}`} />
+          <div className="absolute inset-0 bg-gradient-to-t from-space-0 via-space-0/80 to-space-0/60" />
+        </div>
+      }
+      <HeroSimorgh />
 
-      <div className="relative mx-auto max-w-shell px-5 py-16 lg:px-10 lg:py-20">
+      <div className="relative mx-auto max-w-shell px-5 py-20 lg:px-10 lg:py-28">
         {crumbs.length > 0 &&
         <nav aria-label="Breadcrumb" className="mb-8">
-            <ol className="flex flex-wrap items-center gap-2 text-[13px] text-ink-faint">
+            <ol className="flex flex-wrap items-center gap-2 font-mono text-[12px] text-ink-faint">
               <li>
                 <Link href="/" className="hover:text-cyan">
                   {fa ? 'خانه' : 'Home'}
@@ -52,12 +60,13 @@ export function PageHero({ eyebrow, title, lead, crumbs = [], children }: Props)
         }
 
         <div className="flex items-center gap-3">
-          <span className="text-[14px] font-medium text-cyan">{eyebrow}</span>
+          <span className="h-px w-8 bg-cyan" />
+          <span className="font-mono text-[12px] tracking-label text-cyan">{eyebrow}</span>
         </div>
-        <h1 className="mt-6 max-w-4xl font-display text-[34px] font-semibold leading-[1.25] tracking-tight text-ink lg:text-[50px]">
+        <h1 className="mt-6 max-w-4xl font-display text-[38px] font-semibold leading-[1.05] tracking-tight text-white lg:text-[60px]">
           {title}
         </h1>
-        {lead && <p className="mt-6 max-w-2xl text-[17px] leading-[1.9] text-ink-muted lg:text-[18px]">{lead}</p>}
+        {lead && <p className="mt-7 max-w-2xl text-[15px] leading-relaxed text-ink-muted lg:text-[18px]">{lead}</p>}
         {children}
       </div>
     </section>);
