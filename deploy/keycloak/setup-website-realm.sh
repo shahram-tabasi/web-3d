@@ -15,6 +15,8 @@
 #                                                         # authenticator app is set up again at the next sign-in);
 #                                                         # --no-otp: this person signs in with the password only
 #                                                         # (their authenticator removed, never asked to set one up)
+#   deploy/keycloak/setup-website-realm.sh no-otp EMAIL|USERNAME
+#                                                         # the same without touching the password
 #
 # realm   brute-force lockout (5 wrong passwords: wait, growing to 15 min),
 #         passwords of 12+ characters, no self-registration, Persian first,
@@ -211,6 +213,19 @@ reset() {
   kc update "users/$id" -r "$REALM" -s enabled=true >/dev/null
 }
 
+# Password only for one administrator, the password left as it is.
+no_otp() {
+  local email="${1:?usage: $0 no-otp EMAIL|USERNAME}" id c
+  id="$(user_id "$email")"
+  [ -n "$id" ] || { echo "no user $email in realm $REALM ($0 list shows who there is)"; exit 1; }
+  say "password only for $email"
+  for c in $(kc get "users/$id/credentials" -r "$REALM" --fields id,type --format csv --noquotes | tr -d '\r' | awk -F, '$2=="otp"{print $1}'); do
+    kc delete "users/$id/credentials/$c" -r "$REALM" >/dev/null && echo "authenticator removed"
+  done
+  kc update "users/$id" -r "$REALM" -s 'requiredActions=[]' >/dev/null
+  echo "password only from now on: no authenticator, none asked for"
+}
+
 login
 trap logout EXIT
 case "${1:-}" in
@@ -219,5 +234,6 @@ case "${1:-}" in
   revoke) shift; revoke "$@" ;;
   list) list ;;
   reset) shift; reset "$@" ;;
-  *) echo "usage: $0 realm | admin EMAIL | revoke EMAIL | list | reset EMAIL [--otp | --no-otp]"; exit 2 ;;
+  no-otp) shift; no_otp "$@" ;;
+  *) echo "usage: $0 realm | admin EMAIL | revoke EMAIL | list | reset EMAIL [--otp | --no-otp] | no-otp EMAIL"; exit 2 ;;
 esac
