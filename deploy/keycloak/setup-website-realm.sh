@@ -9,10 +9,12 @@
 #                                                         # an authenticator app is set up at first sign-in)
 #   deploy/keycloak/setup-website-realm.sh revoke EMAIL   # take website-admin away (the account stays)
 #   deploy/keycloak/setup-website-realm.sh list           # the administrators (email, enabled, two-step set up)
-#   deploy/keycloak/setup-website-realm.sh reset EMAIL|USERNAME [--otp]
+#   deploy/keycloak/setup-website-realm.sh reset EMAIL|USERNAME [--otp | --no-otp]
 #                                                         # a forgotten password: asks for a new one, lifts a
 #                                                         # lockout; --otp also for a lost phone (the
-#                                                         # authenticator app is set up again at the next sign-in)
+#                                                         # authenticator app is set up again at the next sign-in);
+#                                                         # --no-otp: this person signs in with the password only
+#                                                         # (their authenticator removed, never asked to set one up)
 #
 # realm   brute-force lockout (5 wrong passwords: wait, growing to 15 min),
 #         passwords of 12+ characters, no self-registration, Persian first,
@@ -180,7 +182,7 @@ list() {
 }
 
 reset() {
-  local email="${1:?usage: $0 reset EMAIL|USERNAME [--otp]}" id p1 p2 c
+  local email="${1:?usage: $0 reset EMAIL|USERNAME [--otp | --no-otp]}" id p1 p2 c
   id="$(user_id "$email")"
   [ -n "$id" ] || { echo "no user $email in realm $REALM ($0 list shows who there is)"; exit 1; }
   say "new password for $email"
@@ -193,12 +195,18 @@ reset() {
   echo "password set"
   # Wrong tries may have locked the account: lift it.
   kc delete "attack-detection/brute-force/users/$id" -r "$REALM" >/dev/null 2>&1 && echo "lockout lifted" || true
-  if [ "${2:-}" = "--otp" ]; then
+  if [ "${2:-}" = "--otp" ] || [ "${2:-}" = "--no-otp" ]; then
     for c in $(kc get "users/$id/credentials" -r "$REALM" --fields id,type --format csv --noquotes | tr -d '\r' | awk -F, '$2=="otp"{print $1}'); do
       kc delete "users/$id/credentials/$c" -r "$REALM" >/dev/null && echo "authenticator removed"
     done
+  fi
+  if [ "${2:-}" = "--otp" ]; then
     kc update "users/$id" -r "$REALM" -s 'requiredActions=["CONFIGURE_TOTP"]' >/dev/null
     echo "at the next sign-in they scan a new QR code with Google/Microsoft Authenticator"
+  elif [ "${2:-}" = "--no-otp" ]; then
+    # The realm's browser flow asks for a code only from a user who has an authenticator.
+    kc update "users/$id" -r "$REALM" -s 'requiredActions=[]' >/dev/null
+    echo "password only from now on: no authenticator, none asked for"
   fi
   kc update "users/$id" -r "$REALM" -s enabled=true >/dev/null
 }
@@ -211,5 +219,5 @@ case "${1:-}" in
   revoke) shift; revoke "$@" ;;
   list) list ;;
   reset) shift; reset "$@" ;;
-  *) echo "usage: $0 realm | admin EMAIL | revoke EMAIL | list | reset EMAIL [--otp]"; exit 2 ;;
+  *) echo "usage: $0 realm | admin EMAIL | revoke EMAIL | list | reset EMAIL [--otp | --no-otp]"; exit 2 ;;
 esac
