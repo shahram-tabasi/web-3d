@@ -10,28 +10,32 @@
 /* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
 
 :root {
-  --space-0: #04060e;
-  --space-1: #070b18;
-  --space-2: #0b1226;
-  --line: rgba(120, 160, 255, 0.14);
-  --blue: #2b6bff;
-  --cyan: #2ad3f0;
-  --violet: #7c5cff;
-  --gold: #e8b65a;
+  --space-0: #fbf9f5;
+  --space-1: #f4f0e8;
+  --space-2: #ffffff;
+  --line: rgba(23, 35, 62, 0.12);
+  --blue: #1f4fa8;
+  --cyan: #0f7c86;
+  --violet: #5a4bb0;
+  --gold: #a87a22;
 }
 html {
   scroll-behavior: smooth;
   background-color: var(--space-0);
 }
 body {
-  /* No background here: it would paint over the fixed sky (z-index -10); html carries the base colour. */
-  color: #e7edff;
+  color: #17233e;
+  font-size: 16.5px;
+  line-height: 1.7;
   font-family: 'Inter Variable', 'Inter', 'Vazirmatn Variable', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 ::selection {
-  background: rgba(42, 211, 240, 0.28);
+  background: rgba(15, 124, 134, 0.18);
 }
+/* Small labels («آنچه هستیم», "OUR PRODUCTS") in normal case: capitals in a
+   tracked face read as machine output. */
+.tracking-label { text-transform: none !important; }
 .sim-grid-lines {
   background-image: linear-gradient(to right, rgba(120, 160, 255, 0.07) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(120, 160, 255, 0.07) 1px, transparent 1px);
@@ -63,9 +67,9 @@ body {
   html { scroll-behavior: auto; }
 }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: #04060e; }
-::-webkit-scrollbar-thumb { background: #16224a; border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: #22336b; }
+::-webkit-scrollbar-track { background: #f4f0e8; }
+::-webkit-scrollbar-thumb { background: #cfc6b5; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #b9ae99; }
 
 /* ── Persian and Arabic ───────────────────────────────────────────────────
    One face for the whole page, whatever font class an element carries. */
@@ -78,7 +82,10 @@ html[dir='rtl'] .font-sans, html[dir='rtl'] .font-display, html[dir='rtl'] .font
 html[dir='rtl'] [class*='tracking-']:not([dir='ltr']):not([dir='ltr'] *) { letter-spacing: 0; }
 /* Persian has tall ascenders and deep descenders: headings need more air
    than the tight Latin leading they were set with. */
-html[dir='rtl'] :is(h1, h2, h3) { line-height: 1.45; }
+html[dir='rtl'] :is(h1, h2, h3) { line-height: 1.5; }
+/* Persian reads best a little larger and with more air between lines. */
+html[dir='rtl'] body { font-size: 17px; line-height: 1.95; }
+html[dir='rtl'] p { line-height: 1.95; }
 html[dir='rtl'] body { font-feature-settings: 'kern'; text-rendering: optimizeLegibility; }
 
 /* ── Site-wide sky ─────────────────────────────────────────────────────────
@@ -97,9 +104,7 @@ html[dir='rtl'] body { font-feature-settings: 'kern'; text-rendering: optimizeLe
   from { background-position: 0% 0%; }
   to { background-position: 100% 100%; }
 }
-main .bg-space-0 { background-color: rgb(4 6 14 / 0.38); }
-main .bg-space-1 { background-color: rgb(7 11 24 / 0.55); }
-footer.bg-space-1 { background-color: rgb(7 11 24 / 0.6); }
+/* (The translucent sections over the old sky are gone: sections are solid paper.) */
 
 /* The header Simorgh riding the air: a slow figure-eight that also comes a
    little nearer and falls back, with the body banking into each turn. */
@@ -120,27 +125,27 @@ footer.bg-space-1 { background-color: rgb(7 11 24 / 0.6); }
 }
 
 /* Article bodies (Markdown from the admin). */
-.sim-prose { color: #b9c6e6; font-size: 16.5px; line-height: 1.85; }
+.sim-prose { color: #2b3753; font-size: 17px; line-height: 1.9; }
 .sim-prose > * + * { margin-top: 1.15em; }
-.sim-prose h2 { margin-top: 2em; font-family: 'Inter Tight Variable', 'Inter Tight', 'Vazirmatn Variable', system-ui, sans-serif; font-size: 1.6em; font-weight: 600; line-height: 1.25; color: #e7edff; letter-spacing: -0.01em; }
-.sim-prose h3 { margin-top: 1.7em; font-size: 1.25em; font-weight: 600; color: #e7edff; }
-.sim-prose h4 { margin-top: 1.5em; font-weight: 600; color: #e7edff; }
-.sim-prose a { color: #7ce6f7; text-decoration: underline; text-underline-offset: 3px; }
-.sim-prose strong { color: #e7edff; }
+.sim-prose h2 { margin-top: 2em; font-family: 'Inter Tight Variable', 'Inter Tight', 'Vazirmatn Variable', system-ui, sans-serif; font-size: 1.6em; font-weight: 600; line-height: 1.25; color: #17233e; letter-spacing: -0.01em; }
+.sim-prose h3 { margin-top: 1.7em; font-size: 1.25em; font-weight: 600; color: #17233e; }
+.sim-prose h4 { margin-top: 1.5em; font-weight: 600; color: #17233e; }
+.sim-prose a { color: #0f7c86; text-decoration: underline; text-underline-offset: 3px; }
+.sim-prose strong { color: #17233e; }
 .sim-prose ul, .sim-prose ol { padding-inline-start: 1.4em; }
 .sim-prose ul { list-style: disc; }
 .sim-prose ol { list-style: decimal; }
 .sim-prose li + li { margin-top: 0.4em; }
-.sim-prose li::marker { color: #2ad3f0; }
-.sim-prose blockquote { border-inline-start: 2px solid #2ad3f0; padding-inline-start: 1.1em; color: #9fb0d8; font-style: italic; }
-.sim-prose img { border-radius: 8px; border: 1px solid rgba(120,160,255,0.14); margin-inline: auto; }
-.sim-prose code { background: rgba(120,160,255,0.1); border-radius: 4px; padding: 0.1em 0.35em; font-size: 0.9em; color: #e7edff; }
-.sim-prose pre { background: #070b18; border: 1px solid rgba(120,160,255,0.14); border-radius: 8px; padding: 1em 1.2em; overflow-x: auto; }
+.sim-prose li::marker { color: #0f7c86; }
+.sim-prose blockquote { border-inline-start: 3px solid #0f7c86; padding-inline-start: 1.1em; color: #3f4b66; font-style: italic; }
+.sim-prose img { border-radius: 8px; border: 1px solid rgba(23,35,62,0.12); margin-inline: auto; }
+.sim-prose code { background: rgba(23,35,62,0.06); border-radius: 4px; padding: 0.1em 0.35em; font-size: 0.9em; color: #17233e; }
+.sim-prose pre { background: #f4f0e8; border: 1px solid rgba(23,35,62,0.12); border-radius: 8px; padding: 1em 1.2em; overflow-x: auto; }
 .sim-prose pre code { background: none; padding: 0; }
 .sim-prose table { width: 100%; border-collapse: collapse; font-size: 0.92em; }
-.sim-prose th, .sim-prose td { border: 1px solid rgba(120,160,255,0.14); padding: 0.55em 0.8em; text-align: start; }
-.sim-prose th { background: rgba(120,160,255,0.06); color: #e7edff; }
-.sim-prose hr { border: 0; border-top: 1px solid rgba(120,160,255,0.14); margin: 2.5em 0; }
+.sim-prose th, .sim-prose td { border: 1px solid rgba(23,35,62,0.12); padding: 0.55em 0.8em; text-align: start; }
+.sim-prose th { background: rgba(23,35,62,0.04); color: #17233e; }
+.sim-prose hr { border: 0; border-top: 1px solid rgba(23,35,62,0.12); margin: 2.5em 0; }
 
 /* ── Home: motion that costs the compositor only ─────────────────────── */
 .sim-kenburns { animation: sim-kenburns 28s ease-in-out infinite alternate; transform-origin: 60% 40%; will-change: transform; }
@@ -169,7 +174,7 @@ footer.bg-space-1 { background-color: rgb(7 11 24 / 0.6); }
 .sim-glow-card { position: relative; isolation: isolate; }
 .sim-glow-card::before {
   content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; z-index: -1;
-  background: radial-gradient(280px circle at var(--gx, 50%) var(--gy, 0%), rgba(124,230,247,.55), rgba(120,160,255,.12) 45%, rgba(120,160,255,.08));
+  background: radial-gradient(280px circle at var(--gx, 50%) var(--gy, 0%), rgba(31,79,168,.35), rgba(23,35,62,.10) 45%, rgba(23,35,62,.08));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
 }
 
@@ -182,6 +187,6 @@ footer.bg-space-1 { background-color: rgb(7 11 24 / 0.6); }
 .sim-tilt:hover { transition-duration: .12s; }
 .sim-tilt::after {
   content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
-  background: radial-gradient(360px circle at var(--lx, 50%) var(--ly, 50%), rgba(255,255,255,.08), transparent 60%);
+  background: radial-gradient(360px circle at var(--lx, 50%) var(--ly, 50%), rgba(31,79,168,.05), transparent 60%);
 }
 .sim-tilt:hover::after { opacity: 1; }

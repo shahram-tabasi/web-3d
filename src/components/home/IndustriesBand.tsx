@@ -6,26 +6,15 @@ import { ArrowUpRightIcon } from 'lucide-react';
 import Link from '../layout/LocaleLink';
 import { Icon } from '../ui/Icon';
 import { Tilt } from '../fx/Tilt';
-import { TARGET_INDUSTRIES, TICKER, pickBi } from '../../data/brochure';
+import { TARGET_INDUSTRIES, pickBi } from '../../data/brochure';
 import { useI18n } from '../../i18n';
 
-// Where the company works: a band of running keywords, then the four target
-// industries from the brochure, each opening its own page.
+// Where the company works: the four target industries from the brochure, each
+// opening its own page. (The band of running keywords is gone: motion for nothing.)
 export function IndustriesBand() {
   const fa = useI18n().locale === 'fa';
-  const words = TICKER.map((w) => pickBi(w, fa));
   return (
-    <section className="relative overflow-hidden border-y border-line bg-space-1/70" data-no-translate={fa ? '' : undefined}>
-      <div className="relative flex overflow-hidden border-b border-line py-5 [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_90%,transparent)]" aria-hidden>
-        <div className="sim-marquee flex shrink-0 gap-10 pe-10">
-          {[...words, ...words].map((w, i) => (
-            <span key={i} className="flex items-center gap-10 whitespace-nowrap text-[15px] text-ink-faint">
-              {w}<span className="h-1.5 w-1.5 rotate-45 bg-gold/60" />
-            </span>
-          ))}
-        </div>
-      </div>
-
+    <section className="relative overflow-hidden border-y border-line bg-space-0" data-no-translate={fa ? '' : undefined}>
       <div className="mx-auto max-w-shell px-5 py-20 lg:px-10 lg:py-24">
         <div className="mb-5 flex items-center gap-3 text-[12px] text-cyan/80"><span>{fa ? 'صنایع هدف' : 'INDUSTRIES'}</span><span className="h-px w-10 bg-cyan/30" /></div>
         <h2 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">{fa ? 'کجا کنار شما هستیم' : 'Where we work'}</h2>

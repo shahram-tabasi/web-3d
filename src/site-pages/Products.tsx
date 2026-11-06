@@ -6,13 +6,13 @@ import { ArrowRightIcon } from 'lucide-react';
 import { Icon } from '../components/ui/Icon';
 import { Reveal } from '../components/ui/Reveal';
 import { useContent } from '../content/ContentProvider';
-import { ProductCarousel } from '../components/product/ProductCarousel';
+import { ProductGrid } from '../components/product/ProductGrid';
 
 export function Products() {
   const { products } = useContent();
   return (
     <>
-      <ProductCarousel />
+      <ProductGrid />
 
       <section className="bg-space-0">
         <div className="mx-auto max-w-shell px-5 py-16 lg:px-10 lg:py-20">

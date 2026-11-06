@@ -7,7 +7,6 @@ import { Footer } from './Footer';
 import { I18nProvider, type Locale } from '../../i18n';
 import { AutoTranslate } from '../i18n/AutoTranslate';
 import { SimorghAIChat } from '../ai/SimorghAIChat';
-import { Starfield } from '../ui/Starfield';
 import { MeteorShower } from '../ui/MeteorShower';
 import { ScrollProgress } from '../fx/ScrollProgress';
 
@@ -20,10 +19,6 @@ export function SiteLayout({ children, locale }: { children: React.ReactNode; lo
 
   return (
     <I18nProvider initial={locale}>
-      {/* The site-wide sky: fixed behind everything, seen through the translucent sections. */}
-      <div aria-hidden="true" className="sim-sky pointer-events-none fixed inset-0 -z-10">
-        <Starfield fixed />
-      </div>
       <div className="relative flex min-h-screen w-full flex-col">
       <ScrollProgress />
       <Header />

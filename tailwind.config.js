@@ -5,33 +5,36 @@ export default {content: [
   theme: {
     extend: {
       colors: {
+        // The calm design (2026-11): warm paper, lapis ink, turquoise and a
+        // little gold — Persian tile and manuscript colours, kept quiet. The
+        // names stay (space = surfaces, ink = text) so every page follows.
         space: {
-          0: '#04060e',
-          1: '#070b18',
-          2: '#0b1226',
-          3: '#101a35',
+          0: '#fbf9f5', // the page
+          1: '#f4f0e8', // a section set apart
+          2: '#ffffff', // cards
+          3: '#ece6da', // a raised or pressed surface
         },
-        line: 'rgba(120, 160, 255, 0.14)',
+        line: 'rgba(23, 35, 62, 0.12)',
         blue: {
-          DEFAULT: '#2b6bff',
-          soft: '#5c8dff',
-          deep: '#1741b8',
+          DEFAULT: '#1f4fa8', // lapis: the one colour of action
+          soft: '#2d62c4',
+          deep: '#173d85',
         },
         cyan: {
-          DEFAULT: '#2ad3f0',
-          soft: '#7ce6f7',
+          DEFAULT: '#0f7c86', // turquoise, dark enough for text on paper
+          soft: '#0d6d76',
         },
         violet: {
-          DEFAULT: '#7c5cff',
-          soft: '#a48bff',
+          DEFAULT: '#5a4bb0',
+          soft: '#4a3d99',
         },
         gold: {
-          DEFAULT: '#e8b65a',
+          DEFAULT: '#a87a22',
         },
         ink: {
-          DEFAULT: '#e7edff',
-          muted: '#9fb0d8',
-          faint: '#6d7fa8',
+          DEFAULT: '#17233e', // headings and body
+          muted: '#3f4b66',
+          faint: '#5f6a82',
         },
       },
       fontFamily: {
@@ -39,10 +42,12 @@ export default {content: [
         // (the company name, a person's name) are drawn in it, not a system font.
         display: ['"Inter Tight Variable"', '"Inter Tight"', '"Vazirmatn Variable"', 'system-ui', 'sans-serif'],
         sans: ['"Inter Variable"', 'Inter', '"Vazirmatn Variable"', 'system-ui', 'sans-serif'],
-        mono: ['"IBM Plex Mono"', '"Vazirmatn Variable"', 'ui-monospace', 'monospace'],
+        // Small labels were set in a typewriter face; they read as machine
+        // output. The same faces as the text now.
+        mono: ['"Inter Variable"', 'Inter', '"Vazirmatn Variable"', 'system-ui', 'sans-serif'],
       },
       letterSpacing: {
-        label: '0.18em',
+        label: '0.04em',
       },
       borderRadius: {
         sm: '2px',

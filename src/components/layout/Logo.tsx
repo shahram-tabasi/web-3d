@@ -12,12 +12,12 @@ export function Logo({ compact = false }: {compact?: boolean;}) {
   return (
     <Link href="/" className="group flex items-center gap-3" aria-label={fa ? `${BRAND.nameFa} — صفحه اصلی` : `${BRAND.short} home`}>
       <Image
-        src="/brand/mark-light.png"
+        src="/brand/mark-dark.png"
         alt={fa ? `لوگوی ${BRAND.nameFa}` : `${BRAND.nameEn} logo`}
         width={1084}
         height={832}
         priority
-        className="h-11 w-auto shrink-0 sm:h-12 object-contain drop-shadow-[0_0_10px_rgba(160,215,255,0.35)] transition-transform duration-300 ease-sim group-hover:scale-105" />
+        className="h-11 w-auto shrink-0 sm:h-12 object-contain transition-transform duration-300 ease-sim group-hover:scale-105" />
       <span className="flex flex-col leading-none" data-no-translate>
         {fa ?
         <>
@@ -25,10 +25,10 @@ export function Logo({ compact = false }: {compact?: boolean;}) {
             {!compact && <span className="mt-1.5 hidden whitespace-nowrap text-[10.5px] text-ink-faint sm:block">فن‌آوری هوشمند ایرانیان</span>}
           </> :
         <>
-            <span className="font-display text-[17px] font-semibold tracking-[0.2em] text-ink">SIMORGH</span>
+            <span className="font-display text-[17px] font-semibold tracking-[0.08em] text-ink">SIMORGH</span>
             {!compact &&
-          <span className="mt-1 hidden whitespace-nowrap font-mono text-[9px] tracking-[0.22em] text-ink-faint sm:block">
-                INTELLIGENT IRANIAN TECHNOLOGY
+          <span className="mt-1 hidden whitespace-nowrap text-[10.5px] tracking-[0.02em] text-ink-faint sm:block">
+                Intelligent Iranian Technology
               </span>
           }
           </>

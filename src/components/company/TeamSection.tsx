@@ -287,11 +287,11 @@ export function TeamSection() {
           {count > 1 && (
             <>
               <button type="button" onClick={prev} aria-label={t.prev}
-                className="absolute left-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-cyan/60 bg-space-1/95 text-cyan transition hover:bg-cyan hover:text-space-0 lg:flex">
+                className="absolute left-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-cyan/60 bg-space-2 text-cyan transition hover:bg-cyan hover:text-white lg:flex">
                 <ChevronLeftIcon className="h-5 w-5" />
               </button>
               <button type="button" onClick={next} aria-label={t.next}
-                className="absolute right-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-cyan/60 bg-space-1/95 text-cyan transition hover:bg-cyan hover:text-space-0 lg:flex">
+                className="absolute right-0 top-1/2 z-30 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-cyan/60 bg-space-2 text-cyan transition hover:bg-cyan hover:text-white lg:flex">
                 <ChevronRightIcon className="h-5 w-5" />
               </button>
             </>
@@ -333,7 +333,7 @@ export function TeamSection() {
                 animate={{ opacity: 1, scale: 1, z: 0, rotateY: 0 }}
                 exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.6, z: -300 }}
                 transition={{ type: 'spring', stiffness: 170, damping: 22 }}
-                className="relative h-[min(640px,82vh)] overflow-hidden rounded-[26px] border border-cyan/60 bg-[#070b18] md:h-[560px]"
+                className="relative h-[min(640px,82vh)] overflow-hidden rounded-[26px] border border-line bg-space-2 shadow-[0_30px_80px_-30px_rgba(23,35,62,0.45)] md:h-[560px]"
               >
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div key={current.id} className="h-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>

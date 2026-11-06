@@ -104,9 +104,6 @@ export function Footer() {
               ? `© ${new Date().getFullYear()} ${BRAND.nameFa}. تمامی حقوق محفوظ است.`
               : `© ${new Date().getFullYear()} ${BRAND.nameEn} (${BRAND.nameFa}). All rights reserved.`}
           </p>
-          <p className="font-mono text-[11px] tracking-[0.12em]">
-            ENTERPRISE · ENGINEERING · KNOWLEDGE AI
-          </p>
         </div>
       </div>
     </footer>);

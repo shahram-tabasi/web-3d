@@ -20,7 +20,7 @@ export function ArticleCard({ item, big = false }: { item: Item; big?: boolean }
     <Tilt className="h-full rounded-[22px]" max={big ? 4 : 6}>
       <Link
         href={`/insights/${item.slug}`}
-        className={`group relative flex h-full flex-col overflow-hidden rounded-[22px] border border-line bg-space-1/90 transition-colors duration-300 hover:border-white/20 ${big ? 'lg:flex-row' : ''}`}
+        className={`group relative flex h-full flex-col overflow-hidden rounded-[22px] border border-line bg-space-2 transition-shadow duration-300 hover:shadow-[0_12px_32px_-16px_rgba(23,35,62,0.35)] ${big ? 'lg:flex-row' : ''}`}
         style={{ ['--tc' as string]: topic.color }}
       >
         <span aria-hidden className="absolute inset-x-0 top-0 z-10 h-[3px] bg-[var(--tc)] opacity-80" />
@@ -45,7 +45,7 @@ export function ArticleCard({ item, big = false }: { item: Item; big?: boolean }
             {format && <span className="rounded-full border border-line px-2.5 py-1 text-ink-faint">{fa ? format.fa : format.en}</span>}
           </div>
           {/* Titles and excerpts are written in English and translated with the page. */}
-          <h3 className={`mt-5 font-semibold leading-snug text-ink transition-colors group-hover:text-white ${big ? 'text-[24px] lg:text-[30px]' : 'text-[18px]'}`}>
+          <h3 className={`mt-5 font-semibold leading-snug text-ink transition-colors group-hover:text-blue ${big ? 'text-[24px] lg:text-[30px]' : 'text-[18px]'}`}>
             {item.title}
           </h3>
           <p className={`mt-3 text-[14px] leading-[1.9] text-ink-muted ${big ? 'line-clamp-4' : 'line-clamp-3'}`}>{item.excerpt}</p>

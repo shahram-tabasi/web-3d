@@ -3,7 +3,7 @@
 import React from 'react';
 import { Hero } from '../components/home/Hero';
 import { ServicesSection } from '../components/home/ServicesSection';
-import { ProductCarousel } from '../components/product/ProductCarousel';
+import { ProductGrid } from '../components/product/ProductGrid';
 import { IndustriesBand } from '../components/home/IndustriesBand';
 import { AboutCTA } from '../components/home/AboutCTA';
 import { StatementBand } from '../components/home/StatementBand';
@@ -18,7 +18,7 @@ export function Home() {
       <Hero />
       <StatementBand />
       <ServicesSection />
-      <ProductCarousel heading="h2" />
+      <ProductGrid />
       <IndustriesBand />
       <InsightsSection />
       <AboutCTA />
