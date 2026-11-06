@@ -13,6 +13,7 @@ import { BriefcaseIcon, ChevronLeftIcon, ChevronRightIcon, DownloadIcon, Graduat
 import { useContent } from '../../content/ContentProvider';
 import { useI18n } from '../../i18n';
 import type { TeamMember } from '../../content/types';
+import { hasPersian, useFromPersian } from '../../lib/fromPersian';
 
 const COPY = {
   en: {
@@ -96,8 +97,31 @@ function cardStyle(offset: number, width: number, reduce: boolean): React.CSSPro
 }
 
 /** The whole résumé of one person: the portrait beside everything about them. */
+/**
+ * Expertise, experience and education in the reader's language: as typed for
+ * Persian; in English (the member's English fields, else translated on the
+ * fly) for every other language. Null while a translation is on its way.
+ */
+function useDetails(m: TeamMember, fa: boolean) {
+  const filled = <T,>(en: T[] | undefined, base: T[]) => (!fa && en && en.length ? en : base);
+  const expertise = filled(m.expertiseEn, m.expertise);
+  const experience = filled(m.experienceEn, m.experience);
+  const education = (!fa && m.educationEn?.trim()) || m.education;
+  const flat = [...expertise, ...experience.flatMap((x) => [x.title, x.period, x.org]), education];
+  const out = useFromPersian(flat, !fa && flat.some(hasPersian));
+  if (!out) return null;
+  let i = 0;
+  const next = () => out[i++];
+  return {
+    expertise: expertise.map(next),
+    experience: experience.map(() => ({ title: next(), period: next(), org: next() })),
+    education: next(),
+  };
+}
+
 function Resume({ m, fa, t, reduce }: { m: TeamMember; fa: boolean; t: typeof COPY.en; reduce: boolean }) {
   const p = pick(m, fa);
+  const d = useDetails(m, fa) ?? { expertise: [], experience: [], education: '' };
   const align: React.CSSProperties = { textAlign: fa ? 'right' : 'left' };
   return (
     <div dir={fa ? 'rtl' : 'ltr'} className="grid h-full grid-rows-[260px_minmax(0,1fr)] md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:grid-rows-1">
@@ -106,24 +130,24 @@ function Resume({ m, fa, t, reduce }: { m: TeamMember; fa: boolean; t: typeof CO
         <h3 dir="auto" translate="no" style={align} className="font-display text-[26px] font-semibold leading-tight text-ink sm:text-[32px]">{p.name}</h3>
         {p.role && <p dir="auto" style={align} className="mt-3 text-[16px] text-cyan-soft">{p.role}</p>}
         {p.bio && <p dir="auto" style={align} className="mt-5 whitespace-pre-line text-[14.5px] leading-[1.95] text-ink-muted">{p.bio}</p>}
-        {m.expertise.length > 0 && (
+        {d.expertise.length > 0 && (
           <div className="mt-7">
             <h4 className="text-[12px] text-ink-faint" data-no-translate={fa ? '' : undefined}>{t.expertise}</h4>
             <ul className="mt-3 flex flex-wrap gap-2">
-              {m.expertise.map((x) => <li key={x} dir="auto" className={`max-w-full break-words border border-cyan/25 bg-cyan/[0.06] px-3 py-1 text-[13px] leading-relaxed text-cyan-soft ${x.length > 40 ? 'rounded-xl' : 'rounded-full'}`}>{x}</li>)}
+              {d.expertise.map((x) => <li key={x} dir="auto" className={`max-w-full break-words border border-cyan/25 bg-cyan/[0.06] px-3 py-1 text-[13px] leading-relaxed text-cyan-soft ${x.length > 40 ? 'rounded-xl' : 'rounded-full'}`}>{x}</li>)}
             </ul>
           </div>
         )}
-        {m.experience.length > 0 && (
+        {d.experience.length > 0 && (
           <div className="mt-7">
             <h4 className="flex items-center gap-2 text-[12px] text-ink-faint" data-no-translate={fa ? '' : undefined}><BriefcaseIcon className="h-3.5 w-3.5" />{t.experience}</h4>
-            <Experience key={m.id} items={m.experience} reduce={reduce} />
+            <Experience key={m.id} items={d.experience} reduce={reduce} />
           </div>
         )}
-        {m.education && (
+        {d.education && (
           <div className="mt-7">
             <h4 className="flex items-center gap-2 text-[12px] text-ink-faint" data-no-translate={fa ? '' : undefined}><GraduationCapIcon className="h-3.5 w-3.5" />{t.education}</h4>
-            <p dir="auto" style={align} className="mt-3 whitespace-pre-line text-[14px] leading-relaxed text-ink-muted">{m.education}</p>
+            <p dir="auto" style={align} className="mt-3 whitespace-pre-line text-[14px] leading-relaxed text-ink-muted">{d.education}</p>
           </div>
         )}
         {(m.resume || m.linkedin || m.email) && (

@@ -9,6 +9,7 @@ interface Mailbox { username: string; name: string; quotaMb: number; usedBytes: 
 interface Alias { id: number; address: string; goto: string; active: boolean }
 interface MailState {
   configured: boolean; ready?: boolean; domain: string; host: string; webmail: string; smtp: boolean;
+  smtpUser?: string; notifyEmail?: string;
   mailboxes?: Mailbox[]; aliases?: Alias[]; error?: string;
 }
 interface DnsRecord { type: string; name: string; value: string; priority?: number; noProxy?: boolean; purpose: string; status?: string; found?: string[] }
@@ -41,7 +42,7 @@ function Copy({ text }: { text: string }) {
 export function MailEditor() {
   const { notify } = useAdmin();
   const [state, setState] = useState<MailState | null>(null);
-  const [tab, setTab] = useState<'boxes' | 'aliases' | 'dns' | 'clients'>('boxes');
+  const [tab, setTab] = useState<'boxes' | 'aliases' | 'dns' | 'clients' | null>(null);
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
@@ -57,9 +58,11 @@ export function MailEditor() {
 
   if (!state) return <p className="text-[13px] text-ink-faint">در حال بارگذاری…</p>;
 
-  const tabs = [
+  // Mailboxes and aliases need mailcow's API; without it they are made in mailcow itself.
+  const tabs = ([
     ['boxes', 'صندوق‌های ایمیل'], ['aliases', 'آدرس‌های فرعی و ارسال خودکار'], ['dns', 'رکوردهای DNS'], ['clients', 'اتصال موبایل و Outlook'],
-  ] as const;
+  ] as const).filter(([k]) => state.configured || (k !== 'boxes' && k !== 'aliases'));
+  const current = tab && tabs.some(([k]) => k === tab) ? tab : tabs[0][0];
 
   return (
     <div className="grid gap-6">
@@ -69,7 +72,8 @@ export function MailEditor() {
           <Btn onClick={load}><RefreshCwIcon className="h-4 w-4" />تازه‌سازی</Btn>
         </>} />
 
-      {!state.configured && <SetupHelp />}
+      <Notifications state={state} busy={busy} run={run} />
+      {!state.configured && <InMailcow host={state.host} />}
       {state.error && <div className="rounded-lg border border-red-400/30 bg-red-500/5 p-4 text-[13px] text-red-200">{state.error}</div>}
       {state.configured && !state.error && state.ready === false && (
         <Card title="راه‌اندازی دامنه" hint={`سرور ایمیل وصل است ولی دامنه ${state.domain} هنوز روی آن تعریف نشده. با یک کلیک دامنه و کلید DKIM ساخته می‌شود.`}>
@@ -80,14 +84,14 @@ export function MailEditor() {
       <div className="flex flex-wrap gap-1.5 border-b border-line">
         {tabs.map(([k, l]) => (
           <button key={k} type="button" onClick={() => setTab(k)}
-            className={`-mb-px border-b-2 px-3 py-2 text-[13px] ${tab === k ? 'border-cyan text-ink' : 'border-transparent text-ink-faint hover:text-ink'}`}>{l}</button>
+            className={`-mb-px border-b-2 px-3 py-2 text-[13px] ${current === k ? 'border-cyan text-ink' : 'border-transparent text-ink-faint hover:text-ink'}`}>{l}</button>
         ))}
       </div>
 
-      {tab === 'boxes' && <Mailboxes state={state} busy={busy} run={run} />}
-      {tab === 'aliases' && <Aliases state={state} busy={busy} run={run} />}
-      {tab === 'dns' && <DnsRecords />}
-      {tab === 'clients' && <Clients state={state} />}
+      {current === 'boxes' && <Mailboxes state={state} busy={busy} run={run} />}
+      {current === 'aliases' && <Aliases state={state} busy={busy} run={run} />}
+      {current === 'dns' && <DnsRecords />}
+      {current === 'clients' && <Clients state={state} />}
     </div>
   );
 }
@@ -264,20 +268,40 @@ function Clients({ state }: { state: MailState }) {
   );
 }
 
-function SetupHelp() {
+/** Where contact and demo requests go: always the admin panel, and by email when SMTP is set. */
+function Notifications({ state, busy, run }: { state: MailState; busy: boolean; run: Run }) {
+  const ok = <CheckCircle2Icon className="h-4 w-4 shrink-0 text-cyan" />;
+  const todo = <CircleAlertIcon className="h-4 w-4 shrink-0 text-gold" />;
   return (
-    <Card title="سرور ایمیل هنوز وصل نشده است" hint="ایمیل روی یک سرور ایمیل جداگانه (mailcow) روی همان سرور لینوکسی شما اجرا می‌شود؛ این پنل فقط آن را مدیریت می‌کند. راهنمای کامل قدم‌به‌قدم در فایل docs/EMAIL-SETUP.fa.md پروژه است.">
+    <Card title="درخواست‌ها و پیام‌های فرم‌ها" hint="هر درخواست دمو و پیام تماس همیشه در «پیام‌ها و درخواست دمو» ذخیره می‌شود، چه ایمیل وصل باشد چه نه. ایمیل فقط خبر می‌دهد که درخواست تازه‌ای آمده.">
+      <ul className="grid gap-2.5 text-[13px] leading-6 text-ink-muted">
+        <li className="flex items-center gap-2">{ok}<span>ذخیره در پنل: <a href="/admin/requests" className="text-cyan hover:underline">پیام‌ها و درخواست دمو</a></span></li>
+        <li className="flex items-center gap-2">{state.smtp ? ok : todo}
+          {state.smtp
+            ? <span>ارسال از <span dir="ltr">{state.smtpUser}</span> از راه سرور ایمیل (پورت 587)</span>
+            : <span>رمز صندوق <span dir="ltr">{state.smtpUser || 'noreply@'}</span> هنوز روی سرور سایت ثبت نشده (SMTP_PASS)؛ راهنما: docs/SITE-SETUP.md بخش ۳</span>}
+        </li>
+        <li className="flex items-center gap-2">{state.notifyEmail ? ok : todo}
+          {state.notifyEmail
+            ? <span>گیرنده: <span dir="ltr">{state.notifyEmail}</span> (<a href="/admin/settings" className="text-cyan hover:underline">تغییر</a>)</span>
+            : <span>گیرنده تعیین نشده: در <a href="/admin/settings" className="text-cyan hover:underline">تنظیمات و سئو</a> «ایمیل دریافت اعلان فرم‌ها» را بنویسید.</span>}
+        </li>
+      </ul>
+      <div><Btn disabled={busy || !state.smtp || !state.notifyEmail} onClick={() => run({ action: 'test-notify' }, `ایمیل آزمایشی به ${state.notifyEmail} فرستاده شد.`)}>ارسال ایمیل آزمایشی</Btn></div>
+    </Card>
+  );
+}
+
+/** Without the mailcow API (the website is kept away from it), mailboxes are made in mailcow's own panel. */
+function InMailcow({ host }: { host: string }) {
+  return (
+    <Card title="صندوق‌ها و آدرس‌های فرعی در خود mailcow" hint="سایت عمداً به API مدیریت سرور ایمیل دسترسی ندارد (اگر سایت هک شود، ایمیل‌ها امن می‌مانند). ساخت صندوق مثل info@ یا sales@ و ارسال خودکار را در پنل mailcow انجام دهید.">
       <ol className="grid list-inside list-decimal gap-1.5 text-[13px] leading-7 text-ink-muted">
-        <li>mailcow را روی سرور لینوکسی نصب کنید (دستورها در راهنما).</li>
-        <li>در mailcow ← System ← Configuration ← Access ← API یک کلید Read-Write بسازید.</li>
-        <li>در فایل <code dir="ltr">.env.local</code> سایت بنویسید و سایت را دوباره اجرا کنید:</li>
+        <li>به پنل mailcow بروید و با حساب مدیر وارد شوید.</li>
+        <li>Email ← Configuration ← Mailboxes ← Add mailbox: صندوق تازه (مثلاً info@).</li>
+        <li>برای ارسال خودکار یک آدرس به چند نفر: Email ← Configuration ← Aliases ← Add alias.</li>
       </ol>
-      <pre dir="ltr" className="overflow-x-auto rounded-md bg-space-0 p-3 text-left font-mono text-[12px] leading-6 text-ink">{`MAIL_DOMAIN=simorghai.com
-MAIL_HOST=mail.simorghai.com
-MAIL_SERVER_IP=<public IP>
-MAILCOW_URL=http://127.0.0.1:8080
-MAILCOW_API_KEY=<api key>`}</pre>
-      <p className="text-[12.5px] text-ink-faint">تب «رکوردهای DNS» همین حالا هم کار می‌کند و رکوردهای لازم برای آروان‌کلاد را نشان می‌دهد.</p>
+      <div><a href={`https://${host}/`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-md border border-line px-3 py-2 text-[13px] text-ink-muted hover:text-ink"><ExternalLinkIcon className="h-4 w-4" />باز کردن پنل mailcow</a></div>
     </Card>
   );
 }

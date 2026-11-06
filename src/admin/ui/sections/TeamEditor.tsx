@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowRightIcon, ExternalLinkIcon, PlusIcon, Trash2Icon, UserIcon } from 'lucide-react';
+import { ArrowRightIcon, ExternalLinkIcon, LanguagesIcon, PlusIcon, Trash2Icon, UserIcon } from 'lucide-react';
+import { hasPersian, translateFromPersian } from '../../../lib/fromPersian';
 import type { TeamMember } from '../../../content/types';
 import { patcher, slugify, useAdmin } from '../AdminStore';
 import { Area, Btn, Card, Grid, ImageField, ListEditor, NumberInput, PageTitle, Select, StatusBadge, Tags, Text } from '../fields';
@@ -64,6 +65,7 @@ export function TeamEditor() {
               )} />
             <QuickExperience onAdd={(rows) => p('experience')([...m.experience, ...rows])} />
             <Area label="تحصیلات" value={m.education} onChange={p('education')} rows={2} />
+            <EnglishDetails m={m} onChange={onChange} />
             <Grid>
               <Text label="LinkedIn" value={m.linkedin} onChange={p('linkedin')} ltr placeholder="https://www.linkedin.com/in/…" />
               <Text label="ایمیل (اختیاری)" value={m.email} onChange={p('email')} ltr type="email" />
@@ -101,6 +103,58 @@ export function TeamEditor() {
 }
 
 /** Paste a list ("نقش – ۱۴ سال", one per line) and add it all at once. */
+/**
+ * Expertise, experience and education in English, for every language but
+ * Persian. Empty, the site translates the Persian on the fly; filled here (by
+ * hand or with the button), it shows exactly what is written.
+ */
+function EnglishDetails({ m, onChange }: { m: TeamMember; onChange: (v: TeamMember) => void }) {
+  const { notify } = useAdmin();
+  const [busy, setBusy] = useState(false);
+  const p = patcher(m, onChange);
+  const translate = async () => {
+    setBusy(true);
+    try {
+      const flat = [...m.expertise, ...m.experience.flatMap((x) => [x.title, x.period, x.org]), m.education];
+      const out = await translateFromPersian(flat);
+      if (flat.some((t, i) => hasPersian(t) && out[i] === t)) { notify('ترجمه خودکار در دسترس نیست؛ انگلیسی را دستی بنویسید.', 'error'); return; }
+      let i = 0;
+      const next = () => out[i++];
+      onChange({
+        ...m,
+        expertiseEn: m.expertise.map(next),
+        experienceEn: m.experience.map(() => ({ title: next(), period: next(), org: next() })),
+        educationEn: next(),
+      });
+      notify('ترجمه انگلیسی پر شد؛ بازبینی و ذخیره کنید.');
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <div className="grid gap-4 rounded-lg border border-line p-4" dir="ltr">
+      <div className="flex flex-wrap items-center justify-between gap-2" dir="rtl">
+        <div>
+          <p className="text-[13.5px] font-medium text-ink">تخصص‌ها، سوابق و تحصیلات به انگلیسی</p>
+          <p className="mt-1 text-[12.5px] leading-6 text-ink-faint">برای نسخه انگلیسی و بقیه زبان‌ها. خالی بماند، سایت فارسی را خودکار ترجمه می‌کند.</p>
+        </div>
+        <Btn onClick={translate} disabled={busy}><LanguagesIcon className="h-4 w-4" />{busy ? 'در حال ترجمه…' : 'ترجمه خودکار از فارسی'}</Btn>
+      </div>
+      <Tags label="Expertise (English)" value={m.expertiseEn ?? []} onChange={p('expertiseEn')} />
+      <ListEditor label="Experience (English)" items={m.experienceEn ?? []} onChange={p('experienceEn')} make={() => ({ period: '', title: '', org: '' })}
+        itemTitle={(x) => x.title || 'Role'}
+        render={(x, setX) => (
+          <Grid cols={3}>
+            <Text label="Role / field" value={x.title} onChange={(title) => setX({ ...x, title })} ltr />
+            <Text label="Duration or dates" value={x.period} onChange={(period) => setX({ ...x, period })} ltr placeholder="14 years" />
+            <Text label="Company (optional)" value={x.org} onChange={(org) => setX({ ...x, org })} ltr />
+          </Grid>
+        )} />
+      <Area label="Education (English)" value={m.educationEn ?? ''} onChange={p('educationEn')} rows={2} ltr />
+    </div>
+  );
+}
+
 function QuickExperience({ onAdd }: { onAdd: (rows: TeamMember['experience']) => void }) {
   const [text, setText] = useState('');
   const rows = text.split('\n')

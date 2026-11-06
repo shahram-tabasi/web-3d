@@ -77,3 +77,14 @@ export async function notifyReply(parent: StoredComment, reply: StoredComment, a
     html: `<div style="font-family:sans-serif;font-size:14px;line-height:1.6"><p>${esc(who)} replied to your comment on <a href="${esc(url)}">${esc(articleTitle)}</a>:</p><blockquote style="margin:0;padding:8px 14px;border-left:3px solid #2f6bff;color:#333">${para(reply.text)}</blockquote><p><a href="${esc(url)}">Read the conversation</a></p><p style="color:#888;font-size:12px"><a href="${esc(stop)}" style="color:#888">No more emails about this comment</a></p></div>`,
   });
 }
+
+/** A test of the whole path, from the admin panel: the site → mailcow → the team's inbox. */
+export async function sendTest(to: string, siteUrl: string) {
+  await smtp().sendMail({
+    from: from(),
+    to,
+    subject: 'SIMORGH website: test of form notifications',
+    text: `This is a test from the website's admin panel. Contact and demo requests will arrive at this address the same way.\n\nAll requests are also kept in the admin panel: ${siteUrl}/admin/requests`,
+    html: `<div style="font-family:sans-serif;font-size:14px;line-height:1.7"><p>This is a test from the website's admin panel. Contact and demo requests will arrive at this address the same way.</p><p>All requests are also kept in the admin panel: <a href="${esc(siteUrl)}/admin/requests">${esc(siteUrl)}/admin/requests</a></p></div>`,
+  });
+}

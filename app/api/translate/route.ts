@@ -27,19 +27,32 @@ function unmask(text: string, terms: string[]) {
   return text.replace(/⟦(\d+)⟧/g, (whole, index) => terms[Number(index)] ?? whole);
 }
 
+// Answers already given, per process: the same team page asked by many
+// visitors costs the LLM once. Bounded so it cannot grow without end.
+const memo = new Map<string, string>();
+const MEMO_MAX = 5000;
+
 export async function POST(req: Request) {
   try {
-    const { texts = [], locale = 'en' } = await req.json();
-    if (locale === 'en' || !Array.isArray(texts) || texts.length === 0) return NextResponse.json({ translations: texts });
+    const body = await req.json();
+    const { texts = [], locale = 'en' } = body;
+    // `from: 'fa'`: content typed only in Persian, wanted in English.
+    const from = body.from === 'fa' ? 'fa' : 'en';
+    if ((locale === 'en' && from === 'en') || !Array.isArray(texts) || texts.length === 0) return NextResponse.json({ translations: texts });
+    if (texts.length > 80) return NextResponse.json({ translations: texts, fallback: true });
     if (!llmConfigured()) return NextResponse.json({ translations: texts, fallback: true, unavailable: true });
 
-    const masked = texts.map((text: string) => mask(String(text)));
+    const key = (t: string) => `${from}>${locale}:${t}`;
+    const strings = texts.map((t: unknown) => String(t).slice(0, 2000));
+    if (strings.every((t: string) => memo.has(key(t)))) return NextResponse.json({ translations: strings.map((t: string) => memo.get(key(t))) });
+
+    const masked = strings.map((text: string) => mask(text));
 
     const raw = await llmChat(
       [
         {
           role: 'system',
-          content: `You are the translation engine for the SIMORGH website. Translate UI and editorial website text into locale ${locale}. Return JSON only: {"translations":[...]} in exactly the same order and count. Preserve HTML-free plain text. Tokens like ⟦0⟧ stand for protected names: copy every token unchanged into the translation, in the grammatically right place. NEVER translate, transliterate, or alter protected technical terms, product names, software names, company names, acronyms, model names, standards, protocols, URLs, numbers, units, or codes. Protected examples: ${protectedTerms.join(', ')}. Translate natural-language UI around those terms. Do not add explanations.`
+          content: `You are the translation engine for the SIMORGH website. Translate UI and editorial website text${from === 'fa' ? ' from Persian (Farsi)' : ''} into locale ${locale}. Durations such as "۱۴ سال" become "14 years"; Persian digits become Latin digits. Return JSON only: {"translations":[...]} in exactly the same order and count. Preserve HTML-free plain text. Tokens like ⟦0⟧ stand for protected names: copy every token unchanged into the translation, in the grammatically right place. NEVER translate, transliterate, or alter protected technical terms, product names, software names, company names, acronyms, model names, standards, protocols, URLs, numbers, units, or codes. Protected examples: ${protectedTerms.join(', ')}. Translate natural-language UI around those terms. Do not add explanations.`
         },
         { role: 'user', content: JSON.stringify(masked.map((item: { masked: string }) => item.masked)) }
       ],
@@ -48,9 +61,10 @@ export async function POST(req: Request) {
     if (!raw) return NextResponse.json({ translations: texts, fallback: true });
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed.translations) || parsed.translations.length !== texts.length) return NextResponse.json({ translations: texts, fallback: true });
-    return NextResponse.json({
-      translations: parsed.translations.map((text: string, index: number) => unmask(String(text), masked[index].terms)),
-    });
+    const translations = parsed.translations.map((text: string, index: number) => unmask(String(text), masked[index].terms));
+    if (memo.size > MEMO_MAX) memo.clear();
+    strings.forEach((t: string, i: number) => memo.set(key(t), translations[i]));
+    return NextResponse.json({ translations });
   } catch (error) {
     console.error('translate:', error instanceof Error ? error.message : error);
     return NextResponse.json({ translations: [], fallback: true }, { status: 500 });

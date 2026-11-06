@@ -126,6 +126,11 @@ export interface TeamMember {
   expertise: string[];
   experience: { period: string; title: string; org: string }[];
   education: string;
+  /** The same three in English, shown in every language but Persian. Left
+   *  empty, the site translates the Persian on the fly. */
+  expertiseEn?: string[];
+  experienceEn?: { period: string; title: string; org: string }[];
+  educationEn?: string;
   /** Uploaded résumé (PDF). */
   resume: MediaUrl;
   linkedin: string;

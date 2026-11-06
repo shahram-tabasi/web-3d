@@ -3,7 +3,8 @@ import { requireAdmin } from '@/src/admin/guard';
 import {
   addAlias, addMailbox, deleteAlias, deleteMailbox, domainExists, editMailbox, listAliases, listMailboxes, mailConfig, setupDomain,
 } from '@/src/mail/mailcow';
-import { smtpConfigured } from '@/src/mail/notify';
+import { sendTest, smtpConfigured } from '@/src/mail/notify';
+import { getContent } from '@/src/content/store';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,7 +22,11 @@ export async function GET() {
   const denied = await requireAdmin();
   if (denied) return denied;
   const cfg = mailConfig();
-  const base = { configured: cfg.configured, domain: cfg.domain, host: cfg.host, webmail: cfg.webmail, smtp: smtpConfigured() };
+  const { settings } = await getContent();
+  const base = {
+    configured: cfg.configured, domain: cfg.domain, host: cfg.host, webmail: cfg.webmail, smtp: smtpConfigured(),
+    smtpUser: process.env.SMTP_USER || '', notifyEmail: settings.notifyEmail || '',
+  };
   if (!cfg.configured) return NextResponse.json(base);
   try {
     const ready = await domainExists();
@@ -43,6 +48,21 @@ export async function POST(req: Request) {
   const b = await req.json().catch(() => ({}));
   try {
     switch (b.action) {
+      case 'test-notify': {
+        // Needs only SMTP, not the mailcow API.
+        const { settings } = await getContent();
+        if (!smtpConfigured()) return fail(new Error('رمز SMTP روی سرور تنظیم نشده است (SMTP_PASS).'), 400);
+        if (!settings.notifyEmail) return fail(new Error('اول در «تنظیمات و سئو» ایمیل دریافت اعلان فرم‌ها را بنویسید.'), 400);
+        try {
+          await sendTest(settings.notifyEmail, settings.siteUrl || '');
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          const why = /auth|535|credentials/i.test(msg) ? 'نام کاربری یا رمز SMTP پذیرفته نشد (SMTP_USER / SMTP_PASS).'
+            : /ECONNREFUSED|ETIMEDOUT|ENOTFOUND|timeout/i.test(msg) ? 'سرور ایمیل (پورت 587) در دسترس نیست.' : msg;
+          return fail(new Error(`ارسال نشد: ${why}`), 502);
+        }
+        return NextResponse.json({ ok: true });
+      }
       case 'setup':
         await setupDomain();
         break;
