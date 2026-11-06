@@ -20,7 +20,7 @@ export function StatementBand() {
         <p className="mb-5 text-[14px] font-medium text-gold">{copy.lead}</p>
         <p className="font-display text-[28px] font-semibold leading-[1.55] tracking-tight text-ink sm:text-[38px] lg:text-[44px]">
           {words.map((w, i) => (
-            <span key={i} className={ACCENT.test(w.replace(/[.,،]/g, '')) ? 'text-blue' : ''}>{w}{i < words.length - 1 ? ' ' : ''}</span>
+            <span key={i} className={ACCENT.test(w.replace(/[.,،]/g, '')) ? 'bg-gradient-to-r from-cyan-soft to-violet-soft bg-clip-text text-transparent' : ''}>{w}{i < words.length - 1 ? ' ' : ''}</span>
           ))}
         </p>
       </div>

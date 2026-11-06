@@ -51,9 +51,9 @@ export function AboutCTA() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="self-center rounded-[24px] border border-line bg-space-2 p-8 shadow-[0_20px_50px_-28px_rgba(23,35,62,0.35)] lg:p-10"
+          className="self-center rounded-[24px] border border-line bg-space-2 p-8 shadow-[0_20px_50px_-28px_rgba(0,0,0,0.55)] lg:p-10"
         >
-          <img src="/brand/mark-dark.png" alt="" aria-hidden className="h-14 w-auto" />
+          <img src="/brand/mark-light.png" alt="" aria-hidden className="h-14 w-auto" />
           <h3 className="mt-7 text-[26px] font-semibold text-ink">{fa ? 'با ما در ارتباط باشید' : 'Let’s talk'}</h3>
           <p className="mt-3 text-[15px] leading-[1.9] text-ink-muted">
             {fa ? 'برای توسعه‌ی همکاری‌های راهبردی و دریافت مشاوره‌ی تخصصی، با ما تماس بگیرید.' : 'For a strategic partnership or specialist advice, get in touch.'}

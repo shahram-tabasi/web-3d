@@ -112,7 +112,7 @@ export function AdminShell({ user, children }: { user: string; children: React.R
 function Brand() {
   return (
     <Link href="/admin" className="flex items-center gap-3 px-2">
-      <img src="/brand/mark-dark.png" alt="" className="h-9 w-auto" />
+      <img src="/brand/mark-light.png" alt="" className="h-9 w-auto" />
       <span>
         <span className="block text-[14px] font-bold tracking-wide text-ink">SIMORGH</span>
         <span className="block text-[11px] text-ink-faint">پنل مدیریت سایت</span>

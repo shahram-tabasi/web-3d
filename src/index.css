@@ -10,28 +10,29 @@
 /* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
 
 :root {
-  --space-0: #fbf9f5;
-  --space-1: #f4f0e8;
-  --space-2: #ffffff;
-  --line: rgba(23, 35, 62, 0.12);
-  --blue: #1f4fa8;
-  --cyan: #0f7c86;
-  --violet: #5a4bb0;
-  --gold: #a87a22;
+  --space-0: #0a1026;
+  --space-1: #0e1630;
+  --space-2: #131d3c;
+  --line: rgba(186, 204, 255, 0.13);
+  --blue: #3a66e0;
+  --cyan: #5fd4cf;
+  --violet: #a596ff;
+  --gold: #e4bc62;
 }
 html {
   scroll-behavior: smooth;
   background-color: var(--space-0);
 }
 body {
-  color: #17233e;
+  /* No background: the fixed night sky (z-index -10) shows through; html carries the base colour. */
+  color: #eef2fb;
   font-size: 16.5px;
   line-height: 1.7;
   font-family: 'Inter Variable', 'Inter', 'Vazirmatn Variable', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 ::selection {
-  background: rgba(15, 124, 134, 0.18);
+  background: rgba(95, 212, 207, 0.3);
 }
 /* Small labels («آنچه هستیم», "OUR PRODUCTS") in normal case: capitals in a
    tracked face read as machine output. */
@@ -67,9 +68,9 @@ body {
   html { scroll-behavior: auto; }
 }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: #f4f0e8; }
-::-webkit-scrollbar-thumb { background: #cfc6b5; border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: #b9ae99; }
+::-webkit-scrollbar-track { background: #0a1026; }
+::-webkit-scrollbar-thumb { background: #22305a; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #2e3f73; }
 
 /* ── Persian and Arabic ───────────────────────────────────────────────────
    One face for the whole page, whatever font class an element carries. */
@@ -104,7 +105,104 @@ html[dir='rtl'] body { font-feature-settings: 'kern'; text-rendering: optimizeLe
   from { background-position: 0% 0%; }
   to { background-position: 100% 100%; }
 }
-/* (The translucent sections over the old sky are gone: sections are solid paper.) */
+/* Sections let the sky show through, a little veiled so text stays calm. */
+main .bg-space-0 { background-color: rgb(10 16 38 / 0.35); }
+main .bg-space-1 { background-color: rgb(14 22 48 / 0.62); }
+footer.bg-space-1 { background-color: rgb(9 14 33 / 0.82); }
+
+/* ── The night sky ───────────────────────────────────────────────────────
+   Painted once by CSS, fixed behind every page: no canvas, no script.
+   Three layers of tiny stars at different spacings (so no grid shows), a
+   faint nebula of lapis, turquoise and gold, and a few stars that twinkle by
+   opacity alone (the compositor's work, not the processor's). */
+.sim-night {
+  background-color: #0a1026;
+  background-image:
+    radial-gradient(1px 1px at 23px 41px, rgba(255,255,255,.85), transparent 60%),
+    radial-gradient(1px 1px at 131px 97px, rgba(255,255,255,.55), transparent 60%),
+    radial-gradient(1.2px 1.2px at 199px 13px, rgba(214,228,255,.7), transparent 60%),
+    radial-gradient(1px 1px at 77px 173px, rgba(255,255,255,.45), transparent 60%),
+    radial-gradient(1px 1px at 251px 211px, rgba(255,240,214,.6), transparent 60%),
+    radial-gradient(1.4px 1.4px at 311px 61px, rgba(255,255,255,.75), transparent 60%),
+    radial-gradient(1px 1px at 367px 151px, rgba(200,220,255,.5), transparent 60%),
+    radial-gradient(60% 45% at 15% 18%, rgba(58,102,224,.16), transparent 70%),
+    radial-gradient(50% 40% at 88% 62%, rgba(95,212,207,.08), transparent 70%),
+    radial-gradient(45% 35% at 55% 105%, rgba(228,188,98,.07), transparent 70%);
+  background-size: 263px 233px, 263px 233px, 263px 233px, 263px 233px, 397px 271px, 397px 271px, 397px 271px, 100% 100%, 100% 100%, 100% 100%;
+}
+.sim-night::before, .sim-night::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(1.6px 1.6px at 61px 83px, #fff, transparent 60%),
+    radial-gradient(1.3px 1.3px at 389px 307px, #e9f1ff, transparent 60%),
+    radial-gradient(1.8px 1.8px at 547px 151px, #fff4dc, transparent 60%);
+  background-size: 613px 467px;
+  animation: sim-twinkle 5.5s ease-in-out infinite alternate;
+}
+.sim-night::after { background-position: 211px 139px; animation-duration: 7.3s; animation-delay: -3s; }
+@keyframes sim-twinkle { from { opacity: .25; } to { opacity: 1; } }
+
+/* A shooting star, now and then, across the first screen only. */
+.sim-meteor {
+  position: absolute; top: 12%; inset-inline-start: 70%; width: 140px; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, rgba(255,255,255,.9), rgba(255,255,255,0));
+  transform: rotate(-24deg) translateX(0); opacity: 0;
+  animation: sim-meteor 11s ease-in 4s infinite;
+}
+@keyframes sim-meteor {
+  0%, 88% { opacity: 0; transform: rotate(-24deg) translateX(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(-24deg) translateX(-420px); }
+}
+/* The Simorgh riding the air: a slow rise and fall. */
+.sim-float { animation: sim-float 9s ease-in-out infinite; will-change: transform; }
+@keyframes sim-float { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-14px) rotate(1deg); } }
+/* The first screen: a band of the galaxy, the earth's horizon, and the
+   network of thought (AI) drawn as a constellation between them. All CSS/SVG. */
+.sim-galaxy {
+  position: absolute; left: -20%; right: -20%; top: 4%; height: 62%; pointer-events: none;
+  transform: rotate(-14deg);
+  background:
+    radial-gradient(ellipse 48% 22% at 58% 50%, rgba(255,240,214,.10), transparent 70%),
+    radial-gradient(ellipse 60% 30% at 40% 52%, rgba(165,150,255,.16), transparent 70%),
+    radial-gradient(ellipse 70% 26% at 70% 46%, rgba(95,212,207,.10), transparent 70%);
+  filter: blur(6px);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent);
+}
+.sim-galaxy::after { /* the dust of distant stars inside the band */
+  content: ''; position: absolute; inset: 20% 10%;
+  background-image:
+    radial-gradient(1px 1px at 12px 18px, rgba(255,255,255,.75), transparent 60%),
+    radial-gradient(1px 1px at 61px 44px, rgba(255,255,255,.5), transparent 60%),
+    radial-gradient(1px 1px at 33px 71px, rgba(255,236,200,.6), transparent 60%),
+    radial-gradient(1px 1px at 88px 9px, rgba(200,220,255,.55), transparent 60%);
+  background-size: 97px 83px;
+  -webkit-mask-image: radial-gradient(ellipse 50% 40% at 50% 50%, #000, transparent);
+          mask-image: radial-gradient(ellipse 50% 40% at 50% 50%, #000, transparent);
+}
+.sim-earth {
+  position: absolute; left: 50%; width: 240vw; max-width: 3600px; aspect-ratio: 1; bottom: 0;
+  transform: translate(-50%, calc(100% - 120px)); border-radius: 50%; pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(95,212,207,.20), transparent 9%),
+    radial-gradient(circle at 50% 50%, #06122a 60%, #0b2347 100%);
+  box-shadow:
+    0 0 0 1px rgba(143,228,224,.55),
+    0 -6px 30px rgba(95,212,207,.40),
+    0 -30px 120px rgba(58,102,224,.35),
+    inset 0 30px 90px rgba(95,212,207,.22);
+}
+@media (min-width: 1024px) { .sim-earth { width: 200vw; transform: translate(-50%, calc(100% - 160px)); } }
+.sim-node { animation: sim-node 4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes sim-node { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+.sim-signal { stroke-dasharray: 4 10; animation: sim-signal 3.2s linear infinite; }
+@keyframes sim-signal { to { stroke-dashoffset: -28; } }
+@media (prefers-reduced-motion: reduce) {
+  .sim-node, .sim-signal { animation: none; }
+  .sim-night::before, .sim-night::after, .sim-meteor, .sim-float { animation: none; }
+  .sim-meteor { display: none; }
+}
 
 /* The header Simorgh riding the air: a slow figure-eight that also comes a
    little nearer and falls back, with the body banking into each turn. */
@@ -125,27 +223,27 @@ html[dir='rtl'] body { font-feature-settings: 'kern'; text-rendering: optimizeLe
 }
 
 /* Article bodies (Markdown from the admin). */
-.sim-prose { color: #2b3753; font-size: 17px; line-height: 1.9; }
+.sim-prose { color: #c9d3ea; font-size: 17px; line-height: 1.9; }
 .sim-prose > * + * { margin-top: 1.15em; }
-.sim-prose h2 { margin-top: 2em; font-family: 'Inter Tight Variable', 'Inter Tight', 'Vazirmatn Variable', system-ui, sans-serif; font-size: 1.6em; font-weight: 600; line-height: 1.25; color: #17233e; letter-spacing: -0.01em; }
-.sim-prose h3 { margin-top: 1.7em; font-size: 1.25em; font-weight: 600; color: #17233e; }
-.sim-prose h4 { margin-top: 1.5em; font-weight: 600; color: #17233e; }
-.sim-prose a { color: #0f7c86; text-decoration: underline; text-underline-offset: 3px; }
-.sim-prose strong { color: #17233e; }
+.sim-prose h2 { margin-top: 2em; font-family: 'Inter Tight Variable', 'Inter Tight', 'Vazirmatn Variable', system-ui, sans-serif; font-size: 1.6em; font-weight: 600; line-height: 1.25; color: #eef2fb; letter-spacing: -0.01em; }
+.sim-prose h3 { margin-top: 1.7em; font-size: 1.25em; font-weight: 600; color: #eef2fb; }
+.sim-prose h4 { margin-top: 1.5em; font-weight: 600; color: #eef2fb; }
+.sim-prose a { color: #5fd4cf; text-decoration: underline; text-underline-offset: 3px; }
+.sim-prose strong { color: #eef2fb; }
 .sim-prose ul, .sim-prose ol { padding-inline-start: 1.4em; }
 .sim-prose ul { list-style: disc; }
 .sim-prose ol { list-style: decimal; }
 .sim-prose li + li { margin-top: 0.4em; }
-.sim-prose li::marker { color: #0f7c86; }
-.sim-prose blockquote { border-inline-start: 3px solid #0f7c86; padding-inline-start: 1.1em; color: #3f4b66; font-style: italic; }
-.sim-prose img { border-radius: 8px; border: 1px solid rgba(23,35,62,0.12); margin-inline: auto; }
-.sim-prose code { background: rgba(23,35,62,0.06); border-radius: 4px; padding: 0.1em 0.35em; font-size: 0.9em; color: #17233e; }
-.sim-prose pre { background: #f4f0e8; border: 1px solid rgba(23,35,62,0.12); border-radius: 8px; padding: 1em 1.2em; overflow-x: auto; }
+.sim-prose li::marker { color: #5fd4cf; }
+.sim-prose blockquote { border-inline-start: 3px solid #5fd4cf; padding-inline-start: 1.1em; color: #b8c3de; font-style: italic; }
+.sim-prose img { border-radius: 8px; border: 1px solid rgba(186,204,255,0.13); margin-inline: auto; }
+.sim-prose code { background: rgba(186,204,255,0.08); border-radius: 4px; padding: 0.1em 0.35em; font-size: 0.9em; color: #eef2fb; }
+.sim-prose pre { background: #0e1630; border: 1px solid rgba(186,204,255,0.13); border-radius: 8px; padding: 1em 1.2em; overflow-x: auto; }
 .sim-prose pre code { background: none; padding: 0; }
 .sim-prose table { width: 100%; border-collapse: collapse; font-size: 0.92em; }
-.sim-prose th, .sim-prose td { border: 1px solid rgba(23,35,62,0.12); padding: 0.55em 0.8em; text-align: start; }
-.sim-prose th { background: rgba(23,35,62,0.04); color: #17233e; }
-.sim-prose hr { border: 0; border-top: 1px solid rgba(23,35,62,0.12); margin: 2.5em 0; }
+.sim-prose th, .sim-prose td { border: 1px solid rgba(186,204,255,0.13); padding: 0.55em 0.8em; text-align: start; }
+.sim-prose th { background: rgba(186,204,255,0.05); color: #eef2fb; }
+.sim-prose hr { border: 0; border-top: 1px solid rgba(186,204,255,0.13); margin: 2.5em 0; }
 
 /* ── Home: motion that costs the compositor only ─────────────────────── */
 .sim-kenburns { animation: sim-kenburns 28s ease-in-out infinite alternate; transform-origin: 60% 40%; will-change: transform; }
@@ -174,7 +272,7 @@ html[dir='rtl'] body { font-feature-settings: 'kern'; text-rendering: optimizeLe
 .sim-glow-card { position: relative; isolation: isolate; }
 .sim-glow-card::before {
   content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; z-index: -1;
-  background: radial-gradient(280px circle at var(--gx, 50%) var(--gy, 0%), rgba(31,79,168,.35), rgba(23,35,62,.10) 45%, rgba(23,35,62,.08));
+  background: radial-gradient(280px circle at var(--gx, 50%) var(--gy, 0%), rgba(143,228,224,.5), rgba(186,204,255,.12) 45%, rgba(186,204,255,.08));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
 }
 
@@ -187,6 +285,6 @@ html[dir='rtl'] body { font-feature-settings: 'kern'; text-rendering: optimizeLe
 .sim-tilt:hover { transition-duration: .12s; }
 .sim-tilt::after {
   content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
-  background: radial-gradient(360px circle at var(--lx, 50%) var(--ly, 50%), rgba(31,79,168,.05), transparent 60%);
+  background: radial-gradient(360px circle at var(--lx, 50%) var(--ly, 50%), rgba(255,255,255,.06), transparent 60%);
 }
 .sim-tilt:hover::after { opacity: 1; }

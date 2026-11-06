@@ -12,7 +12,7 @@ export function Logo({ compact = false }: {compact?: boolean;}) {
   return (
     <Link href="/" className="group flex items-center gap-3" aria-label={fa ? `${BRAND.nameFa} — صفحه اصلی` : `${BRAND.short} home`}>
       <Image
-        src="/brand/mark-dark.png"
+        src="/brand/mark-light.png"
         alt={fa ? `لوگوی ${BRAND.nameFa}` : `${BRAND.nameEn} logo`}
         width={1084}
         height={832}

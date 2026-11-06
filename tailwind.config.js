@@ -5,36 +5,38 @@ export default {content: [
   theme: {
     extend: {
       colors: {
-        // The calm design (2026-11): warm paper, lapis ink, turquoise and a
-        // little gold — Persian tile and manuscript colours, kept quiet. The
-        // names stay (space = surfaces, ink = text) so every page follows.
+        // "A Persian night" (2026-11): a deep lapis night sky, ivory text, a
+        // turquoise of tilework for links and small headings, gold for the
+        // few things that should shine. Every text pair meets WCAG AA on the
+        // night (ink ≈ 15:1, muted ≈ 9:1, faint ≈ 5.5:1). The names stay
+        // (space = surfaces, ink = text) so every page follows.
         space: {
-          0: '#fbf9f5', // the page
-          1: '#f4f0e8', // a section set apart
-          2: '#ffffff', // cards
-          3: '#ece6da', // a raised or pressed surface
+          0: '#0a1026', // the night
+          1: '#0e1630', // a section set apart
+          2: '#131d3c', // cards
+          3: '#1b2850', // raised
         },
-        line: 'rgba(23, 35, 62, 0.12)',
+        line: 'rgba(186, 204, 255, 0.13)',
         blue: {
-          DEFAULT: '#1f4fa8', // lapis: the one colour of action
-          soft: '#2d62c4',
-          deep: '#173d85',
+          DEFAULT: '#3a66e0', // lapis: the one colour of action (white on it ≈ 5:1)
+          soft: '#4f7af0',
+          deep: '#2a4fb8',
         },
         cyan: {
-          DEFAULT: '#0f7c86', // turquoise, dark enough for text on paper
-          soft: '#0d6d76',
+          DEFAULT: '#5fd4cf', // turquoise tile
+          soft: '#8fe4e0',
         },
         violet: {
-          DEFAULT: '#5a4bb0',
-          soft: '#4a3d99',
+          DEFAULT: '#a596ff',
+          soft: '#c1b6ff',
         },
         gold: {
-          DEFAULT: '#a87a22',
+          DEFAULT: '#e4bc62',
         },
         ink: {
-          DEFAULT: '#17233e', // headings and body
-          muted: '#3f4b66',
-          faint: '#5f6a82',
+          DEFAULT: '#eef2fb',
+          muted: '#b8c3de',
+          faint: '#8e9cc0',
         },
       },
       fontFamily: {

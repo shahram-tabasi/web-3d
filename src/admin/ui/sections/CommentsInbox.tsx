@@ -90,7 +90,7 @@ export function CommentsInbox() {
                   {c.parentId ? <span className="text-ink-faint">پاسخ</span> : <span className="text-ink-faint">{KIND[c.kind] ?? c.kind}</span>}
                   {c.answered && <span className="rounded bg-emerald-400/10 px-2 py-0.5 text-[11px] text-emerald-300">پاسخ داده شد</span>}
                   {c.pinned && <span className="inline-flex items-center gap-1 text-ink-faint"><PinIcon className="h-3 w-3" />سنجاق</span>}
-                  {c.team && <span className="rounded bg-blue/20 px-2 py-0.5 text-[11px] text-blue-soft">تیم سیمرغ</span>}
+                  {c.team && <span className="rounded bg-blue/20 px-2 py-0.5 text-[11px] text-[#9db4ff]">تیم سیمرغ</span>}
                   <span className="inline-flex items-center gap-1 text-ink-faint"><HeartIcon className="h-3 w-3" />{c.likes}</span>
                   <span className="ms-auto text-ink-faint">{new Date(c.createdAt).toLocaleString('fa-IR')}</span>
                 </div>

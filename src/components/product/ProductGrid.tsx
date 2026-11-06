@@ -34,7 +34,7 @@ export function ProductGrid({ heading = 'h2' }: { heading?: 'h1' | 'h2' }) {
           {products.map((p) => (
             <li key={p.slug}>
               <Link href={`/products/${p.slug}`}
-                className="group flex h-full flex-col overflow-hidden rounded-xl border border-line bg-space-2 transition-shadow duration-200 hover:shadow-[0_12px_32px_-16px_rgba(23,35,62,0.35)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue">
+                className="group flex h-full flex-col overflow-hidden rounded-xl border border-line bg-space-2 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-cyan/35 hover:shadow-[0_18px_40px_-20px_rgba(95,212,207,0.35)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue">
                 {p.image && (
                   <div className="relative aspect-[16/9] bg-space-3">
                     <Image src={p.image} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
@@ -42,9 +42,9 @@ export function ProductGrid({ heading = 'h2' }: { heading?: 'h1' | 'h2' }) {
                 )}
                 <div className="flex flex-1 flex-col p-6">
                   <h3 className="font-display text-[20px] font-semibold text-ink" data-no-translate dir="ltr" style={{ textAlign: fa ? 'right' : 'left' }}>{p.name}</h3>
-                  {p.tagline && <p className="mt-1.5 text-[15.5px] font-medium leading-7 text-cyan">{p.tagline}</p>}
+                  {p.tagline && <p className="mt-1.5 text-[15.5px] font-medium leading-7 text-ink/90">{p.tagline}</p>}
                   {p.summary && <p className="mt-3 line-clamp-3 text-[15px] leading-7 text-ink-muted">{p.summary}</p>}
-                  <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-[15px] font-medium text-blue">
+                  <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-[15px] font-medium text-cyan">
                     {fa ? 'بیشتر بدانید' : 'Learn more'}
                     <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5" strokeWidth={1.8} />
                   </span>

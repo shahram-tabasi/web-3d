@@ -19,6 +19,8 @@ export function SiteLayout({ children, locale }: { children: React.ReactNode; lo
 
   return (
     <I18nProvider initial={locale}>
+      {/* The night sky: CSS only, fixed behind every page (index.css .sim-night). */}
+      <div aria-hidden="true" className="sim-night pointer-events-none fixed inset-0 -z-10" />
       <div className="relative flex min-h-screen w-full flex-col">
       <ScrollProgress />
       <Header />
