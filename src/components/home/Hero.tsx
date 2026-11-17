@@ -14,7 +14,6 @@ export function Hero() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
   const mediaY = useTransform(scrollYProgress, [0, 1], ['0%', reduced ? '0%' : '9%']);
   const mediaScale = useTransform(scrollYProgress, [0, 1], [1, reduced ? 1 : 1.06]);
-  const copyOpacity = useTransform(scrollYProgress, [0, 0.7], [1, reduced ? 1 : 0]);
 
   const { t } = useI18n();
   const slide = activeHero;
@@ -55,20 +54,18 @@ export function Hero() {
         }
       </motion.div>
 
-      <div className="absolute inset-x-0 top-0 h-[62svh] lg:inset-0 lg:h-full">
-        <HeroExperience />
-      </div>
+      <HeroExperience />
 
       {/* Scrims: vertical on mobile, directional on desktop so the Simorgh stays uncovered */}
       <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-space-0 via-space-0/70 to-transparent lg:bg-gradient-to-r rtl:lg:bg-gradient-to-l lg:from-space-0 lg:via-space-0/30 lg:to-transparent"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-space-0 via-transparent to-transparent lg:bg-gradient-to-r rtl:lg:bg-gradient-to-l lg:from-space-0 lg:via-transparent lg:to-transparent"
         style={{ opacity: Math.min(slide.overlay + 0.15, 1) }} />
       
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-space-0 to-transparent" />
       <div className="pointer-events-none absolute inset-0 hidden lg:block lg:bg-[radial-gradient(60%_50%_at_58%_45%,rgba(42,211,240,0.10),transparent_70%)]" />
 
-      <div className="pointer-events-none relative mx-auto flex min-h-[100svh] max-w-shell flex-col items-center justify-end px-5 pb-16 pt-28 text-center lg:items-start lg:justify-center lg:px-10 lg:pb-0 lg:text-start">
-        <motion.div style={{ opacity: copyOpacity }} className="mx-auto max-w-4xl lg:mx-0 lg:max-w-[52%]">
+      <div className="pointer-events-none relative mx-auto flex min-h-[100svh] max-w-shell flex-col items-center justify-end px-5 pb-14 pt-[380px] text-center sm:pt-[460px] lg:items-start lg:justify-center lg:px-10 lg:pb-16 lg:pt-28 lg:text-start">
+        <motion.div className="mx-auto max-w-2xl lg:mx-0 lg:w-[42%]">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -83,7 +80,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.34, delay: 0.06, ease: [0.23, 1, 0.32, 1] }}
-            className="mt-6 font-display text-[40px] font-semibold leading-[1.03] tracking-tight text-white sm:text-[54px] lg:text-[68px]">
+            className="mt-6 font-display text-[36px] font-semibold leading-[1.1] tracking-tight text-white sm:text-[48px] lg:text-[clamp(40px,4vw,60px)]">
             
             {t.hero.headline}
             <span className="block text-transparent [-webkit-background-clip:text] [background-clip:text] [background-image:linear-gradient(92deg,#7ce6f7,#5c8dff_55%,#a48bff)]">
@@ -119,7 +116,7 @@ export function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.26 }}
-            className="mt-12 font-mono text-[10.5px] tracking-label text-ink-faint">
+            className="mt-10 font-mono text-[10px] leading-relaxed tracking-label text-ink-faint">
             
             {t.hero.kicker}
           </motion.div>

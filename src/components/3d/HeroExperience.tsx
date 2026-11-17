@@ -54,7 +54,7 @@ export function HeroExperience() {
   return (
     <div ref={host} aria-hidden="true" className="absolute inset-0" data-hero-3d={failed ? 'fallback' : 'available'}>
       <div className={`pointer-events-none absolute inset-0 bg-[#050b18] transition-opacity duration-700 ${ready && !failed ? 'opacity-100' : 'opacity-0'}`} />
-      <div className="absolute inset-0 lg:left-[35%] rtl:lg:left-0 rtl:lg:right-[35%]">
+      <div className="absolute inset-x-0 top-20 h-[280px] sm:h-[360px] lg:bottom-0 lg:top-0 lg:h-auto lg:left-[43%] rtl:lg:left-0 rtl:lg:right-[43%]">
         {eligible && !failed && <SceneBoundary onFailure={onFailure}>
           <Scene visible={visible} compact={compact} reduced={reduced} onFailure={onFailure} onReady={onReady} />
         </SceneBoundary>}

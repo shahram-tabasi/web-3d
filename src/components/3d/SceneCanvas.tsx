@@ -1,65 +1,33 @@
 'use client';
 
-import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
-import { Line } from '@react-three/drei';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Environment, Lightformer } from '@react-three/drei';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { IndustrialCampus } from './IndustrialCampus';
 
 type Props = { visible: boolean; compact: boolean; reduced: boolean; onFailure: () => void; onReady: () => void };
-const sites: [number, number, number][] = [
-  [-0.95, 0.65, 0.85], [0.1, 1.1, 0.9], [0.95, 0.5, 0.85],
-  [1.1, -0.45, 0.65], [0.1, -0.6, 1.25], [-0.9, -0.4, 1],
-];
+const lookAt = new THREE.Vector3(0, -0.2, 0);
 
-function Connection({ from, to, reduced }: { from: number; to: number; reduced: boolean }) {
-  const packet = useRef<THREE.Mesh>(null);
-  const progress = useRef(from / sites.length);
-  const curve = useMemo(() => {
-    const a = new THREE.Vector3(...sites[from]).normalize().multiplyScalar(1.42);
-    const b = new THREE.Vector3(...sites[to]).normalize().multiplyScalar(1.42);
-    return new THREE.QuadraticBezierCurve3(a, a.clone().add(b).normalize().multiplyScalar(2.1), b);
-  }, [from, to]);
-  const points = useMemo(() => curve.getPoints(32), [curve]);
-  useFrame((_, dt) => {
-    if (!reduced) progress.current = (progress.current + Math.min(dt, 0.05) * 0.12) % 1;
-    if (packet.current) curve.getPoint(progress.current, packet.current.position);
-  });
-  return <>
-    <Line points={points} color="#55e6ff" lineWidth={1} transparent opacity={0.5} />
-    <mesh ref={packet} position={curve.getPoint(progress.current)}>
-      <sphereGeometry args={[0.022, 8, 6]} />
-      <meshBasicMaterial color="#dcfbff" />
-    </mesh>
-  </>;
+function RenderBudget({ visible, reduced }: Pick<Props, 'visible' | 'reduced'>) {
+  const invalidate = useThree(state => state.invalidate);
+  useEffect(() => {
+    if (!visible || reduced) return;
+    const timer = window.setInterval(() => invalidate(), 1000 / 30);
+    return () => window.clearInterval(timer);
+  }, [visible, reduced, invalidate]);
+  return null;
 }
 
-function IndustrialSite({ position, index, active, onActive }: {
-  position: [number, number, number]; index: number; active: boolean; onActive: (index: number | null) => void;
-}) {
-  const location = useMemo(() => new THREE.Vector3(...position).normalize().multiplyScalar(1.42), [position]);
-  const orientation = useMemo(() => new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), location.clone().normalize()), [location]);
-  const enter = (event: ThreeEvent<PointerEvent>) => { event.stopPropagation(); onActive(index); };
-  return <group position={location} quaternion={orientation} onPointerOver={enter} onPointerOut={() => onActive(null)}>
-    <mesh position={[0, 0.025, 0]}>
-      <cylinderGeometry args={[0.19, 0.22, 0.05, 6]} />
-      <meshStandardMaterial color={active ? '#76edff' : '#184d65'} metalness={0.7} roughness={0.35} emissive="#2ad3f0" emissiveIntensity={active ? 1.2 : 0.2} />
-    </mesh>
-    {[0, 1, 2].map(tower => <mesh key={tower} position={[(tower - 1) * 0.09, 0.12 + tower * 0.025, 0]}>
-      <boxGeometry args={[0.065, 0.15 + tower * 0.05, 0.11]} />
-      <meshStandardMaterial color={active ? '#b5f4ff' : '#48859b'} metalness={0.75} roughness={0.3} emissive="#27b8e5" emissiveIntensity={active ? 0.8 : 0.1} />
-    </mesh>)}
-    <mesh position={[0, 0.37, 0]}>
-      <sphereGeometry args={[active ? 0.055 : 0.035, 12, 8]} />
-      <meshBasicMaterial color={active ? '#ffffff' : '#67eaff'} />
-    </mesh>
-  </group>;
-}
-
-function DigitalTwin({ compact, reduced }: Pick<Props, 'compact' | 'reduced'>) {
-  const world = useRef<THREE.Group>(null);
+function CameraRig({ compact, reduced }: Pick<Props, 'compact' | 'reduced'>) {
   const pointer = useRef({ x: 0, y: 0 });
-  const [active, setActive] = useState<number | null>(null);
-  const { camera, gl, size } = useThree();
+  const { camera, gl, size, invalidate } = useThree();
+  const distance = (compact ? 1 : 1.18) * Math.max(1, 0.9 / (size.width / size.height));
+  useEffect(() => {
+    camera.position.set(7.4 * distance, 6.1 * distance, 8.6 * distance);
+    camera.lookAt(lookAt);
+    invalidate();
+  }, [camera, distance, invalidate]);
 
   useEffect(() => {
     const section = gl.domElement.closest('section');
@@ -80,40 +48,13 @@ function DigitalTwin({ compact, reduced }: Pick<Props, 'compact' | 'reduced'>) {
   }, [gl, compact, reduced]);
 
   useFrame((_, dt) => {
-    if (reduced) return;
+    if (reduced || compact) return;
     const delta = Math.min(dt, 0.05);
-    if (world.current) world.current.rotation.y += delta * 0.035;
-    camera.position.x = THREE.MathUtils.damp(camera.position.x, pointer.current.x * 0.3, 3, delta);
-    camera.position.y = THREE.MathUtils.damp(camera.position.y, 0.35 - pointer.current.y * 0.18, 3, delta);
-    camera.lookAt(0, 0, 0);
+    camera.position.x = THREE.MathUtils.damp(camera.position.x, 7.4 * distance + pointer.current.x * 0.35, 2.5, delta);
+    camera.position.y = THREE.MathUtils.damp(camera.position.y, 6.1 * distance - pointer.current.y * 0.2, 2.5, delta);
+    camera.lookAt(lookAt);
   });
-
-  return <>
-    <color attach="background" args={['#050b18']} />
-    <ambientLight intensity={0.6} />
-    <directionalLight position={[3, 4, 5]} color="#b7e9ff" intensity={3} />
-    <pointLight position={[-3, 1, -1]} color="#6856ff" intensity={16} />
-    <pointLight position={[1, -2, 3]} color="#2ad3f0" intensity={8} />
-    <group scale={compact ? 0.87 : size.width / size.height < 1.2 ? 1 : 1.15} rotation={[0.18, -0.35, -0.16]}>
-      <group ref={world}>
-        <mesh>
-          <sphereGeometry args={[1.38, compact ? 32 : 64, compact ? 24 : 48]} />
-          <meshStandardMaterial color="#092438" metalness={0.65} roughness={0.4} />
-        </mesh>
-        <mesh>
-          <sphereGeometry args={[1.4, compact ? 20 : 36, compact ? 12 : 20]} />
-          <meshBasicMaterial color="#3097b2" wireframe transparent opacity={0.2} />
-        </mesh>
-        {sites.map((position, index) => <IndustrialSite key={index} position={position} index={index} active={active === index} onActive={setActive} />)}
-        {sites.map((_, index) => <Connection key={index} from={index} to={(index + 1) % sites.length} reduced={reduced} />)}
-        {!compact && <><Connection from={0} to={3} reduced={reduced} /><Connection from={1} to={4} reduced={reduced} /><Connection from={2} to={5} reduced={reduced} /></>}
-      </group>
-      {[0, 1].map(index => <mesh key={index} rotation={[Math.PI / 2 + index * 0.45, index * 0.4, 0]}>
-        <torusGeometry args={[1.95 + index * 0.18, 0.006, 6, compact ? 64 : 128]} />
-        <meshBasicMaterial color={index ? '#6e6be8' : '#2ad3f0'} transparent opacity={0.45} />
-      </mesh>)}
-    </group>
-  </>;
+  return null;
 }
 
 function ContextGuard({ onFailure }: Pick<Props, 'onFailure'>) {
@@ -131,15 +72,28 @@ export default function SceneCanvas({ visible, compact, reduced, onFailure, onRe
   const [ready, setReady] = useState(false);
   return <div className={`absolute inset-0 transition-opacity duration-700 ${ready ? 'opacity-100' : 'opacity-0'}`}>
     <Canvas
+      shadows={compact ? false : 'soft'}
       dpr={compact ? 1 : [1, 1.5]}
-      camera={{ position: [0, 0.35, 6.3], fov: 42 }}
-      frameloop={!visible ? 'never' : reduced ? 'demand' : 'always'}
-      gl={{ antialias: !compact, alpha: false, powerPreference: 'low-power' }}
+      camera={{ position: [7.4, 6.1, 8.6], fov: 35, near: 0.1, far: 60 }}
+      frameloop={visible ? 'demand' : 'never'}
+      gl={{ antialias: !compact, alpha: true, powerPreference: 'low-power' }}
       fallback={null}
-      onCreated={({ camera }) => { camera.lookAt(0, 0, 0); setReady(true); onReady(); }}
+      onCreated={({ camera }) => { camera.lookAt(lookAt); setReady(true); onReady(); }}
     >
       <ContextGuard onFailure={onFailure} />
-      <DigitalTwin compact={compact} reduced={reduced} />
+      <RenderBudget visible={visible} reduced={reduced} />
+      <CameraRig compact={compact} reduced={reduced} />
+      <ambientLight intensity={0.45} color="#a6bfd6" />
+      <directionalLight position={[-3, 7, 4]} color="#fff0d6" intensity={3.2} castShadow={!compact}
+        shadow-mapSize={[1024, 1024]} shadow-camera-left={-5} shadow-camera-right={5}
+        shadow-camera-top={5} shadow-camera-bottom={-5} shadow-normalBias={0.03} />
+      <directionalLight position={[4, 3, -4]} color="#80d5ff" intensity={2.4} />
+      <Environment resolution={compact ? 32 : 64} frames={1}>
+        <Lightformer position={[0, 6, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[8, 5, 1]} intensity={3} color="#f2f5ff" />
+        <Lightformer position={[-5, 2, 0]} rotation={[0, Math.PI / 2, 0]} scale={[3, 5, 1]} intensity={2} color="#98d8ff" />
+        <Lightformer position={[3, 2, 4]} rotation={[0, Math.PI, 0]} scale={[4, 2, 1]} intensity={2} color="#ffe4c2" />
+      </Environment>
+      <IndustrialCampus compact={compact} reduced={reduced} />
     </Canvas>
   </div>;
 }
