@@ -10,16 +10,20 @@
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
     "framer-motion": "^11.5.4",
     "lucide-react": "0.522.0",
     "next": "^15.5.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "three": "^0.187.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.18",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.187.0",
     "autoprefixer": "latest",
     "eslint": "^9.0.0",
     "eslint-config-next": "^15.5.0",
