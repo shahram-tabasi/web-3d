@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from '../layout/LocaleLink';
 import { ChevronRightIcon } from 'lucide-react';
-import { HeroSimorgh } from './HeroSimorgh';
+import { HeroSimorgh3D } from './HeroSimorgh3D';
 import { useI18n } from '../../i18n';
 
 interface Crumb {
@@ -32,7 +32,7 @@ export function PageHero({ eyebrow, title, lead, crumbs = [], image, flip = fals
           <div className="absolute inset-0 bg-gradient-to-t from-space-0 via-space-0/80 to-space-0/60" />
         </div>
       }
-      <HeroSimorgh />
+      <HeroSimorgh3D />
 
       <div className="relative mx-auto max-w-shell px-5 py-20 lg:px-10 lg:py-28">
         {crumbs.length > 0 &&
