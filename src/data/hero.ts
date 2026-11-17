@@ -1,4 +1,4 @@
-import { REF_IMAGE_HERO, REF_IMAGE_NEURAL, REF_IMAGE_PLANET } from './site';
+import { REF_IMAGE_NEURAL, REF_IMAGE_PLANET } from './site';
 
 export interface HeroMedia {
   /** Admin-selectable hero media type. Swapping to 'video' requires no code change. */
@@ -46,10 +46,10 @@ export const heroSlides: HeroSlide[] = [
   overlay: 0.55,
   media: {
     type: 'image',
-    desktop: REF_IMAGE_HERO,
-    tablet: REF_IMAGE_HERO,
-    mobile: REF_IMAGE_HERO,
-    focal: '50% 42%'
+    desktop: '/hero/simorgh-calm-desktop.webp',
+    tablet: '/hero/simorgh-calm-tablet.webp',
+    mobile: '/hero/simorgh-calm-mobile.webp',
+    focal: '50% 50%'
   }
 },
 {

@@ -1,129 +1,43 @@
 'use client';
 
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import { ArrowRightIcon } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { HeroExperience } from '../3d/HeroExperience';
+import { HeroArtwork } from '../hero/HeroArtwork';
 import { activeHero } from '../../data/hero';
 import { useI18n } from '../../i18n';
 
 export function Hero() {
-  const ref = useRef<HTMLElement | null>(null);
-  const reduced = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
-  const mediaY = useTransform(scrollYProgress, [0, 1], ['0%', reduced ? '0%' : '9%']);
-  const mediaScale = useTransform(scrollYProgress, [0, 1], [1, reduced ? 1 : 1.06]);
-
   const { t } = useI18n();
   const slide = activeHero;
-  const { media } = slide;
 
-  return (
-    <section ref={ref} className="relative min-h-[100svh] w-full overflow-hidden bg-space-0" aria-label="SIMORGH">
-      {/* Media layer — mobile gets its own composition band, desktop is full bleed 16:9 */}
-      <motion.div
-        style={{ y: mediaY, scale: mediaScale }}
-        className="absolute inset-x-0 top-0 h-[62svh] lg:inset-0 lg:h-full">
-        
-        {media.type === 'video' ?
-        <video
-          className="h-full w-full object-cover"
-          style={{ objectPosition: media.focal }}
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster={media.desktop}>
-          
-            {media.videoWebm && <source src={media.videoWebm} type="video/webm" />}
-            {media.videoMp4 && <source src={media.videoMp4} type="video/mp4" />}
-          </video> :
-
-        <picture>
-            <source media="(min-width: 1024px)" srcSet={media.desktop} />
-            <source media="(min-width: 640px)" srcSet={media.tablet} />
-            <img
-            src={media.mobile}
-            alt="A luminous Simorgh formed of light and data rising between a human and an artificial intelligence above a digital Earth"
-            className="h-full w-full object-cover"
-            style={{ objectPosition: media.focal }}
-            fetchPriority="high" />
-          
-          </picture>
-        }
-      </motion.div>
-
-      <HeroExperience />
-
-      {/* Scrims: vertical on mobile, directional on desktop so the Simorgh stays uncovered */}
-      <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-space-0 via-transparent to-transparent lg:bg-gradient-to-r rtl:lg:bg-gradient-to-l lg:from-space-0 lg:via-transparent lg:to-transparent"
-        style={{ opacity: Math.min(slide.overlay + 0.15, 1) }} />
-      
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-space-0 to-transparent" />
-      <div className="pointer-events-none absolute inset-0 hidden lg:block lg:bg-[radial-gradient(60%_50%_at_58%_45%,rgba(42,211,240,0.10),transparent_70%)]" />
-
-      <div className="pointer-events-none relative mx-auto flex min-h-[100svh] max-w-shell flex-col items-center justify-end px-5 pb-14 pt-[380px] text-center sm:pt-[460px] lg:items-start lg:justify-center lg:px-10 lg:pb-16 lg:pt-28 lg:text-start">
-        <motion.div className="mx-auto max-w-2xl lg:mx-0 lg:w-[42%]">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-            className="flex items-center justify-center gap-3 lg:justify-start">
-            
-            <span className="h-px w-8 bg-cyan" />
-            <span className="font-mono text-[10.5px] tracking-label text-cyan">{t.hero.eyebrow}</span>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.34, delay: 0.06, ease: [0.23, 1, 0.32, 1] }}
-            className="mt-6 font-display text-[36px] font-semibold leading-[1.1] tracking-tight text-white sm:text-[48px] lg:text-[clamp(40px,4vw,60px)]">
-            
-            {t.hero.headline}
-            <span className="block text-transparent [-webkit-background-clip:text] [background-clip:text] [background-image:linear-gradient(92deg,#7ce6f7,#5c8dff_55%,#a48bff)]">
-              {t.hero.accent}
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.34, delay: 0.12, ease: [0.23, 1, 0.32, 1] }}
-            className="mx-auto mt-7 max-w-2xl text-[15px] leading-relaxed text-ink-muted sm:text-[17px]">
-            
-            {t.hero.subtitle}
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.34, delay: 0.18, ease: [0.23, 1, 0.32, 1] }}
-            className="pointer-events-auto mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:items-center lg:justify-start">
-            
-            <Button to={slide.primaryCta.to} size="lg">
-              {t.hero.primary}
-              <ArrowRightIcon className="h-4 w-4" strokeWidth={1.6} />
-            </Button>
-            <Button to={slide.secondaryCta.to} size="lg" variant="outline">
-              {t.hero.secondary}
-            </Button>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.26 }}
-            className="mt-10 font-mono text-[10px] leading-relaxed tracking-label text-ink-faint">
-            
-            {t.hero.kicker}
-          </motion.div>
-        </motion.div>
+  return <section className="relative isolate min-h-[100svh] w-full overflow-hidden bg-space-0" aria-label="SIMORGH">
+    <HeroArtwork media={slide.media} />
+    {/* Keep the bird and faces clear; only the lower copy area needs a quiet scrim. */}
+    <div className="pointer-events-none absolute inset-0 hidden lg:block"
+      style={{ background: 'linear-gradient(180deg, rgba(4,9,19,.65) 0%, rgba(4,9,19,.05) 20%, rgba(4,9,19,.1) 43%, rgba(4,9,19,.84) 69%, rgba(4,9,19,.3) 100%)' }} />
+    <div className="pointer-events-none relative mx-auto flex min-h-[100svh] max-w-shell flex-col items-center justify-end px-5 pb-12 pt-[calc(66.667vw+112px)] text-center lg:pb-12 lg:pt-[53vh]">
+      <div className="w-full max-w-[850px]">
+        <div className="flex items-center justify-center gap-3">
+          <span className="h-px w-6 bg-cyan/60" />
+          <span className="font-mono text-[9px] tracking-label text-cyan/80 sm:text-[10px]">{t.hero.eyebrow}</span>
+          <span className="h-px w-6 bg-cyan/60" />
+        </div>
+        <h1 className="mt-5 font-display text-[34px] font-semibold leading-[1.12] tracking-tight text-white sm:text-[46px] lg:text-[clamp(40px,3.6vw,56px)]">
+          {t.hero.headline}
+          <span className="mt-1 block text-[#9ec9ed]">{t.hero.accent}</span>
+        </h1>
+        <p className="mx-auto mt-5 max-w-[620px] text-[14px] leading-relaxed text-[#abb8ca] sm:text-[15px]">
+          {t.hero.subtitle}
+        </p>
+        <div className="pointer-events-auto mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Button to={slide.primaryCta.to} size="lg">
+            {t.hero.primary}<ArrowRightIcon className="h-4 w-4" strokeWidth={1.6} />
+          </Button>
+          <Button to={slide.secondaryCta.to} size="lg" variant="outline">{t.hero.secondary}</Button>
+        </div>
+        <div className="mt-7 font-mono text-[9px] leading-relaxed tracking-label text-ink-faint">{t.hero.kicker}</div>
       </div>
-
-      <div className="absolute inset-x-0 bottom-0 h-px sim-hairline" />
-    </section>);
-
+    </div>
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px sim-hairline" />
+  </section>;
 }
